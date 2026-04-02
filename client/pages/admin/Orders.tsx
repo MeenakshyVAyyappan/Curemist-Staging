@@ -229,7 +229,7 @@ export default function AdminOrders() {
                         onChange={(e) => { setEndDate(e.target.value); setCurrentPage(1); }}
                         className="w-auto"
                     />
-                    <Button
+                    {/* <Button
                         variant="secondary"
                         onClick={() => {
                             const resetEnd = new Date();
@@ -241,9 +241,9 @@ export default function AdminOrders() {
                         }}
                     >
                         Last 3 months
-                    </Button>
+                    </Button> */}
                 </div>
-                <Button variant="outline" onClick={async () => {
+                {/* <Button variant="outline" onClick={async () => {
                     const { data: ordersWithItems, error } = await supabase
                         .from('orders')
                         .select('*, order_items(*)')
@@ -303,7 +303,7 @@ export default function AdminOrders() {
                     doc.save(`orders_report_${new Date().toISOString().slice(0, 10)}.pdf`);
                 }}>
                     Download PDF Report
-                </Button>
+                </Button> */}
                 <Button variant="outline" onClick={exportOrdersToXls}>
                     Export XLS
                 </Button>

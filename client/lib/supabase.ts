@@ -8,13 +8,13 @@ const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYm
 const getRedirectUrl = () => {
   if (typeof window !== 'undefined') {
     // Check if we're in production
-    if (window.location.hostname === 'cure-mist.vercel.app') {
-      return 'https://cure-mist.vercel.app';
+    if (window.location.hostname === 'curemist-website.vercel.app') {
+      return 'https://curemist-website.vercel.app';
     }
     // Use current origin for development
     return window.location.origin;
   }
-  return 'https://cure-mist.vercel.app';
+  return 'https://curemist-website.vercel.app';
 };
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {

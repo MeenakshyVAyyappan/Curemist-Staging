@@ -82,7 +82,7 @@ export default function CartPage() {
               {/* Brand Header Strip */}
               <div className="bg-brand-blue rounded-t-2xl py-5 px-6 flex items-center justify-center">
                 <img
-                  src="https://cure-mist.vercel.app/Logo.png"
+                  src="https://curemist-website.vercel.app/Logo.png"
                   alt="CureMist"
                   className="h-8 w-auto brightness-0 invert"
                 />
