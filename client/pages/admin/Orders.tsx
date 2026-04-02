@@ -25,7 +25,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { format } from 'date-fns';
 import { Search, Eye } from 'lucide-react';
 import { useToast } from "@/components/ui/use-toast";
-import { formatOrderDate } from "@/lib/utils";
+import { formatOrderDate, formatOrderId } from "@/lib/utils";
 
 export default function AdminOrders() {
     const [orders, setOrders] = useState<any[]>([]);
@@ -43,11 +43,6 @@ export default function AdminOrders() {
     const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
     const [bulkStatus, setBulkStatus] = useState('processing');
 
-    const formatOrderId = (id: string) => {
-        const digits = id.replace(/\D/g, '');
-        const num = (digits || '00000000').slice(0, 8).padStart(8, '0');
-        return `ORD-${num}`;
-    };
     const { toast } = useToast();
 
     useEffect(() => {

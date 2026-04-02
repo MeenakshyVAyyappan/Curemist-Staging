@@ -5,6 +5,13 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+// Format order ID as ORD-00000000
+export function formatOrderId(id: string): string {
+  const digits = id.replace(/\D/g, '');
+  const num = (digits || '00000000').slice(0, 8).padStart(8, '0');
+  return `ORD-${num}`;
+}
+
 // Format date as "feb 02 2026, hh:mm:ss"
 export function formatOrderDate(dateString: string | Date): string {
   const date = new Date(dateString);

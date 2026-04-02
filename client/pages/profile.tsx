@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/auth';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Button } from '@/components/ui/button';import { formatOrderDate } from "@/lib/utils";import { toast } from '@/components/ui/use-toast';
+import { Button } from '@/components/ui/button';
+import { formatOrderDate, formatOrderId } from "@/lib/utils";
+import { toast } from '@/components/ui/use-toast';
 import { supabase } from '@/lib/supabase';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { FiEye, FiEyeOff } from "react-icons/fi";
@@ -574,7 +576,7 @@ export default function Profile() {
                           </div>
                           <div>
                             <p className="text-xs text-gray-500 uppercase font-bold">Order ID</p>
-                            <p className="text-xs font-mono text-gray-600">{ord.id}</p>
+                            <p className="text-xs font-mono text-gray-600">{formatOrderId(ord.id)}</p>
                           </div>
                           <div className="px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800 uppercase">
                             {ord.order_status}
@@ -631,7 +633,7 @@ export default function Profile() {
                     <DialogHeader>
                       <DialogTitle>Order Details</DialogTitle>
                       <DialogDescription>
-                        {selectedOrder ? `Order ID: ${selectedOrder.id}` : ""}
+                        {selectedOrder ? `Order ID: ${formatOrderId(selectedOrder.id)}` : ""}
                       </DialogDescription>
                     </DialogHeader>
 
