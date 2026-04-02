@@ -95,7 +95,6 @@ export default function CartDrawer() {
               <span>Subtotal</span>
               <span>₹{subtotal}</span>
             </div>
-            <p className="text-xs text-gray-500 text-center">Shipping & taxes calculated at checkout</p>
             <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={handleViewCart}

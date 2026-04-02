@@ -54,13 +54,7 @@ const WhySafe: React.FC = () => {
   }, [emblaApi]);
 
   useEffect(() => {
-    if (!emblaApi) return;
-    const interval = setInterval(() => {
-      if (window.innerWidth <= 1024) {
-        emblaApi.scrollNext();
-      }
-    }, 3000);
-    return () => clearInterval(interval);
+    // Autoplay removed for mobile view as per request
   }, [emblaApi]);
 
   return (

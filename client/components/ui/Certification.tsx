@@ -214,14 +214,7 @@ const Certifications: React.FC = () => {
     }, [emblaApi]);
 
     useEffect(() => {
-        if (!emblaApi) return;
-        const handleAutoPlay = setInterval(() => {
-            if (window.innerWidth < 640) {
-                emblaApi.scrollNext();
-            }
-        }, 3000); // 3 seconds per slide
-
-        return () => clearInterval(handleAutoPlay);
+        // Autoplay removed for mobile view as per request
     }, [emblaApi]);
 
     return (

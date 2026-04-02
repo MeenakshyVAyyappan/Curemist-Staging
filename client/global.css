@@ -126,6 +126,14 @@
     overflow-x: auto;
     white-space: pre;
   }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  input:invalid, select:invalid, textarea:invalid {
+    scroll-margin-top: 180px; 
+  }
 }
 
 @layer utilities {

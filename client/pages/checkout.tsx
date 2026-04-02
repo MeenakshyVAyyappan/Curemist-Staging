@@ -73,6 +73,7 @@ export default function Checkout() {
     zip: '',
     country: '',
   });
+  const [showErrors, setShowErrors] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -446,7 +447,22 @@ export default function Checkout() {
           <div className="grid lg:grid-cols-3 gap-6 md:gap-8">
             {/* Main Checkout Form */}
             <div className="lg:col-span-2">
-              <form onSubmit={handlePlaceOrder} className="space-y-8">
+              <form onSubmit={handlePlaceOrder} onInvalidCapture={(e) => {
+                setShowErrors(true);
+                const firstInvalid = e.currentTarget.querySelector(':invalid') as HTMLElement;
+                if (e.target === firstInvalid && firstInvalid) {
+                  const headerOffset = 180;
+                  const elementPosition = firstInvalid.getBoundingClientRect().top;
+                  const offsetPosition = elementPosition + window.scrollY - headerOffset;
+
+                  window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                  });
+                  firstInvalid.focus({ preventScroll: true });
+                  e.preventDefault();
+                }
+              }} className="space-y-8">
 
                 {/* Saved Addresses Selection */}
                 {savedAddresses.length > 0 && (
@@ -506,6 +522,7 @@ export default function Checkout() {
                         placeholder="First Name"
                         required
                       />
+                      {showErrors && !customerInfo.firstName && <p className="text-red-500 text-xs mt-1 font-medium">First Name is required</p>}
                     </div>
                     <div>
                       <label className="block text-sm font-medium mb-2">Last Name *</label>
@@ -517,6 +534,7 @@ export default function Checkout() {
                         placeholder="Last Name"
                         required
                       />
+                      {showErrors && !customerInfo.lastName && <p className="text-red-500 text-xs mt-1 font-medium">Last Name is required</p>}
                     </div>
                     <div className="sm:col-span-2">
                       <label className="block text-sm font-medium mb-2">Email Address *</label>
@@ -528,6 +546,7 @@ export default function Checkout() {
                         placeholder="Email Address"
                         required
                       />
+                      {showErrors && !customerInfo.email && <p className="text-red-500 text-xs mt-1 font-medium">Email Address is required</p>}
                     </div>
                     <div className="sm:col-span-2">
                       <label className="block text-sm font-medium mb-2">Phone Number *</label>
@@ -558,6 +577,7 @@ export default function Checkout() {
                         <option value="Female">Female</option>
                         <option value="Other">Other</option>
                       </select>
+                      {showErrors && !customerInfo.sex && <p className="text-red-500 text-xs mt-1 font-medium">Gender is required</p>}
                     </div>
                     <div>
                       <label className="block text-sm font-medium mb-2">Date of Birth *</label>
@@ -569,6 +589,7 @@ export default function Checkout() {
                         className="w-full border p-3 rounded focus:outline-none focus:ring-2 focus:ring-brand-yellow"
                         required
                       />
+                      {showErrors && !customerInfo.dob && <p className="text-red-500 text-xs mt-1 font-medium">Date of Birth is required</p>}
                     </div>
                   </div>
                 </section>
@@ -587,6 +608,7 @@ export default function Checkout() {
                         placeholder="Street Address"
                         required
                       />
+                      {showErrors && !shippingAddress.street && <p className="text-red-500 text-xs mt-1 font-medium">Street Address is required</p>}
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
@@ -599,6 +621,7 @@ export default function Checkout() {
                           placeholder="City/Town"
                           required
                         />
+                      {showErrors && !shippingAddress.city && <p className="text-red-500 text-xs mt-1 font-medium">City/Town is required</p>}
                       </div>
                       <div>
                         <label className="block text-sm font-medium mb-2">State/Province *</label>
@@ -610,6 +633,7 @@ export default function Checkout() {
                           placeholder="State/Province"
                           required
                         />
+                      {showErrors && !shippingAddress.state && <p className="text-red-500 text-xs mt-1 font-medium">State/Province is required</p>}
                       </div>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -623,6 +647,7 @@ export default function Checkout() {
                           placeholder="ZIP/Postal Code"
                           required
                         />
+                      {showErrors && !shippingAddress.zip && <p className="text-red-500 text-xs mt-1 font-medium">ZIP/Postal Code is required</p>}
                       </div>
                       <div>
                         <label className="block text-sm font-medium mb-2">Country *</label>
@@ -634,6 +659,7 @@ export default function Checkout() {
                           placeholder="Country"
                           required
                         />
+                      {showErrors && !shippingAddress.country && <p className="text-red-500 text-xs mt-1 font-medium">Country is required</p>}
                       </div>
                     </div>
                   </div>

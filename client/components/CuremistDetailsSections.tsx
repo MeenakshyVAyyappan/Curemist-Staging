@@ -21,13 +21,7 @@ export default function CuremistDetailsSections() {
     }, [emblaApi]);
 
     useEffect(() => {
-        if (!emblaApi) return;
-        const interval = setInterval(() => {
-            if (window.innerWidth <= 768) {
-                emblaApi.scrollNext();
-            }
-        }, 3000);
-        return () => clearInterval(interval);
+        // Autoplay removed for mobile view as per request
     }, [emblaApi]);
 
     return (
@@ -68,7 +62,7 @@ export default function CuremistDetailsSections() {
                     {/* ── TOP: Mechanism of Actions ── */}
                     <div className="pd-mechanism-header">
                         <p className="pd-section-tag">Science Behind the Healing</p>
-                        <h2 className="pd-mechanism-title">CURE MIST : Mechanism of Actions</h2>
+                        <h2 className="pd-mechanism-title">CUREMIST : Mechanism of Actions</h2>
                         <p className="pd-mechanism-subtitle">Understanding how CureMist works at a cellular level to accelerate wound recovery.</p>
                     </div>
                     
@@ -148,7 +142,7 @@ export default function CuremistDetailsSections() {
                         </div>
                         <div className="pd-howact-content">
                             <p className="pd-section-tag" style={{ textAlign: "left" }}>Film Formation Technology</p>
-                            <h2 className="pd-howact-title">How Cure Mist Acts</h2>
+                            <h2 className="pd-howact-title">How CureMist Acts</h2>
                             <div className="pd-howact-points">
                                 {[
                                     "Cure Mist film formation spray is designed to provide a protective barrier over wounds.",

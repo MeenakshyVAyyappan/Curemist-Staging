@@ -434,10 +434,10 @@
     text-align: center;
     max-width: 560px;
     margin: 0 auto 52px;
-    font-size: 14px;
-    color: #666;
+    font-size: 21px;
+    color: #444;
     font-weight: 500;
-    line-height: 1.75;
+    line-height: 1.7;
 }
 
 /* ── Description / About This Product ── */
@@ -510,8 +510,9 @@
 }
 
 .pd-step p {
-    font-size: 13px;
-    color: #333;
+    font-size: 21px;
+    font-weight: 500;
+    color: #444;
     line-height: 1.7;
 }
 
@@ -1147,12 +1148,12 @@
 }
 
 .pd-mechanism-subtitle {
-    font-size: 14px;
-    color: #3a2800;
-    font-weight: 400;
+    font-size: 21px;
+    color: #444;
+    font-weight: 500;
     max-width: 560px;
     margin: 0 auto;
-    line-height: 1.75;
+    line-height: 1.7;
 }
 
 .pd-mechanism-grid {
@@ -1217,9 +1218,10 @@
 }
 
 .pd-mechanism-card-text {
-    font-size: 13px;
-    color: #3a2800;
-    line-height: 1.75;
+    font-size: 21px;
+    font-weight: 500;
+    color: #444;
+    line-height: 1.7;
 }
 
 /* ══════════════════════════════════════════════
@@ -1275,7 +1277,7 @@
 }
 
 .pd-howact-title {
-    font-size: clamp(24px, 2.6vw, 36px);
+    font-size: clamp(26px, 3vw, 40px);
     font-weight: 800;
     color: #0C1F4A;
     margin-bottom: 32px;
@@ -1310,10 +1312,10 @@
 }
 
 .pd-howact-point p {
-    font-size: 14px;
-    color: #444;
-    line-height: 1.8;
+    font-size: 21px;
     font-weight: 500;
+    color: #444;
+    line-height: 1.7;
     margin: 0;
     padding-top: 4px;
 }
@@ -1432,7 +1434,7 @@
 }
 
 .pd-nwc-title {
-    font-size: clamp(28px, 3.2vw, 44px);
+    font-size: clamp(26px, 3vw, 40px);
     font-weight: 800;
     color: #0C1F4A;
     line-height: 1.2;
@@ -1517,10 +1519,10 @@
 
 /* Body text */
 .pd-nwc-text {
-    font-size: 14px;
-    color: #555;
-    line-height: 1.85;
-    font-weight: 400;
+    font-size: 21px;
+    font-weight: 500;
+    color: #444;
+    line-height: 1.7;
     flex: 1;
 }
 
@@ -1586,5 +1588,17 @@
     .pd-nwc-grid {
         grid-template-columns: 1fr;
         gap: 16px;
+    }
+}
+
+@media (max-width: 768px) {
+    .pd-section-sub,
+    .pd-step p,
+    .pd-mechanism-subtitle,
+    .pd-mechanism-card-text,
+    .pd-howact-point p,
+    .pd-nwc-text {
+        font-size: 1rem;
+        line-height: 1.625;
     }
 }

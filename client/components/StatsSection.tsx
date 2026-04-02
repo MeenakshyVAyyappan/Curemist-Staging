@@ -3,7 +3,7 @@ export default function StatsSection() {
     {
       icon: <img src="/icons/homeicon1.png" alt="Users Icon" className="h-[72px]" />,
       number: "10,000+",
-      description: "users across India"
+      description: "users across India, Middle East & Europe"
     },
     {
       icon: <img src="/icons/homeicon2.png" alt="Households Icon" className="h-[72px]" />,
