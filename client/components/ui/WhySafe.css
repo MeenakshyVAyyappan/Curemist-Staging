@@ -1,0 +1,308 @@
+/* WhySafe.css */
+
+:root {
+    --ws-gold: #D5A000;
+    --ws-gold-light: #EDB200;
+    --ws-gold-pale: #FFF1C5;
+    --ws-cream: #FFF1C5;
+    --ws-text: #1a1500;
+    --ws-text-muted: #5a3e00;
+    --ws-border: rgba(0, 0, 0, 0.1);
+}
+
+/* ── Section ── */
+.ws-section,
+.ws-section * {
+    font-family: 'Montserrat', sans-serif !important;
+}
+
+.ws-section {
+    position: relative;
+    padding: 80px 60px 100px;
+    background: #ffffff;
+    overflow: hidden;
+}
+
+.ws-section::before {
+    content: "";
+    position: absolute;
+    top: -200px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 900px;
+    height: 600px;
+    background: radial-gradient(ellipse at center,
+            rgba(201, 168, 76, 0.12) 0%,
+            transparent 70%);
+    pointer-events: none;
+}
+
+/* ── Decorative top line ── */
+.ws-deco-line {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1px;
+    height: 80px;
+    background: linear-gradient(to bottom, transparent, var(--ws-gold));
+}
+
+/* ── Section label ── */
+.ws-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 28px;
+}
+
+.ws-label span {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--ws-gold);
+}
+
+.ws-label::before,
+.ws-label::after {
+    content: "";
+    width: 40px;
+    height: 1px;
+}
+
+.ws-label::before {
+    background: linear-gradient(to right, transparent, var(--ws-gold));
+}
+
+.ws-label::after {
+    background: linear-gradient(to left, transparent, var(--ws-gold));
+}
+
+/* ── Title ── */
+.ws-title {
+    font-family:'Montserrat';
+    font-size: 40px;
+    font-weight: 700;
+    line-height: 1.1;
+    text-align: center;
+    color: #000000;
+    margin-bottom: 18px;
+}
+
+.ws-title em {
+    font-style: normal;
+    color: #000000;
+}
+
+/* ── Subtitle ── */
+.ws-sub {
+    font-family: 'Montserrat';
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: #000000;
+    text-align: center;
+    max-width: 48rem;
+    margin: 0 auto 64px;
+    line-height: 1.75rem;
+}
+
+/* ── Grid ── */
+.ws-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+    max-width: 1300px;
+    margin: 0 auto;
+}
+
+/* ── Card ── */
+.ws-card {
+    position: relative;
+    padding: 32px 24px;
+    background: #fffdf5;
+    border: 1.5px solid rgba(213, 160, 0, 0.18);
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: default;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: wsFadeUp 0.7s ease both;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06), 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+
+.ws-card:last-child {
+    border-right: 1.5px solid rgba(213, 160, 0, 0.18);
+}
+
+.ws-card:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.ws-card:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.ws-card:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+.ws-card:nth-child(4) {
+    animation-delay: 0.4s;
+}
+
+.ws-card:nth-child(5) {
+    animation-delay: 0.5s;
+}
+
+.ws-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg,
+            rgba(201, 168, 76, 0.05) 0%,
+            transparent 60%);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.ws-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1),
+        0 0 0 1.5px var(--ws-gold);
+    background: #fff;
+}
+
+.ws-card:hover::before {
+    opacity: 1;
+}
+
+/* ── Card number (removed) ── */
+
+/* ── Icon ── */
+.ws-icon-wrap {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 24px;
+    position: relative;
+}
+
+.ws-icon-wrap svg {
+    width: 28px;
+    height: 28px;
+    stroke: var(--ws-gold);
+    fill: none;
+    stroke-width: 1.3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.ws-icon-wrap::after {
+    content: "";
+    position: absolute;
+    bottom: -6px;
+    left: -6px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--ws-gold-pale);
+    z-index: -1;
+}
+
+/* ── Card text ── */
+.ws-card h3 {
+    font-family: 'Montserrat';
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.3;
+    color: #000000;
+    margin-bottom: 12px;
+}
+
+.ws-card p {
+    font-family: 'Montserrat';
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.6;
+    color: #000000;
+}
+
+/* ── Card bottom accent line ── */
+.ws-card-accent {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(to right,
+            transparent,
+            var(--ws-gold),
+            transparent);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.ws-card:hover .ws-card-accent {
+    opacity: 1;
+}
+
+/* ── Animation ── */
+@keyframes wsFadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(28px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+    .ws-section {
+        padding: 90px 32px 100px;
+    }
+
+    .ws-grid {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        padding-bottom: 20px;
+        -webkit-overflow-scrolling: touch;
+        gap: 16px;
+    }
+    .ws-grid::-webkit-scrollbar {
+        height: 6px;
+    }
+    .ws-grid::-webkit-scrollbar-thumb {
+        background: var(--ws-gold);
+        border-radius: 3px;
+    }
+
+    .ws-card {
+        flex: 0 0 calc(50vw - 42px);
+        scroll-snap-align: start;
+    }
+}
+
+@media (max-width: 600px) {
+    .ws-section {
+        padding: 70px 0 80px;
+    }
+
+    .ws-label, .ws-title, .ws-sub {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .ws-grid {
+        padding: 0 20px 20px;
+        scroll-padding: 0 20px;
+    }
+
+    .ws-card {
+        flex: 0 0 calc(85vw - 20px);
+    }
+}
