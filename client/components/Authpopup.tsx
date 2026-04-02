@@ -82,7 +82,7 @@ const AuthPopup = ({ onClose }: { onClose: () => void }) => {
           email,
           password,
           options: {
-            emailRedirectTo: "https://curemist-website.vercel.app/",
+            emailRedirectTo: getAuthRedirectUrl(),
           }
         });
 
