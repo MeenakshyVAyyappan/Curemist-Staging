@@ -16,7 +16,6 @@ const getRedirectUrl = () => {
     const host = window.location.hostname;
     const knownProductionHosts = [
       'curemist-website.vercel.app',
-      'cure-mist.vercel.app',
       'www.curemist-website.vercel.app',
       'localhost',
       '127.0.0.1',
