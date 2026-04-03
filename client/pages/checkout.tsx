@@ -317,6 +317,17 @@ export default function Checkout() {
 
       if (!response.ok) {
         console.error("Razorpay order creation failed:", data);
+        if (data.error?.toLowerCase().includes("payment gateway not configured")) {
+          toast({
+            title: "Payment gateway not configured",
+            description:
+              "Server environment is missing Razorpay credentials. Please configure RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET and try again.",
+            variant: "destructive",
+          });
+          setLoading(false);
+          setProcessingPayment(false);
+          return;
+        }
         throw new Error(data.error || "Failed to create payment order");
       }
 

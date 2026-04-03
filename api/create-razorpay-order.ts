@@ -1,6 +1,25 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import crypto from "crypto";
 
+function getRazorpayCredentials() {
+  const RAZORPAY_KEY_ID =
+    process.env.RAZORPAY_KEY_ID?.trim() ||
+    process.env.VITE_RAZORPAY_KEY_ID?.trim() ||
+    process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID?.trim() ||
+    "";
+  const RAZORPAY_KEY_SECRET =
+    process.env.RAZORPAY_KEY_SECRET?.trim() ||
+    process.env.VITE_RAZORPAY_KEY_SECRET?.trim() ||
+    process.env.NEXT_PUBLIC_RAZORPAY_KEY_SECRET?.trim() ||
+    "";
+
+  const missing: string[] = [];
+  if (!RAZORPAY_KEY_ID) missing.push("RAZORPAY_KEY_ID");
+  if (!RAZORPAY_KEY_SECRET) missing.push("RAZORPAY_KEY_SECRET");
+
+  return { RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET, missing };
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Only allow POST requests
   if (req.method !== "POST") {
@@ -8,14 +27,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    // Load Razorpay credentials from environment variables
-    const RAZORPAY_KEY_ID = process.env.RAZORPAY_KEY_ID || "";
-    const RAZORPAY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET || "";
-
-    // Validate credentials are loaded
-    if (!RAZORPAY_KEY_ID || !RAZORPAY_KEY_SECRET) {
-      console.error("Razorpay credentials not configured");
-      return res.status(500).json({ error: "Payment gateway not configured" });
+    const { RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET, missing } =
+      getRazorpayCredentials();
+    if (missing.length) {
+      const message = `Payment gateway not configured. Missing env: ${missing.join(", ")}`;
+      console.error(message);
+      return res.status(500).json({ error: message });
     }
 
     const { amount, currency = "INR", receipt } = req.body;

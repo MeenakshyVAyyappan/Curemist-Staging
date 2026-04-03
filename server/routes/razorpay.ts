@@ -1,18 +1,38 @@
 import { Request, Response } from "express";
 import crypto from "crypto";
 
-// Load Razorpay credentials from environment variables
-const RAZORPAY_KEY_ID = process.env.RAZORPAY_KEY_ID || "";
-const RAZORPAY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET || "";
+function getRazorpayCredentials() {
+  const RAZORPAY_KEY_ID =
+    process.env.RAZORPAY_KEY_ID?.trim() ||
+    process.env.VITE_RAZORPAY_KEY_ID?.trim() ||
+    process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID?.trim() ||
+    "";
+  const RAZORPAY_KEY_SECRET =
+    process.env.RAZORPAY_KEY_SECRET?.trim() ||
+    process.env.VITE_RAZORPAY_KEY_SECRET?.trim() ||
+    process.env.NEXT_PUBLIC_RAZORPAY_KEY_SECRET?.trim() ||
+    "";
+
+  const missing: string[] = [];
+  if (!RAZORPAY_KEY_ID) missing.push("RAZORPAY_KEY_ID");
+  if (!RAZORPAY_KEY_SECRET) missing.push("RAZORPAY_KEY_SECRET");
+
+  return { RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET, missing };
+}
+
+function sendMissingConfig(res: Response, missing: string[]) {
+  const message = `Payment gateway not configured. Missing env: ${missing.join(", ")}`;
+  console.error(message);
+  res.status(500).json({ error: message });
+}
 
 // POST /api/create-razorpay-order
 export async function createRazorpayOrder(req: Request, res: Response) {
   try {
-    // Validate credentials are loaded
-    if (!RAZORPAY_KEY_ID || !RAZORPAY_KEY_SECRET) {
-      console.error("Razorpay credentials not configured");
-      res.status(500).json({ error: "Payment gateway not configured" });
-      return;
+    const { RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET, missing } =
+      getRazorpayCredentials();
+    if (missing.length) {
+      return sendMissingConfig(res, missing);
     }
 
     const { amount, currency = "INR", receipt } = req.body;
@@ -77,13 +97,12 @@ export async function createRazorpayOrder(req: Request, res: Response) {
 // POST /api/verify-razorpay-payment
 export async function verifyRazorpayPayment(req: Request, res: Response) {
   try {
-    // Validate credentials are loaded
-    if (!RAZORPAY_KEY_ID || !RAZORPAY_KEY_SECRET) {
-      console.error("Razorpay credentials not configured");
-      res
-        .status(500)
-        .json({ verified: false, error: "Payment gateway not configured" });
-      return;
+    const { RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET, missing } =
+      getRazorpayCredentials();
+    if (missing.length) {
+      const message = `Payment gateway not configured. Missing env: ${missing.join(", ")}`;
+      console.error(message);
+      return res.status(500).json({ verified: false, error: message });
     }
 
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
