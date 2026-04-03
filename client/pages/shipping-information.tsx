@@ -107,7 +107,6 @@ const shippingCards = [
     icon: <ShieldCheck size={22} />,
     title: "Order Tracking",
     items: [
-      "Once your order is shipped, you will receive a tracking number via email.",
       "Use the tracking number on the courier's website to track your shipment.",
       "For tracking assistance, contact us at contact@altuspharma.in.",
     ],
