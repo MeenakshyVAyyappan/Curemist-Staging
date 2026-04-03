@@ -40,6 +40,7 @@ export default function Checkout() {
   const [processingPayment, setProcessingPayment] = useState(false);
   const [currentOrderId, setCurrentOrderId] = useState<string | null>(null);
   const [currentOrderStatus, setCurrentOrderStatus] = useState<string>("");
+  const [showThankYouModal, setShowThankYouModal] = useState(false);
 
   // Customer Information
   const [customerInfo, setCustomerInfo] = useState<CustomerInfo>({
@@ -366,10 +367,15 @@ export default function Checkout() {
                 title: "Payment Successful! 🎉",
                 description: "Your order has been placed successfully.",
               });
+              
+              // Show thank you modal
+              setShowThankYouModal(true);
+              
               setTimeout(() => {
                 setProcessingPayment(false);
+                setShowThankYouModal(false);
                 navigate("/profile?tab=1");
-              }, 1200);
+              }, 3000);
             } else {
               await finalizeOrderStatus("payment_failed");
               toast({
@@ -535,6 +541,55 @@ export default function Checkout() {
             </p>
             <p className="text-sm text-gray-600">
               You will be redirected to your order history automatically.
+            </p>
+          </div>
+        </div>
+      )}
+      
+      {showThankYouModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+          <div className="max-w-md rounded-lg bg-white p-8 text-center shadow-2xl animate-in fade-in zoom-in">
+            <div className="mb-6 flex justify-center">
+              <div className="flex h-20 w-20 items-center justify-center rounded-full bg-green-100">
+                <svg
+                  className="h-10 w-10 text-green-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+              </div>
+            </div>
+            
+            <h2 className="mb-3 text-3xl font-bold text-green-600">
+              Thank You! 🎉
+            </h2>
+            
+            <p className="mb-2 text-lg font-semibold text-gray-900">
+              Payment Successful
+            </p>
+            
+            <p className="mb-6 text-sm text-gray-600">
+              Your order has been placed successfully! We're preparing your items for shipment.
+            </p>
+            
+            <div className="mb-6 space-y-1 rounded-lg bg-gray-50 p-4 text-left">
+              <p className="text-sm text-gray-600">
+                <span className="font-semibold">Order ID:</span> {currentOrderId?.slice(0, 8).toUpperCase()}
+              </p>
+              <p className="text-xs text-gray-500">
+                We'll email you tracking information soon.
+              </p>
+            </div>
+            
+            <p className="text-xs text-gray-500">
+              Redirecting to your orders in a moment...
             </p>
           </div>
         </div>
