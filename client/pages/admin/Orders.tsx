@@ -220,7 +220,13 @@ export default function AdminOrders() {
       "Billing Address",
       "Payment Method",
     ];
-    const rows = filteredOrders.map((order) => {
+
+    const ordersToExport =
+      selectedOrders.length > 0
+        ? filteredOrders.filter((order) => selectedOrders.includes(order.id))
+        : filteredOrders;
+
+    const rows = ordersToExport.map((order) => {
       const shipping = order.shipping_address
         ? `${order.shipping_address.street}, ${order.shipping_address.city}, ${order.shipping_address.state}, ${order.shipping_address.zip}, ${order.shipping_address.country}`
         : "";
