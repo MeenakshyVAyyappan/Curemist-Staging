@@ -1,7 +1,9 @@
 # Payment Issue Fix Guide
 
 ## Problem Summary
+
 Money is being debited from customer accounts but orders are not being created in the database due to:
+
 1. Missing database columns in the `orders` table
 2. Insufficient error handling in the payment flow
 3. Potential API endpoint issues
@@ -25,9 +27,10 @@ UPDATE orders SET payment_method = 'cod' WHERE payment_method IS NULL;
 ```
 
 4. Verify the columns were added by running:
+
 ```sql
-SELECT column_name, data_type 
-FROM information_schema.columns 
+SELECT column_name, data_type
+FROM information_schema.columns
 WHERE table_name = 'orders'
 ORDER BY ordinal_position;
 ```
@@ -60,6 +63,7 @@ Make sure your Express server is running and accessible:
    - `/api/verify-razorpay-payment`
 
 3. Test the endpoints manually:
+
 ```bash
 # Test create order endpoint
 curl -X POST http://localhost:8080/api/create-razorpay-order \
@@ -83,19 +87,25 @@ curl -X POST http://localhost:8080/api/create-razorpay-order \
 ### Step 5: Common Issues and Solutions
 
 #### Issue: 406 Error on create-razorpay-order
+
 **Solution**: Check if your server is running and CORS is properly configured
 
 #### Issue: 400 Error "Invalid amount"
+
 **Solution**: Verify that `totalPrice` is a valid number > 0. Check the console logs.
 
 #### Issue: 400 Error on Supabase orders insert
-**Solution**: 
+
+**Solution**:
+
 - Run the database schema fix (Step 1)
 - Check RLS policies (Step 2)
 - Verify all required fields are being sent
 
 #### Issue: Payment succeeds but order not created
-**Solution**: 
+
+**Solution**:
+
 - Check browser console for errors in `saveOrderToSupabase`
 - Verify database columns exist
 - Check RLS policies allow insert
@@ -143,12 +153,14 @@ If customers have been charged but orders weren't created:
 ### Step 8: Monitoring Going Forward
 
 Add monitoring to track:
+
 - Payment success rate
 - Order creation success rate
 - Failed payment verifications
 - Database insertion errors
 
 Check logs regularly for:
+
 - "Order creation error:"
 - "Payment verification error:"
 - "Failed to create order:"
@@ -162,9 +174,9 @@ Check logs regularly for:
 ## Need Help?
 
 If issues persist after following these steps:
+
 1. Check all console logs in browser
 2. Check server logs
 3. Verify Razorpay credentials are correct
 4. Ensure Supabase connection is working
 5. Test with Razorpay test mode first before going live
-

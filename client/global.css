@@ -6,7 +6,6 @@
 @tailwind utilities;
 
 @layer base {
-
   /**
    * Tailwind CSS theme
    * tailwind.config.ts expects the following color variables to be expressed as HSL values.
@@ -113,7 +112,12 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Montserrat', -apple-system, Roboto, Helvetica, sans-serif;
+    font-family:
+      "Montserrat",
+      -apple-system,
+      Roboto,
+      Helvetica,
+      sans-serif;
   }
 
   :where(p, span, li, h1, h2, h3, h4, h5, h6, a, button, label, td, th) {
@@ -131,8 +135,10 @@
     scroll-behavior: smooth;
   }
 
-  input:invalid, select:invalid, textarea:invalid {
-    scroll-margin-top: 180px; 
+  input:invalid,
+  select:invalid,
+  textarea:invalid {
+    scroll-margin-top: 180px;
   }
 }
 
@@ -178,7 +184,6 @@
   }
 }
 
-
 /* For small screens (sm), set padding-top to 0 */
 @media (max-width: 639px) {
   .testimonials {
@@ -186,10 +191,6 @@
     padding-bottom: 0 !important;
   }
 }
-
-
-
-
 
 /* mobile faq button */
 @media (max-width: 768px) {
@@ -206,8 +207,6 @@
     }
   }
 }
-
-
 
 /* mobile banner description */
 /* @media (max-width: 768px) {

@@ -5,6 +5,7 @@
 If you got the error **"relation 'orders' does not exist"**, it means your database tables haven't been created yet.
 
 ### 👉 Follow This Guide First:
+
 **Read and follow: `DATABASE_SETUP_GUIDE.md`**
 
 This will create all the necessary database tables with the correct schema.
@@ -14,6 +15,7 @@ This will create all the necessary database tables with the correct schema.
 ## ⚡ If Database Already Exists (3-Minute Fix)
 
 ### Step 1: Fix Database (2 minutes)
+
 1. Open Supabase Dashboard: https://supabase.com/dashboard
 2. Select your project
 3. Click "SQL Editor" in left sidebar
@@ -33,11 +35,12 @@ UPDATE orders SET payment_method = 'cod' WHERE payment_method IS NULL;
 **If you get an error**, go to `DATABASE_SETUP_GUIDE.md` instead.
 
 ### Step 2: Verify Fix (1 minute)
+
 1. Run this query to verify:
 
 ```sql
-SELECT column_name, data_type 
-FROM information_schema.columns 
+SELECT column_name, data_type
+FROM information_schema.columns
 WHERE table_name = 'orders'
 ORDER BY ordinal_position;
 ```
@@ -45,6 +48,7 @@ ORDER BY ordinal_position;
 2. You should see `payment_method`, `razorpay_payment_id`, and `razorpay_order_id` in the list
 
 ### Step 3: Test Payment
+
 1. Make sure your dev server is running: `npm run dev`
 2. Go to your website
 3. Add item to cart
@@ -63,7 +67,9 @@ ORDER BY ordinal_position;
 ## ❌ If Still Failing
 
 ### Check Browser Console (F12)
+
 Look for these messages:
+
 - "Creating Razorpay order with amount: X" ✓
 - "Razorpay order response: {...}" ✓
 - "Creating order with data: {...}" ✓
@@ -89,17 +95,21 @@ Look for these messages:
 ## 🔍 Diagnostic Commands
 
 ### Check if server is running:
+
 ```bash
 curl http://localhost:8080/api/ping
 ```
+
 Should return: `{"message":"ping"}`
 
 ### Check orders in database:
+
 ```sql
 SELECT * FROM orders ORDER BY created_at DESC LIMIT 5;
 ```
 
 ### Check for failed orders:
+
 ```sql
 SELECT o.id, o.created_at, o.total_price, o.payment_status
 FROM orders o
@@ -110,6 +120,7 @@ WHERE oi.id IS NULL;
 ## 📞 Need More Help?
 
 Read the detailed guides:
+
 - `PAYMENT_FIX_SUMMARY.md` - Overview of the issue and fixes
 - `PAYMENT_FIX_GUIDE.md` - Step-by-step detailed instructions
 - `check-payment-issues.sql` - Diagnostic SQL queries
@@ -125,8 +136,9 @@ If customers were charged but didn't get orders:
    - Filter by date when issue occurred
 
 2. **Cross-check with database**:
+
    ```sql
-   SELECT razorpay_payment_id FROM orders 
+   SELECT razorpay_payment_id FROM orders
    WHERE created_at >= '2024-XX-XX';
    ```
 
@@ -166,4 +178,3 @@ After fixing, add these to prevent future issues:
 - **Today**: Test payment flow, process refunds
 - **This Week**: Add monitoring, contact affected customers
 - **Ongoing**: Regular checks and monitoring
-

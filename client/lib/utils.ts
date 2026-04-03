@@ -7,21 +7,34 @@ export function cn(...inputs: ClassValue[]) {
 
 // Format order ID as ORD-00000000
 export function formatOrderId(id: string): string {
-  const digits = id.replace(/\D/g, '');
-  const num = (digits || '00000000').slice(0, 8).padStart(8, '0');
+  const digits = id.replace(/\D/g, "");
+  const num = (digits || "00000000").slice(0, 8).padStart(8, "0");
   return `ORD-${num}`;
 }
 
 // Format date as "feb 02 2026, hh:mm:ss"
 export function formatOrderDate(dateString: string | Date): string {
   const date = new Date(dateString);
-  const months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+  const months = [
+    "jan",
+    "feb",
+    "mar",
+    "apr",
+    "may",
+    "jun",
+    "jul",
+    "aug",
+    "sep",
+    "oct",
+    "nov",
+    "dec",
+  ];
   const month = months[date.getMonth()];
-  const day = String(date.getDate()).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, "0");
   const year = date.getFullYear();
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-  const seconds = String(date.getSeconds()).padStart(2, '0');
-  
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  const seconds = String(date.getSeconds()).padStart(2, "0");
+
   return `${month} ${day} ${year}, ${hours}:${minutes}:${seconds}`;
 }

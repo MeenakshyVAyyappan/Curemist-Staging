@@ -31,19 +31,22 @@ export default function Header() {
   const handleLogout = () => {
     signOut();
     setShowProfileMenu(false);
-    navigate('/');
+    navigate("/");
   };
 
   // Close menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target as Node)) {
+      if (
+        profileMenuRef.current &&
+        !profileMenuRef.current.contains(event.target as Node)
+      ) {
         setShowProfileMenu(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   return (
@@ -53,18 +56,42 @@ export default function Header() {
         <div className="absolute inset-0 flex items-center">
           <div className="marquee-track">
             <div className="marquee-content">
-              <span>Instant Film Protection. 3x Faster Healing. 100% Ayurvedic Care •</span>
-              <span>Instant Film Protection. 3x Faster Healing. 100% Ayurvedic Care •</span>
-              <span>Instant Film Protection. 3x Faster Healing. 100% Ayurvedic Care •</span>
-              <span>Instant Film Protection. 3x Faster Healing. 100% Ayurvedic Care •</span>
+              <span>
+                Instant Film Protection. 3x Faster Healing. 100% Ayurvedic Care
+                •
+              </span>
+              <span>
+                Instant Film Protection. 3x Faster Healing. 100% Ayurvedic Care
+                •
+              </span>
+              <span>
+                Instant Film Protection. 3x Faster Healing. 100% Ayurvedic Care
+                •
+              </span>
+              <span>
+                Instant Film Protection. 3x Faster Healing. 100% Ayurvedic Care
+                •
+              </span>
             </div>
 
             {/* DUPLICATE for seamless loop */}
             <div className="marquee-content">
-              <span>Instant Film Protection. 3x Faster Healing. 100% Ayurvedic Care •</span>
-              <span>Instant Film Protection. 3x Faster Healing. 100% Ayurvedic Care •</span>
-              <span>Instant Film Protection. 3x Faster Healing. 100% Ayurvedic Care •</span>
-              <span>Instant Film Protection. 3x Faster Healing. 100% Ayurvedic Care •</span>
+              <span>
+                Instant Film Protection. 3x Faster Healing. 100% Ayurvedic Care
+                •
+              </span>
+              <span>
+                Instant Film Protection. 3x Faster Healing. 100% Ayurvedic Care
+                •
+              </span>
+              <span>
+                Instant Film Protection. 3x Faster Healing. 100% Ayurvedic Care
+                •
+              </span>
+              <span>
+                Instant Film Protection. 3x Faster Healing. 100% Ayurvedic Care
+                •
+              </span>
             </div>
           </div>
         </div>
@@ -90,7 +117,10 @@ export default function Header() {
               alt="CureMist Certified Logo"
               className="hidden md:block h-20 w-auto object-contain"
             />
-            <Link to="/blog" className=" md:flex items-center text-black text-xs md:text-sm font-semibold hover:opacity-80">
+            <Link
+              to="/blog"
+              className=" md:flex items-center text-black text-xs md:text-sm font-semibold hover:opacity-80"
+            >
               BLOG
             </Link>
             {/* Profile Button / Login.... */}
@@ -103,15 +133,16 @@ export default function Header() {
                 <span className="text-xs md:text-sm">Login</span>
               </button>
             ) : (
-              <div className="flex items-center gap-1 md:gap-3 relative flex-shrink-0" ref={profileMenuRef}>
+              <div
+                className="flex items-center gap-1 md:gap-3 relative flex-shrink-0"
+                ref={profileMenuRef}
+              >
                 <button
                   onClick={() => setShowProfileMenu(!showProfileMenu)}
                   className="flex items-center gap-0.5 md:gap-2 text-black text-xs md:text-sm font-medium hover:opacity-80"
                 >
                   <Avatar className="w-7 h-7 md:w-10 md:h-10">
-                    <AvatarFallback
-                      className="bg-brand-yellow text-black font-bold text-xs md:text-sm border-2 border-black rounded-full w-full h-full flex items-center justify-center box-border"
-                    >
+                    <AvatarFallback className="bg-brand-yellow text-black font-bold text-xs md:text-sm border-2 border-black rounded-full w-full h-full flex items-center justify-center box-border">
                       {user?.email?.slice(0, 1).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
@@ -145,7 +176,9 @@ export default function Header() {
               className="flex items-center gap-1 text-black text-xs md:text-sm font-medium hover:opacity-80 flex-shrink-0"
             >
               <ShoppingCart className="w-5 h-4 md:w-[26px] md:h-[23px]" />
-              <span className="text-xs md:text-sm"><CartCount /></span>
+              <span className="text-xs md:text-sm">
+                <CartCount />
+              </span>
             </button>
           </div>
         </div>

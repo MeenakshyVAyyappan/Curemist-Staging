@@ -1,7 +1,7 @@
 // KeyFeaturesSection.js
 import React from "react";
 import KeyFeatureCard from "./KeyFeatureCard"; // Importing the KeyFeatureCard component
-import './KeyFeatures.css';// Importing the styles
+import "./KeyFeatures.css"; // Importing the styles
 
 const KeyFeaturesSection = () => {
   const features = [
@@ -9,7 +9,7 @@ const KeyFeaturesSection = () => {
     { icon: "derm", text: "Derma Tested Safe!" },
     { icon: "safe", text: "No side effects" },
     { icon: "healing", text: "Fast Dry Healing" },
-    { icon: "spray", text: "Handsfree Spray" },
+    { icon: "spray", text: "Touch-Free Spray" },
     { icon: "waterproof", text: "Water & Dust Proof" },
     { icon: "antigerm", text: "Anti Germ Healing" },
     { icon: "turmeric", text: "Powered by turmeric" },
@@ -27,7 +27,11 @@ const KeyFeaturesSection = () => {
             key={index}
             icon={feature.icon}
             text={feature.text}
-            className={["antigerm", "turmeric", "ayush", "ages"].includes(feature.icon) ? "hide-mobile" : ""}
+            className={
+              ["antigerm", "turmeric", "ayush", "ages"].includes(feature.icon)
+                ? "hide-mobile"
+                : ""
+            }
           />
         ))}
       </div>

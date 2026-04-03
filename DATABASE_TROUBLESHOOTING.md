@@ -71,6 +71,7 @@ The date of birth field is being sent as an empty string ("") to PostgreSQL, but
 This is a code issue, not a database issue. The application has been fixed to send `null` instead of empty strings for empty dates.
 
 **What was changed:**
+
 - Modified `client/pages/checkout.tsx` to use `dob: customerInfo.dob || null`
 - Modified `client/pages/profile.tsx` to use `dob: dob || null`
 
@@ -103,11 +104,12 @@ Row Level Security (RLS) is blocking your access.
 -- Make yourself an admin
 INSERT INTO profiles (id, is_admin, email)
 VALUES ('YOUR_USER_ID', true, 'your-email@example.com')
-ON CONFLICT (id) 
+ON CONFLICT (id)
 DO UPDATE SET is_admin = true;
 ```
 
 To find your user ID:
+
 - Go to Supabase Dashboard → Authentication → Users
 - Copy your User ID (UUID)
 
@@ -125,7 +127,7 @@ Use `ON CONFLICT` to update instead of insert:
 ```sql
 INSERT INTO profiles (id, first_name, last_name)
 VALUES ('user-id', 'John', 'Doe')
-ON CONFLICT (id) 
+ON CONFLICT (id)
 DO UPDATE SET first_name = 'John', last_name = 'Doe';
 ```
 
@@ -198,9 +200,9 @@ Or run: `fix-orders-table-schema.sql`
 ### Check if all tables exist:
 
 ```sql
-SELECT table_name 
-FROM information_schema.tables 
-WHERE table_schema = 'public' 
+SELECT table_name
+FROM information_schema.tables
+WHERE table_schema = 'public'
 ORDER BY table_name;
 ```
 
@@ -211,8 +213,8 @@ ORDER BY table_name;
 ### Check if all columns exist in orders table:
 
 ```sql
-SELECT column_name, data_type 
-FROM information_schema.columns 
+SELECT column_name, data_type
+FROM information_schema.columns
 WHERE table_name = 'orders'
 ORDER BY ordinal_position;
 ```
@@ -224,8 +226,8 @@ ORDER BY ordinal_position;
 ### Check if RLS is enabled:
 
 ```sql
-SELECT tablename, rowsecurity 
-FROM pg_tables 
+SELECT tablename, rowsecurity
+FROM pg_tables
 WHERE schemaname = 'public'
 ORDER BY tablename;
 ```
@@ -238,8 +240,8 @@ ORDER BY tablename;
 
 ```sql
 SELECT tablename, policyname, cmd
-FROM pg_policies 
-WHERE schemaname = 'public' 
+FROM pg_policies
+WHERE schemaname = 'public'
 ORDER BY tablename, policyname;
 ```
 
@@ -258,8 +260,8 @@ SELECT auth.uid() as my_user_id;
 ### Check if you're an admin:
 
 ```sql
-SELECT id, email, is_admin 
-FROM profiles 
+SELECT id, email, is_admin
+FROM profiles
 WHERE id = auth.uid();
 ```
 
@@ -328,17 +330,16 @@ Follow this exact order:
 
 ## 📞 Quick Reference
 
-| Error | File to Run |
-|-------|-------------|
-| "relation 'orders' does not exist" | `create-complete-database-schema.sql` |
-| "column is_admin does not exist" | `fix-missing-is-admin-column.sql` |
-| "column dob does not exist" | `fix-missing-dob-column.sql` |
-| "column sex does not exist" | `fix-missing-sex-column.sql` |
-| "column payment_method does not exist" | `fix-orders-table-schema.sql` |
-| "permission denied" | Make yourself admin (see above) |
-| "row-level security policy" | Check you're logged in |
+| Error                                  | File to Run                           |
+| -------------------------------------- | ------------------------------------- |
+| "relation 'orders' does not exist"     | `create-complete-database-schema.sql` |
+| "column is_admin does not exist"       | `fix-missing-is-admin-column.sql`     |
+| "column dob does not exist"            | `fix-missing-dob-column.sql`          |
+| "column sex does not exist"            | `fix-missing-sex-column.sql`          |
+| "column payment_method does not exist" | `fix-orders-table-schema.sql`         |
+| "permission denied"                    | Make yourself admin (see above)       |
+| "row-level security policy"            | Check you're logged in                |
 
 ---
 
 **Last Updated:** 2026-04-01
-
