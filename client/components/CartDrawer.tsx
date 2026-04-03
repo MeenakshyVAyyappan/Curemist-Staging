@@ -1,10 +1,16 @@
 import { ShoppingCart } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "@/lib/cart";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 
 export default function CartDrawer() {
-  const { isCartOpen, setIsCartOpen, items, updateQty, removeItem, subtotal } = useCart();
+  const { isCartOpen, setIsCartOpen, items, updateQty, removeItem, subtotal } =
+    useCart();
   const navigate = useNavigate();
 
   const handleCheckout = () => {
@@ -50,14 +56,22 @@ export default function CartDrawer() {
                   />
                   <div className="flex-1 flex flex-col justify-between">
                     <div>
-                      <h3 className="font-semibold text-brand-blue text-sm line-clamp-2">{item.title}</h3>
-                      {item.size && <p className="text-xs text-gray-500 mt-1">{item.size}</p>}
+                      <h3 className="font-semibold text-brand-blue text-sm line-clamp-2">
+                        {item.title}
+                      </h3>
+                      {item.size && (
+                        <p className="text-xs text-gray-500 mt-1">
+                          {item.size}
+                        </p>
+                      )}
                     </div>
                     <div className="flex items-center justify-between mt-2">
                       <div className="flex items-center border border-gray-200 rounded-md">
                         <button
                           className="px-2 py-1 text-gray-600 hover:bg-gray-100 disabled:opacity-50"
-                          onClick={() => updateQty(item.id, Math.max(1, item.quantity - 1))}
+                          onClick={() =>
+                            updateQty(item.id, Math.max(1, item.quantity - 1))
+                          }
                           disabled={item.quantity <= 1}
                         >
                           -
@@ -73,7 +87,9 @@ export default function CartDrawer() {
                         </button>
                       </div>
                       <div className="flex flex-col items-end">
-                        <span className="font-bold text-brand-blue">₹{item.price * item.quantity}</span>
+                        <span className="font-bold text-brand-blue">
+                          ₹{item.price * item.quantity}
+                        </span>
                         <button
                           onClick={() => removeItem(item.id)}
                           className="text-xs text-red-500 hover:underline mt-1"

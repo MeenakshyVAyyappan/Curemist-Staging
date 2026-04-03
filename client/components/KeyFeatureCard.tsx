@@ -1,8 +1,19 @@
 // KeyFeatureCard.js
 import React from "react";
 // Import React Icons
-import { FaCheckCircle, FaHandSparkles, FaLeaf, FaFireAlt, FaUserShield, FaHeartbeat, FaShieldAlt, FaUserMd, FaChild, FaHandsWash } from 'react-icons/fa';
-import { MdOutlineHealthAndSafety } from 'react-icons/md';
+import {
+  FaCheckCircle,
+  FaHandSparkles,
+  FaLeaf,
+  FaFireAlt,
+  FaUserShield,
+  FaHeartbeat,
+  FaShieldAlt,
+  FaUserMd,
+  FaChild,
+  FaHandsWash,
+} from "react-icons/fa";
+import { MdOutlineHealthAndSafety } from "react-icons/md";
 
 // Functional component that takes in props: icon and text
 const KeyFeatureCard = ({ icon, text, className = "" }) => {
@@ -10,34 +21,34 @@ const KeyFeatureCard = ({ icon, text, className = "" }) => {
   let IconComponent;
 
   switch (icon) {
-    case 'ayurvedic':
+    case "ayurvedic":
       IconComponent = FaLeaf;
       break;
-    case 'derm':
+    case "derm":
       IconComponent = FaUserMd;
       break;
-    case 'safe':
+    case "safe":
       IconComponent = MdOutlineHealthAndSafety;
       break;
-    case 'healing':
+    case "healing":
       IconComponent = FaHeartbeat;
       break;
-    case 'spray':
+    case "spray":
       IconComponent = FaHandsWash;
       break;
-    case 'waterproof':
+    case "waterproof":
       IconComponent = FaShieldAlt;
       break;
-    case 'antigerm':
+    case "antigerm":
       IconComponent = FaUserShield;
       break;
-    case 'turmeric':
+    case "turmeric":
       IconComponent = FaCheckCircle;
       break;
-    case 'ayush':
+    case "ayush":
       IconComponent = FaCheckCircle;
       break;
-    case 'ages':
+    case "ages":
       IconComponent = FaChild;
       break;
     default:

@@ -75,7 +75,7 @@ export const Carousel = React.forwardRef<
             onClick={() => goToSlide(index)}
             className={cn(
               "w-2 h-2 rounded-full transition-colors",
-              current === index ? "bg-gray-800" : "bg-gray-300"
+              current === index ? "bg-gray-800" : "bg-gray-300",
             )}
             aria-label={`Go to slide ${index + 1}`}
           />

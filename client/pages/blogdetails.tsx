@@ -7,14 +7,18 @@ import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import { blogPosts } from "@/lib/blogs";
 import { Button } from "@/components/ui/button";
-import { BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage } from "@/components/ui/breadcrumb";
-
+import {
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbPage,
+} from "@/components/ui/breadcrumb";
 
 const BlogDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  
-  const post = blogPosts.find(p => p.id === id);
+
+  const post = blogPosts.find((p) => p.id === id);
 
   if (!post) {
     return (
@@ -27,7 +31,7 @@ const BlogDetail = () => {
   const breadcrumbItems = [
     { label: "Home", href: "/" },
     { label: "Blog", href: "/blog" },
-    { label: post.title.substring(0, 25) + "..." }
+    { label: post.title.substring(0, 25) + "..." },
   ];
 
   const handleShare = async () => {
@@ -35,14 +39,14 @@ const BlogDetail = () => {
       try {
         await navigator.share({
           title: post.title,
-          url: window.location.href
+          url: window.location.href,
         });
       } catch (err) {
-        console.log('Error sharing:', err);
+        console.log("Error sharing:", err);
       }
     } else {
       navigator.clipboard.writeText(window.location.href);
-      alert('Link copied to clipboard!');
+      alert("Link copied to clipboard!");
     }
   };
 
@@ -50,7 +54,7 @@ const BlogDetail = () => {
     <div className="min-h-screen flex flex-col">
       <AnnouncementBar />
       <Header />
-      
+
       {/* Breadcrumb Section */}
       <section className="bg-gradient-to-r from-[#F2B705] to-[#FFD147] py-4 md:py-6 px-4">
         <div className="container mx-auto px-4 md:px-6 lg:px-24">
@@ -79,8 +83,8 @@ const BlogDetail = () => {
 
           {/* Featured Image */}
           <div className="aspect-video overflow-hidden rounded-lg mb-6 md:mb-8">
-            <img 
-              src={post.image} 
+            <img
+              src={post.image}
               alt={post.title}
               className="w-full h-full object-cover"
             />
@@ -97,7 +101,7 @@ const BlogDetail = () => {
           <div className="prose prose-lg max-w-none">
             {post.content.map((item, index) => {
               // Backward compatibility for plain string paragraphs
-              if (typeof item === 'string') {
+              if (typeof item === "string") {
                 return (
                   <div key={index} className="mb-6">
                     {index > 0 && index % 2 === 0 && (
@@ -105,37 +109,47 @@ const BlogDetail = () => {
                         Sed ut perspiciatis unde omnis iste natus error sit
                       </h2>
                     )}
-                    <p className="text-foreground/80 leading-relaxed">
-                      {item}
-                    </p>
+                    <p className="text-foreground/80 leading-relaxed">{item}</p>
                   </div>
                 );
               }
 
               // Handle structured content
               switch (item.type) {
-                case 'mainheading':
+                case "mainheading":
                   return (
-                    <h2 key={index} className="text-2xl md:text-3xl font-bold text-foreground mt-10 mb-6">
+                    <h2
+                      key={index}
+                      className="text-2xl md:text-3xl font-bold text-foreground mt-10 mb-6"
+                    >
                       {item.text}
                     </h2>
                   );
-                case 'subheading':
+                case "subheading":
                   return (
-                    <h3 key={index} className="text-xl md:text-2xl font-semibold text-foreground mt-8 mb-4">
+                    <h3
+                      key={index}
+                      className="text-xl md:text-2xl font-semibold text-foreground mt-8 mb-4"
+                    >
                       {item.text}
                     </h3>
                   );
-                case 'paragraph':
-                case 'description':
+                case "paragraph":
+                case "description":
                   return (
-                    <p key={index} className="text-foreground/80 leading-relaxed mb-6">
+                    <p
+                      key={index}
+                      className="text-foreground/80 leading-relaxed mb-6"
+                    >
                       {item.text}
                     </p>
                   );
-                case 'list':
+                case "list":
                   return (
-                    <ul key={index} className="list-disc pl-6 mb-6 text-foreground/80 leading-relaxed space-y-2">
+                    <ul
+                      key={index}
+                      className="list-disc pl-6 mb-6 text-foreground/80 leading-relaxed space-y-2"
+                    >
                       {item.items?.map((listItem: string, i: number) => (
                         <li key={i}>{listItem}</li>
                       ))}
@@ -149,15 +163,15 @@ const BlogDetail = () => {
 
           {/* Action Buttons */}
           <div className="flex items-center justify-between sm:justify-start gap-4 mt-12 pt-8">
-            <Button 
+            <Button
               variant="outline"
               onClick={() => navigate(-1)}
               className="flex-1 sm:flex-none sm:w-auto border-2 border-muted-foreground/30 text-foreground font-semibold hover:bg-muted px-12 py-6"
             >
               BACK
             </Button>
-            
-            <button 
+
+            <button
               onClick={handleShare}
               className="p-3 shrink-0 rounded-full hover:bg-muted transition-colors flex items-center justify-center border-2 border-muted-foreground/30 sm:border-none"
               aria-label="Share Blog"

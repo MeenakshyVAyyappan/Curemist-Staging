@@ -28,6 +28,9 @@ const BANNERS = [
 
 export default function Hero() {
   const [currentBanner, setCurrentBanner] = useState(0);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const minSwipeDistance = 50;
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -47,17 +50,45 @@ export default function Hero() {
 
   const goToBanner = (index: number) => setCurrentBanner(index);
 
+  const onTouchStartHandler = (e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMoveHandler = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEndHandler = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe) {
+      nextBanner();
+    } else if (isRightSwipe) {
+      prevBanner();
+    }
+  };
+
   const banner = BANNERS[currentBanner];
 
   return (
-    <section className="relative mt-0 min-h-[50vh] md:h-[650px] overflow-hidden">
+    <section
+      className="relative mt-0 min-h-[50vh] md:h-[650px] overflow-hidden"
+      onTouchStart={onTouchStartHandler}
+      onTouchMove={onTouchMoveHandler}
+      onTouchEnd={onTouchEndHandler}
+    >
       {/* Background */}
       <div className="absolute inset-0 overflow-hidden">
         {BANNERS.map((b, index) => (
           <div
             key={index}
-            className={`absolute inset-0 transition-opacity duration-1000 ${index === currentBanner ? "opacity-100 z-10" : "opacity-0 z-0"
-              }`}
+            className={`absolute inset-0 transition-opacity duration-1000 ${
+              index === currentBanner ? "opacity-100 z-10" : "opacity-0 z-0"
+            }`}
           >
             <div
               className="absolute inset-0 bg-cover bg-no-repeat md:bg-center"
@@ -101,7 +132,6 @@ export default function Hero() {
             >
               {banner.buttonText}
             </button>
-
 
             {/* Badges */}
             <div className="flex items-center gap-2 sm:gap-4 pt-2 md:pt-4">
@@ -155,17 +185,17 @@ export default function Hero() {
         <ChevronRight className="w-6 h-6 sm:w-8 sm:h-8" />
       </button>
 
-
       {/* Indicators */}
       <div className="absolute bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-20">
         {BANNERS.map((_, index) => (
           <button
             key={index}
             onClick={() => goToBanner(index)}
-            className={`h-2 md:h-3 rounded-full transition-all duration-300 ${index === currentBanner
+            className={`h-2 md:h-3 rounded-full transition-all duration-300 ${
+              index === currentBanner
                 ? "bg-brand-blue w-8 md:w-10"
                 : "bg-brand-blue/40 w-2 md:w-3 hover:bg-brand-blue/60"
-              }`}
+            }`}
             aria-label={`Go to banner ${index + 1}`}
           />
         ))}

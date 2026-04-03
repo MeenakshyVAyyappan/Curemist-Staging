@@ -35,10 +35,14 @@ export interface CartContextValue {
 
 const CartContext = createContext<CartContextValue | undefined>(undefined);
 
-export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const { user } = useAuth();
   const [items, setItems] = useState<CartItem[]>([]);
-  const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
+  const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(
+    null,
+  );
   const [isCartOpen, setIsCartOpen] = useState(false);
   const { toast } = useToast();
 
@@ -70,7 +74,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Get cart items
       const { data: cartItems, error: itemsError } = await supabase
         .from("cart_items")
-        .select(`
+        .select(
+          `
           quantity,
           product_id,
           title,
@@ -78,7 +83,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
           original_price,
           image,
           size
-        `)
+        `,
+        )
         .eq("cart_id", cart.id);
 
       if (itemsError) throw itemsError;
@@ -88,9 +94,11 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         title: item.title,
         image: item.image,
         price: Number(item.price),
-        originalPrice: item.original_price ? Number(item.original_price) : undefined,
+        originalPrice: item.original_price
+          ? Number(item.original_price)
+          : undefined,
         quantity: item.quantity,
-        size: item.size
+        size: item.size,
       }));
 
       setItems(formattedItems);
@@ -124,7 +132,10 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const addItem = async (item: CartItem, qty = 1) => {
     if (!user) {
-      toast({ title: "Please login to add items to cart", variant: "destructive" });
+      toast({
+        title: "Please login to add items to cart",
+        variant: "destructive",
+      });
       return;
     }
 
@@ -138,7 +149,10 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (existingIndex >= 0) {
         // Update existing item quantity optimistically
         const newItems = [...items];
-        newItems[existingIndex] = { ...newItems[existingIndex], quantity: newItems[existingIndex].quantity + qty };
+        newItems[existingIndex] = {
+          ...newItems[existingIndex],
+          quantity: newItems[existingIndex].quantity + qty,
+        };
         setItems(newItems);
 
         // Update in database
@@ -152,7 +166,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } else {
         // Add new item optimistically
         const newItem = { ...item, quantity: qty };
-        setItems(prev => [...prev, newItem]);
+        setItems((prev) => [...prev, newItem]);
 
         // Insert in database
         const { error } = await supabase.from("cart_items").insert({
@@ -163,12 +177,12 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
           price: item.price,
           original_price: item.originalPrice,
           image: item.image,
-          size: item.size
+          size: item.size,
         });
 
         if (error) {
           // Revert optimistic update on error
-          setItems(prev => prev.filter(i => i.id !== item.id));
+          setItems((prev) => prev.filter((i) => i.id !== item.id));
           throw error;
         }
       }
@@ -176,7 +190,11 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Open cart immediately (no need to wait for database sync)
       setIsCartOpen(true);
     } catch (error: any) {
-      toast({ title: "Error adding to cart", description: error.message, variant: "destructive" });
+      toast({
+        title: "Error adding to cart",
+        description: error.message,
+        variant: "destructive",
+      });
     }
   };
 
@@ -187,9 +205,11 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (!cartId) return;
 
       // Update optimistically
-      setItems(prev => prev.map(item =>
-        item.id === id ? { ...item, quantity: qty } : item
-      ));
+      setItems((prev) =>
+        prev.map((item) =>
+          item.id === id ? { ...item, quantity: qty } : item,
+        ),
+      );
 
       // Update in database
       const { error } = await supabase
@@ -215,7 +235,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (!cartId) return;
 
       // Remove optimistically
-      setItems(prev => prev.filter(item => item.id !== id));
+      setItems((prev) => prev.filter((item) => item.id !== id));
 
       // Remove from database
       const { error } = await supabase

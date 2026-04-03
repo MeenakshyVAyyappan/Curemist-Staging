@@ -42,10 +42,20 @@ function AddToCartButton({
       ? Number(originalPrice.replace(/[^\d]/g, "")) || 0
       : numericPrice;
     addItem(
-      { id: slug, title, image, price: numericPrice, originalPrice: numericOriginalPrice, quantity: 1, size },
-      1
+      {
+        id: slug,
+        title,
+        image,
+        price: numericPrice,
+        originalPrice: numericOriginalPrice,
+        quantity: 1,
+        size,
+      },
+      1,
     );
-    try { toast({ title: "Added to cart" }); } catch { }
+    try {
+      toast({ title: "Added to cart" });
+    } catch {}
   };
 
   return (
@@ -72,7 +82,7 @@ export default function ProductCard({
   const goToDetails = () => navigate(`/product/${slug}`);
 
   return (
-    <div className="flex flex-col h-full w-full bg-white rounded-2xl transition-all duration-300 hover:shadow-xl border border-gray-100 p-2 sm:p-3 md:p-4">
+    <div className="flex flex-col h-full w-full bg-white rounded-2xl transition-all duration-300 hover:shadow-xl border border-[#252c74] p-2 sm:p-3 md:p-4">
       {/* Product Image Container */}
       <div
         className="group/image relative w-full aspect-[4/5] mb-3 md:mb-4 cursor-pointer overflow-hidden rounded-xl bg-gray-50 flex-shrink-0"
@@ -98,7 +108,9 @@ export default function ProductCard({
 
         {/* ✅ Size Badge — bottom right */}
         <div className="absolute bottom-2 right-2 md:bottom-3 md:right-3 bg-white/80 backdrop-blur-md px-2 py-1 md:px-3 md:py-1.5 rounded-full shadow-sm">
-          <span className="text-purple-badge text-[10px] md:text-sm font-bold">{size}</span>
+          <span className="text-purple-badge text-[10px] md:text-sm font-bold">
+            {size}
+          </span>
         </div>
       </div>
 

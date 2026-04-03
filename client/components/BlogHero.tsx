@@ -1,5 +1,9 @@
 import { Link } from "react-router-dom";
-import { BreadcrumbList, BreadcrumbItem, BreadcrumbLink } from "./ui/breadcrumb";
+import {
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+} from "./ui/breadcrumb";
 
 interface HeroProps {
   title: string;
@@ -26,8 +30,14 @@ const BlogHero = ({ title, subtitle, breadcrumbItems = [] }: HeroProps) => {
             ))}
           </BreadcrumbList>
 
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground text-center mt-4">{title}</h1>
-          {subtitle && <p className="text-foreground/80 max-w-2xl text-center">{subtitle}</p>}
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground text-center mt-4">
+            {title}
+          </h1>
+          {subtitle && (
+            <p className="text-foreground/80 max-w-2xl text-center">
+              {subtitle}
+            </p>
+          )}
         </div>
       </div>
     </section>

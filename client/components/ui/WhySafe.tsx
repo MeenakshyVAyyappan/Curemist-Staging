@@ -31,8 +31,8 @@ const cards = [
   {
     num: "05",
     icon: "🧪",
-    title: "Does Curemist FFS contain Ployfluoroalkyl substances(PFAS)?",
-    desc: "No, CureMist is PFAS-free. It uses an acrylic monomer, not fluorinated compounds, making it safe and eco-friendly.",
+    title: "100% PFAS-Free Formulation",
+    desc: "Completely free of polyfluoroalkyl substances (PFAS). Formulated with a safe, eco-friendly acrylic monomer instead of harmful fluorinated compounds.",
   },
 ];
 
@@ -41,8 +41,8 @@ const WhySafe: React.FC = () => {
     loop: true,
     align: "center",
     breakpoints: {
-      '(min-width: 1025px)': { active: false }
-    }
+      "(min-width: 1025px)": { active: false },
+    },
   });
 
   const scrollPrev = useCallback(() => {
@@ -71,23 +71,23 @@ const WhySafe: React.FC = () => {
             padding-right: 0 !important;
           }
           .embla-slide {
-            flex: 0 0 100% !important;
+            flex: 0 0 70% !important;
             min-width: 0 !important;
             scroll-snap-align: none !important;
-            margin: 0 !important;
-            /* To give spacing between cards but keep them centered: 
-               We use relative positioning or padding, but ws-card has its own padding.
-               Let's limit the width and center it inside the flex item */
+            margin: 0 12px !important;
           }
-          /* Embla calculates width correctly if we let .embla-slide dictate space */
           .ws-card.embla-slide {
             box-sizing: border-box;
             border-right: 1.5px solid rgba(213, 160, 0, 0.18) !important;
             transform: scale(0.95);
+            padding-top: 40px !important;
+            padding-bottom: 40px !important;
           }
           .embla-viewport {
             overflow: hidden;
             width: 100%;
+            padding-left: 20px;
+            padding-right: 20px;
           }
         }
         @media (min-width: 1025px) {
@@ -103,13 +103,11 @@ const WhySafe: React.FC = () => {
           <span>Quality Assurance</span>
         </div>
 
-        <h2 className="ws-title">
-          Why CureMist is 100% Safe
-        </h2>
+        <h2 className="ws-title">Why CureMist is 100% Safe</h2>
 
         <p className="ws-sub">
-          Every promise is backed by independent lab reports and clinical studies
-          publicly available for you to verify.
+          Every promise is backed by independent lab reports and clinical
+          studies publicly available for you to verify.
         </p>
 
         <div className="relative h-fit group max-w-[1300px] mx-auto">
@@ -133,7 +131,10 @@ const WhySafe: React.FC = () => {
             <div className="ws-grid hide-scrollbar">
               {cards.map((card) => (
                 <div className="ws-card embla-slide" key={card.num}>
-                  <div className="ws-icon-wrap w-12 h-12 flex items-center justify-center text-3xl mb-6 relative" style={{ textAlign: 'center' }}>
+                  <div
+                    className="ws-icon-wrap w-12 h-12 flex items-center justify-center text-3xl mb-6 relative"
+                    style={{ textAlign: "center" }}
+                  >
                     {card.icon}
                   </div>
                   <h3>{card.title}</h3>
