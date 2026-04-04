@@ -219,56 +219,28 @@ export default function CuremistDetailsSections() {
           </div>
 
           {/* Film Visibility Info -> PREMIUM LAYOUT */}
-          <div className="mt-12 md:mt-16 max-w-4xl mx-auto rounded-[24px] p-[1.5px] bg-gradient-to-r from-[#252c74]/20 via-[#ffe38d] to-[#252c74]/20 shadow-xl overflow-hidden group hover:shadow-2xl transition-shadow duration-500">
-            <div className="bg-white rounded-[22px] p-6 md:p-8 lg:p-10 relative overflow-hidden h-full">
-              {/* Background elegant decoration */}
-              <div className="absolute -top-24 -right-24 w-64 h-64 bg-gradient-to-bl from-[#fffbe6] to-transparent rounded-full opacity-60"></div>
+          {/* Film Visibility Info -> VERY COMPACT LAYOUT */}
+          <div className="mt-8 max-w-md mx-auto flex flex-col md:flex-row gap-3 px-4">
+            {/* Darker Skin Box - Match top boxes background */}
+            <div className="flex-1 bg-white/60 backdrop-blur-sm p-3 rounded-lg border border-white/80 shadow-sm">
+              <h5 className="font-bold text-[#252c74] text-xs mb-1 flex items-center justify-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#252c74]"></span>
+                Darker Skin
+              </h5>
+              <p className="text-[11px] text-black leading-snug text-center">
+                The protective film may appear more clearly visible once it dries onto the skin.
+              </p>
+            </div>
 
-              <div className="relative z-10 flex flex-col md:flex-row gap-6 md:gap-10 items-center md:items-start">
-                <div className="shrink-0">
-                  <div className="relative w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-[#fffbe6] to-[#ffe38d] rounded-2xl flex items-center justify-center shadow-sm border border-[#ffe38d] rotate-3 group-hover:-rotate-3 transition-transform duration-500">
-                    <ShieldCheck
-                      className="w-8 h-8 md:w-10 md:h-10 text-[#252c74] drop-shadow-sm"
-                      strokeWidth={2.5}
-                    />
-                  </div>
-                </div>
-
-                <div className="flex-1 text-center md:text-left">
-                  <h4 className="text-xl md:text-[22px] font-bold text-[#252c74] mb-2 tracking-tight">
-                    CureMist forms a protective shield on your skin
-                  </h4>
-                  <p className="text-gray-500 text-sm md:text-[15px] max-w-2xl mx-auto md:mx-0 mb-6 font-medium leading-relaxed">
-                    As the spray dries, it creates an invisible or mildly
-                    visible safe barrier. Depending on your skin tone, you may
-                    notice the following:
-                  </p>
-
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div className="bg-[#fcfdfd]/80 backdrop-blur-sm p-5 md:p-6 rounded-2xl border border-gray-100/50 hover:border-[#252c74]/20 transition-all duration-300 shadow-[0_4px_16px_rgba(0,0,0,0.02)] hover:shadow-[0_8px_24px_rgba(40,43,112,0.08)] group/card">
-                      <h5 className="font-bold text-[#252c74] text-base mb-2.5 flex items-center justify-center md:justify-start gap-2.5">
-                        <span className="w-2.5 h-2.5 rounded-full bg-[#252c74] shadow-sm"></span>
-                        Darker Skin
-                      </h5>
-                      <p className="text-[13px] md:text-sm text-gray-600 leading-relaxed font-medium group-hover/card:text-gray-800 transition-colors">
-                        The protective film may appear more clearly visible once
-                        it dries onto the skin.
-                      </p>
-                    </div>
-
-                    <div className="bg-[#fcfdfd]/80 backdrop-blur-sm p-5 md:p-6 rounded-2xl border border-gray-100/50 hover:border-[#ffe38d] transition-all duration-300 shadow-[0_4px_16px_rgba(0,0,0,0.02)] hover:shadow-[0_8px_24px_rgba(255,209,71,0.15)] group/card">
-                      <h5 className="font-bold text-[#252c74] text-base mb-2.5 flex items-center justify-center md:justify-start gap-2.5">
-                        <span className="w-2.5 h-2.5 rounded-full bg-[#ffe38d] shadow-sm"></span>
-                        Fair Skin
-                      </h5>
-                      <p className="text-[13px] md:text-sm text-gray-600 leading-relaxed font-medium group-hover/card:text-gray-800 transition-colors">
-                        The film may not be seen with a single spray, but
-                        becomes noticeably visible after multiple sprays.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            {/* Fair Skin Box - Match top boxes background */}
+            <div className="flex-1 bg-white/60 backdrop-blur-sm p-3 rounded-lg border border-white/80 shadow-sm">
+              <h5 className="font-bold text-[#252c74] text-xs mb-1 flex items-center justify-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#ffe38d]"></span>
+                Fair Skin
+              </h5>
+              <p className="text-[11px] text-black leading-snug text-center">
+                The film may not be seen with a single spray, but becomes noticeably visible after multiple sprays.
+              </p>
             </div>
           </div>
         </div>

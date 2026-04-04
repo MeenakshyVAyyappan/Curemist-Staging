@@ -66,7 +66,7 @@ export default function ProductSection() {
         {/* Section Header */}
         <div className="text-center mb-10 md:mb-16">
           <h2 className="text-3xl md:text-4xl lg:text-[40px] font-bold text-black mb-4 tracking-tight">
-            Most Trusted Wound Care Spray
+            We Are A Wound Care Company 
           </h2>
           <p className="text-base md:text-xl font-medium text-gray-700 max-w-3xl mx-auto leading-relaxed">
             Fast relief for sports injuries & active lifestyles. Protects and

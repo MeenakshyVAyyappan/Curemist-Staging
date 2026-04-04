@@ -299,7 +299,7 @@ export default function CartPage() {
                 <div className="space-y-3 text-sm mb-4 pb-4 border-b">
                   <div className="flex justify-between">
                     <span className="font-medium">
-                      Total MRP (Original Price)
+                      Total MRP (Incl 5% GST)
                     </span>
                     <span className="font-medium">₹{Math.round(mrpTotal)}</span>
                   </div>

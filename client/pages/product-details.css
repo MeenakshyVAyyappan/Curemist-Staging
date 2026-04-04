@@ -427,7 +427,7 @@
   text-align: center;
   font-size: clamp(26px, 3vw, 40px);
   font-weight: 800;
-  color: #0c1f4a;
+  color: #000;
   margin-bottom: 8px;
   line-height: 1.2;
 }
@@ -704,7 +704,7 @@
 
 .pd-desc-text p {
   font-size: 14px;
-  color: #555;
+  color: #000;
   line-height: 1.9;
   margin-bottom: 16px;
 }
@@ -723,7 +723,7 @@
 }
 
 .pd-spec-row .key {
-  color: #888;
+  color: #000;
   font-weight: 500;
 }
 
@@ -1315,7 +1315,7 @@
 .pd-howact-title {
   font-size: clamp(26px, 3vw, 40px);
   font-weight: 800;
-  color: #0c1f4a;
+  color: #000;
   margin-bottom: 32px;
   line-height: 1.2;
 }
@@ -1480,7 +1480,7 @@
 .pd-nwc-title {
   font-size: clamp(26px, 3vw, 40px);
   font-weight: 800;
-  color: #0c1f4a;
+  color: #000;
   line-height: 1.2;
   margin-bottom: 24px;
   letter-spacing: -0.01em;
@@ -1568,7 +1568,7 @@
 
 /* Body text */
 .pd-nwc-text {
-  font-size: 21px;
+  font-size: 14px;
   font-weight: 500;
   color: #444;
   line-height: 1.7;

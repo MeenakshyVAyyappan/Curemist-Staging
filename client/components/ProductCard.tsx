@@ -55,7 +55,7 @@ function AddToCartButton({
     );
     try {
       toast({ title: "Added to cart" });
-    } catch {}
+    } catch { }
   };
 
   return (
@@ -117,7 +117,10 @@ export default function ProductCard({
       {/* Product Info (Flex Grow to align buttons at bottom) */}
       <div className="flex flex-col flex-grow justify-between gap-3 md:gap-4">
         <div className="flex justify-between items-start gap-1 md:gap-2">
-          <h3 className="text-xs sm:text-sm md:text-base lg:text-lg font-bold text-black leading-snug flex-1 pr-1">
+          <h3 
+            className="text-xs sm:text-sm md:text-base lg:text-lg font-bold text-black leading-snug flex-1 pr-1 cursor-pointer hover:underline"
+            onClick={goToDetails}
+          >
             {title}
           </h3>
           <div className="flex flex-col items-end flex-shrink-0 text-right">

@@ -173,11 +173,12 @@ const BlogDetail = () => {
 
             <button
               onClick={handleShare}
-              className="p-3 shrink-0 rounded-full hover:bg-muted transition-colors flex items-center justify-center border-2 border-muted-foreground/30 sm:border-none"
+              className="p-3 shrink-0 rounded-full sm:rounded-md hover:bg-muted transition-colors flex items-center justify-center gap-2 border-2 border-muted-foreground/30 sm:border-none"
               aria-label="Share Blog"
               title="Share Blog"
             >
-              <Share2 className="w-6 h-6 sm:w-7 sm:h-7 text-foreground" />
+              <Share2 className="w-5 h-5 sm:w-6 sm:h-6 text-foreground" />
+              <span className="font-semibold text-foreground text-sm sm:text-base">Share</span>
             </button>
           </div>
         </div>

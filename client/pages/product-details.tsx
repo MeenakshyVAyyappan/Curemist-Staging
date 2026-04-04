@@ -135,7 +135,7 @@ export default function ProductDetailsPage() {
         title: "✓ Added to cart",
         description: `${qty} item(s) added successfully`,
       });
-    } catch {}
+    } catch { }
   };
 
   /* Related products (other 3) */
@@ -622,6 +622,31 @@ export default function ProductDetailsPage() {
                   <p>{s.desc}</p>
                 </div>
               ))}
+            </div>
+
+            {/* Film Visibility Info -> VERY COMPACT LAYOUT */}
+            <div className="mt-8 max-w-md mx-auto flex flex-col md:flex-row gap-3 px-4">
+              {/* Darker Skin Box - Swapped background to yellow */}
+              <div className="flex-1 bg-[#ffe38d]/30 p-3 rounded-lg border border-[#ffe38d]/50 shadow-sm">
+                <h5 className="font-bold text-[#252c74] text-xs mb-1 flex items-center justify-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#252c74]"></span>
+                  Darker Skin
+                </h5>
+                <p className="text-[11px] text-gray-700 leading-snug text-center">
+                  The protective film may appear more clearly visible once it dries onto the skin.
+                </p>
+              </div>
+
+              {/* Fair Skin Box - Swapped background to blue */}
+              <div className="flex-1 bg-[#252c74]/10 p-3 rounded-lg border border-[#252c74]/20 shadow-sm">
+                <h5 className="font-bold text-[#252c74] text-xs mb-1 flex items-center justify-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#ffe38d]"></span>
+                  Fair Skin
+                </h5>
+                <p className="text-[11px] text-gray-700 leading-snug text-center">
+                  The film may not be seen with a single spray, but becomes noticeably visible after multiple sprays.
+                </p>
+              </div>
             </div>
           </div>
         </section>

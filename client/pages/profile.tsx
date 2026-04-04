@@ -7,6 +7,8 @@ import { toast } from "@/components/ui/use-toast";
 import { supabase } from "@/lib/supabase";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { FiEye, FiEyeOff } from "react-icons/fi";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import {
   Dialog,
   DialogContent,
@@ -397,63 +399,80 @@ export default function Profile() {
   }
 
   return (
-    <div className="min-h-screen pt-[110px] md:pt-[145px] bg-background">
-      <div className="container mx-auto px-4 md:px-6 lg:px-24">
-        <div className="mb-6 flex justify-between items-center">
-          <div className="flex gap-4">
+    <>
+      <Header />
+      <div className="min-h-screen pt-[110px] md:pt-[145px] pb-0 bg-gradient-to-b from-gray-50 to-gray-100">
+        <div className="container mx-auto px-4 md:px-6 lg:px-24 py-8 md:py-12">
+          {/* Page Title */}
+          <div className="mb-8">
+            <h1 className="text-3xl md:text-4xl font-bold text-curemist-purple">My Account</h1>
+            <p className="text-gray-600 mt-2">Manage your profile, orders, and addresses</p>
+          </div>
+
+          {/* Logout Button - Top Right */}
+          <div className="flex justify-end mb-6">
             <Button
-              onClick={() => navigate("/")}
-              className="bg-brand-yellow hover:bg-[#816306] text-[#311659] text-sm"
+              onClick={() => signOut().then(() => navigate("/login"))}
+              variant="destructive"
+              className="text-sm px-6 py-2"
             >
-              Back to Home
+              Logout
             </Button>
           </div>
-          <Button
-            onClick={() => signOut().then(() => navigate("/login"))}
-            variant="destructive"
-            className="text-sm"
-          >
-            Logout
-          </Button>
-        </div>
 
-        <div className="text-xl md:text-2xl font-bold text-curemist-purple mb-6">
-          My Profile
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8">
+          {/* Sidebar */}
           <aside className="lg:col-span-1">
-            <nav className="flex flex-col space-y-2">
-              {tabs.map((t, i) => (
-                <button
-                  key={t}
-                  onClick={() => setActive(i)}
-                  className={`text-left p-3 rounded ${i === active ? "bg-brand-yellow text-brand-blue font-semibold" : "text-muted-foreground"}`}
-                >
-                  {t}
-                </button>
-              ))}
+            <nav className="sticky top-32 flex flex-col space-y-3 bg-white rounded-xl border border-gray-200 shadow-md overflow-hidden">
+              <div className="bg-gradient-to-r from-curemist-purple to-brand-blue p-6 text-white ">
+                <h2 className="font-bold text-xl text-[#0c1f4a]  drop-shadow-md">Settings</h2>
+              </div>
+              <div className="px-2 pb-2">
+                {tabs.map((t, i) => (
+                  <button
+                    key={t}
+                    onClick={() => setActive(i)}
+                    className={`w-full text-left px-4 py-3 rounded-lg font-medium transition-all duration-200 ${
+                      i === active
+                        ? "bg-gradient-to-r from-brand-yellow to-[#d4a835] text-brand-blue shadow-md scale-105 border-l-4 border-brand-blue"
+                        : "text-gray-700 hover:bg-gray-100 border-l-4 border-transparent hover:border-gray-300"
+                    }`}
+                  >
+                    {t}
+                  </button>
+                ))}
+              </div>
             </nav>
           </aside>
 
-          <section className="lg:col-span-3 bg-white rounded border p-6 min-h-[500px]">
-            {/* Profile Information Tab */}
+          {/* Content Section */}
+          <section className="lg:col-span-3 bg-white rounded-xl border border-gray-300 shadow-lg min-h-[600px] overflow-hidden">
+            {/* Content Header Background */}
+            <div className="bg-gradient-to-r from-curemist-purple via-blue-600 to-brand-blue h-1"></div>
+            
+            <div className="p-8 md:p-10">{/* Profile Information Tab */}
             {active === 0 && (
-              <div className="space-y-6">
-                <div className="flex flex-col md:flex-row gap-6 items-start">
+              <div className="space-y-8">
+                {/* Profile Header */}
+                <div className="pb-6 border-b border-gray-200">
+                  <h2 className="text-2xl font-bold text-curemist-purple mb-1">Profile Information</h2>
+                  <p className="text-gray-600 text-sm">Update your personal information and profile picture</p>
+                </div>
+
+                <div className="flex flex-col md:flex-row gap-8 items-start">
                   {/* Profile Image Section */}
-                  <div className="flex flex-col items-center space-y-3">
-                    <Avatar className="w-24 h-24 border-2 border-brand-yellow">
+                  <div className="flex flex-col items-center space-y-4 p-6 bg-gradient-to-b from-gray-50 to-white rounded-lg border border-gray-200 flex-shrink-0">
+                    <Avatar className="w-28 h-28 border-4 border-brand-yellow shadow-lg">
                       <AvatarImage src={avatarUrl} className="object-cover" />
-                      <AvatarFallback className="text-2xl font-bold text-brand-blue bg-gray-100">
+                      <AvatarFallback className="text-3xl font-bold text-white bg-gradient-to-br from-curemist-purple to-brand-blue">
                         {firstName?.[0]?.toUpperCase() ||
                           user.email?.[0]?.toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
-                    <div className="w-full max-w-xs text-center flex flex-col items-center gap-2">
+                    <div className="w-full text-center flex flex-col items-center gap-3">
                       <label
                         htmlFor="avatar-upload"
-                        className="text-xs font-semibold text-brand-blue cursor-pointer bg-brand-yellow px-3 py-1 rounded hover:bg-[#816306] hover:text-[#311659] transition-colors"
+                        className="text-sm font-semibold text-white cursor-pointer bg-gradient-to-r from-brand-yellow to-[#d4a835] hover:shadow-lg px-4 py-2 rounded-lg transition-all duration-200"
                       >
                         {loadingProfile ? "Uploading..." : "Upload Photo"}
                       </label>
@@ -478,7 +497,7 @@ export default function Profile() {
                             }
                             setLoadingProfile(false);
                           }}
-                          className="text-xs text-red-500 hover:text-red-700 underline"
+                          className="text-xs text-red-500 hover:text-red-700 underline font-medium"
                           disabled={loadingProfile}
                         >
                           Remove Photo
@@ -535,54 +554,54 @@ export default function Profile() {
                   </div>
 
                   {/* Input Fields */}
-                  <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+                  <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-5 w-full">
                     <div className="flex flex-col">
-                      <label className="font-medium mb-1">First Name</label>
+                      <label className="font-semibold text-gray-700 mb-2 text-sm">First Name</label>
                       <input
-                        className="border p-3 rounded bg-white"
+                        className="border border-gray-300 p-3 rounded-lg bg-white focus:ring-2 focus:ring-brand-yellow focus:border-transparent outline-none transition-all"
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
                         placeholder="First Name"
                       />
                     </div>
                     <div className="flex flex-col">
-                      <label className="font-medium mb-1">Last Name</label>
+                      <label className="font-semibold text-gray-700 mb-2 text-sm">Last Name</label>
                       <input
-                        className="border p-3 rounded bg-white"
+                        className="border border-gray-300 p-3 rounded-lg bg-white focus:ring-2 focus:ring-brand-yellow focus:border-transparent outline-none transition-all"
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
                         placeholder="Last Name"
                       />
                     </div>
                     <div className="flex flex-col">
-                      <label className="font-medium mb-1">Phone Number</label>
+                      <label className="font-semibold text-gray-700 mb-2 text-sm">Phone Number</label>
                       <input
                         type="tel"
                         maxLength={10}
                         pattern="\d{10}"
-                        className="border p-3 rounded bg-white"
+                        className="border border-gray-300 p-3 rounded-lg bg-white focus:ring-2 focus:ring-brand-yellow focus:border-transparent outline-none transition-all"
                         value={phone}
                         onChange={(e) => {
-                          const val = e.target.value.replace(/\D/g, ""); // restrict to digits
+                          const val = e.target.value.replace(/\D/g, "");
                           setPhone(val);
                         }}
-                        placeholder="Phone Number"
+                        placeholder="Mobile Number"
                       />
                     </div>
                     <div className="flex flex-col">
-                      <label className="font-medium mb-1">Email Address</label>
+                      <label className="font-semibold text-gray-700 mb-2 text-sm">Email Address</label>
                       <input
-                        className="border p-3 rounded bg-gray-100 text-gray-500 cursor-not-allowed"
+                        className="border border-gray-300 p-3 rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed"
                         value={user.email || ""}
                         readOnly
                       />
                     </div>
                     <div className="flex flex-col">
-                      <label className="font-medium mb-1">Gender</label>
+                      <label className="font-semibold text-gray-700 mb-2 text-sm">Gender</label>
                       <select
                         value={sex}
                         onChange={(e) => setSex(e.target.value)}
-                        className="border p-3 rounded bg-white focus:outline-none focus:ring-2 focus:ring-brand-yellow"
+                        className="border border-gray-300 p-3 rounded-lg bg-white focus:ring-2 focus:ring-brand-yellow focus:border-transparent outline-none transition-all"
                       >
                         <option value="">Select Gender</option>
                         <option value="Male">Male</option>
@@ -591,39 +610,39 @@ export default function Profile() {
                       </select>
                     </div>
                     <div className="flex flex-col">
-                      <label className="font-medium mb-1">Date of Birth</label>
+                      <label className="font-semibold text-gray-700 mb-2 text-sm">Date of Birth</label>
                       <input
                         type="date"
                         value={dob}
                         onChange={(e) => setDob(e.target.value)}
                         max="2009-12-31"
-                        className="border p-3 rounded focus:outline-none focus:ring-2 focus:ring-brand-yellow bg-white"
+                        className="border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-brand-yellow focus:border-transparent outline-none transition-all bg-white"
                       />
                     </div>
                   </div>
                 </div>
 
-                <div className="flex justify-end pt-4 border-t">
+                <div className="flex justify-end gap-4 pt-6 border-t border-gray-200">
                   <Button
                     onClick={handleUpdateProfile}
                     disabled={loadingProfile}
-                    className="bg-brand-yellow text-brand-blue font-bold px-8"
+                    className="bg-gradient-to-r from-brand-yellow to-[#d4a835] text-brand-blue font-bold px-8 py-2 rounded-lg shadow-md hover:shadow-lg transition-all"
                   >
                     {loadingProfile ? "SAVING..." : "SAVE CHANGES"}
                   </Button>
                 </div>
 
-                <div className="mt-8 pt-8 border-t">
-                  <h3 className="font-bold mb-4 text-[#311659]">
+                <div className="mt-8 pt-8 border-t border-gray-200">
+                  <h3 className="font-bold text-lg mb-6 text-curemist-purple">
                     Change Password
                   </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 items-end">
                     <div className="flex flex-col">
-                      <label className="font-medium mb-1">New Password</label>
+                      <label className="font-semibold text-gray-700 mb-2 text-sm">New Password</label>
                       <div className="relative">
                         <input
-                          className="w-full border p-3 rounded pr-10"
-                          placeholder="New Password"
+                          className="w-full border border-gray-300 p-3 rounded-lg pr-10 focus:ring-2 focus:ring-brand-yellow focus:border-transparent outline-none transition-all"
+                          placeholder="Enter new password"
                           type={showNewPassword ? "text" : "password"}
                           value={newPassword}
                           onChange={(e) => setNewPassword(e.target.value)}
@@ -642,13 +661,13 @@ export default function Profile() {
                       </div>
                     </div>
                     <div className="flex flex-col">
-                      <label className="font-medium mb-1">
+                      <label className="font-semibold text-gray-700 mb-2 text-sm">
                         Confirm Password
                       </label>
                       <div className="relative">
                         <input
-                          className="w-full border p-3 rounded pr-10"
-                          placeholder="Confirm Password"
+                          className="w-full border border-gray-300 p-3 rounded-lg pr-10 focus:ring-2 focus:ring-brand-yellow focus:border-transparent outline-none transition-all"
+                          placeholder="Confirm password"
                           type={showConfirmPassword ? "text" : "password"}
                           value={confirmPassword}
                           onChange={(e) => setConfirmPassword(e.target.value)}
@@ -671,7 +690,7 @@ export default function Profile() {
                     <Button
                       onClick={handleUpdatePassword}
                       disabled={loadingPass}
-                      className="bg-brand-yellow text-brand-blue font-bold"
+                      className="bg-gradient-to-r from-brand-yellow to-[#d4a835] text-brand-blue font-bold rounded-lg shadow-md hover:shadow-lg transition-all"
                     >
                       {loadingPass ? "UPDATING..." : "UPDATE PASSWORD"}
                     </Button>
@@ -683,15 +702,18 @@ export default function Profile() {
             {/* Order History Tab */}
             {active === 1 && (
               <div>
-                <h3 className="text-lg font-semibold mb-6">Order History</h3>
+                <div className="pb-6 border-b border-gray-200 mb-6">
+                  <h2 className="text-2xl font-bold text-curemist-purple mb-1">Order History</h2>
+                  <p className="text-gray-600 text-sm">View and manage your orders</p>
+                </div>
                 {orders.length === 0 ? (
-                  <div className="text-center py-10">
-                    <p className="text-muted-foreground mb-4">
+                  <div className="text-center py-12 bg-gray-50 rounded-lg border border-gray-200">
+                    <p className="text-gray-600 mb-6 text-lg">
                       You don't have any orders yet.
                     </p>
                     <button
                       onClick={() => navigate("/")}
-                      className="bg-brand-yellow text-brand-blue px-6 py-2 rounded font-bold"
+                      className="bg-gradient-to-r from-brand-yellow to-[#d4a835] text-brand-blue px-8 py-3 rounded-lg font-bold shadow-md hover:shadow-lg transition-all"
                     >
                       START SHOPPING
                     </button>
@@ -701,11 +723,11 @@ export default function Profile() {
                     {paginatedOrders.map((ord) => (
                       <div
                         key={ord.id}
-                        className="border rounded-lg overflow-hidden shadow-sm"
+                        className="border border-gray-300 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all"
                       >
-                        <div className="bg-gray-50 p-4 border-b flex flex-wrap justify-between items-center gap-4">
-                          <div className="flex items-center gap-3">
-                            <div className="w-14 h-14 rounded-md overflow-hidden border bg-white flex-shrink-0">
+                        <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-6 border-b border-gray-200 flex flex-wrap justify-between items-center gap-4">
+                          <div className="flex items-center gap-4">
+                            <div className="w-16 h-16 rounded-lg overflow-hidden border-2 border-gray-300 bg-white flex-shrink-0 shadow-sm">
                               {ord.order_items?.[0]?.image ? (
                                 <img
                                   src={ord.order_items[0].image}
@@ -721,31 +743,31 @@ export default function Profile() {
                               )}
                             </div>
                             <div>
-                              <p className="text-xs text-gray-500 uppercase font-bold">
+                              <p className="text-xs text-gray-600 uppercase font-bold tracking-wide">
                                 Order Placed
                               </p>
-                              <p className="text-sm font-medium">
+                              <p className="text-base font-semibold text-gray-800">
                                 {formatOrderDate(ord.created_at)}
                               </p>
                             </div>
                           </div>
-                          <div>
-                            <p className="text-xs text-gray-500 uppercase font-bold">
-                              Total
+                          <div className="text-right">
+                            <p className="text-xs text-gray-600 uppercase font-bold tracking-wide">
+                              Total Amount
                             </p>
-                            <p className="text-sm font-medium">
+                            <p className="text-xl font-bold text-curemist-purple">
                               ₹{ord.total_price}
                             </p>
                           </div>
                           <div>
-                            <p className="text-xs text-gray-500 uppercase font-bold">
+                            <p className="text-xs text-gray-600 uppercase font-bold tracking-wide">
                               Order ID
                             </p>
-                            <p className="text-xs font-mono text-gray-600">
+                            <p className="text-xs font-mono text-gray-700 bg-gray-100 px-2 py-1 rounded">
                               {formatOrderId(ord.id)}
                             </p>
                           </div>
-                          <div className="px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800 uppercase">
+                          <div className="px-4 py-2 rounded-full text-xs font-bold bg-green-100 text-green-800 uppercase">
                             {ord.order_status}
                           </div>
                           <div className="flex items-center gap-2">
@@ -753,22 +775,21 @@ export default function Profile() {
                               size="sm"
                               variant="outline"
                               onClick={() => handleViewOrder(ord)}
+                              className="border border-gray-300 hover:bg-gray-100"
                             >
-                              <FiEye className="h-4 w-4" />
-                              <span>View</span>
+                              <FiEye className="h-4 w-4 mr-1" />
+                              <span>View Details</span>
                             </Button>
                           </div>
                         </div>
-                        <div className="p-4">
-                          <p className="text-sm text-gray-600">
-                            {ord.order_items?.length ?? 0} item
-                            {(ord.order_items?.length ?? 0) === 1 ? "" : "s"} in
-                            this order.
+                        <div className="p-6 bg-white">
+                          <p className="text-sm text-gray-700 font-medium">
+                            <span className="text-gray-600">Items:</span> {ord.order_items?.length ?? 0} item{(ord.order_items?.length ?? 0) === 1 ? "" : "s"}
                           </p>
                           {ord.order_items && ord.order_items.length > 0 && (
-                            <p className="text-sm text-gray-600 mt-1">
-                              First item:{" "}
-                              <span className="font-medium">
+                            <p className="text-sm text-gray-700 mt-2">
+                              <span className="text-gray-600">First item:</span>{" "}
+                              <span className="font-semibold text-curemist-purple">
                                 {ord.order_items[0].title}
                               </span>
                             </p>
@@ -778,8 +799,8 @@ export default function Profile() {
                     ))}
 
                     {orders.length > pageSize && (
-                      <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-                        <p className="text-sm text-muted-foreground">
+                      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-gray-200">
+                        <p className="text-sm text-gray-700 font-medium">
                           Showing{" "}
                           {Math.min(
                             orders.length,
@@ -788,7 +809,7 @@ export default function Profile() {
                           - {Math.min(orders.length, currentPage * pageSize)} of{" "}
                           {orders.length} orders
                         </p>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-3">
                           <Button
                             size="sm"
                             variant="outline"
@@ -796,10 +817,11 @@ export default function Profile() {
                               setCurrentPage((p) => Math.max(1, p - 1))
                             }
                             disabled={currentPage === 1}
+                            className="border border-gray-300 hover:bg-gray-100"
                           >
                             Previous
                           </Button>
-                          <span className="text-sm text-muted-foreground">
+                          <span className="text-sm font-semibold text-gray-700 bg-gray-100 px-3 py-1 rounded">
                             Page {currentPage} of {totalPages}
                           </span>
                           <Button
@@ -809,6 +831,7 @@ export default function Profile() {
                               setCurrentPage((p) => Math.min(totalPages, p + 1))
                             }
                             disabled={currentPage === totalPages}
+                            className="border border-gray-300 hover:bg-gray-100"
                           >
                             Next
                           </Button>
@@ -979,25 +1002,30 @@ export default function Profile() {
             {/* Address Information Tab */}
             {active === 2 && (
               <div>
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-lg font-semibold">Address Information</h3>
+                <div className="flex items-center justify-between mb-6 pb-6 border-b border-gray-200">
+                  <div>
+                    <h2 className="text-2xl font-bold text-curemist-purple mb-1">Address Information</h2>
+                    <p className="text-gray-600 text-sm">Manage your delivery addresses</p>
+                  </div>
                   <button
                     onClick={() => setShowAddForm(true)}
-                    className="bg-brand-yellow text-brand-blue px-4 py-2 rounded font-bold text-sm"
+                    className="bg-gradient-to-r from-brand-yellow to-[#d4a835] text-brand-blue px-6 py-3 rounded-lg font-bold text-sm shadow-md hover:shadow-lg transition-all"
                   >
                     + ADD NEW ADDRESS
                   </button>
                 </div>
                 {addresses.length === 0 && !showAddForm ? (
-                  <div className="text-muted-foreground text-center py-8">
-                    No addresses yet.
+                  <div className="text-center py-12 bg-gray-50 rounded-lg border border-gray-200">
+                    <p className="text-gray-600 text-lg">
+                      No addresses saved yet.
+                    </p>
                   </div>
                 ) : (
                   <div className="space-y-4">
                     {addresses.map((a, i) => (
                       <div
                         key={i}
-                        className={`border p-4 rounded-lg flex items-start justify-between gap-4 ${defaultAddressId === a.id ? "border-brand-yellow bg-yellow-50" : ""}`}
+                        className={`border-2 p-6 rounded-lg flex items-start justify-between gap-4 transition-all ${defaultAddressId === a.id ? "border-brand-yellow bg-yellow-50 shadow-md" : "border-gray-300 hover:shadow-md"}`}
                       >
                         <div className="flex items-start gap-4 flex-1">
                           <div className="pt-1">
@@ -1006,41 +1034,41 @@ export default function Profile() {
                               name="default_addr"
                               checked={defaultAddressId === a.id}
                               onChange={() => handleSetDefaultAddress(a.id)}
-                              className="w-4 h-4 cursor-pointer text-brand-yellow focus:ring-brand-yellow"
+                              className="w-5 h-5 cursor-pointer text-brand-yellow focus:ring-brand-yellow"
                             />
                           </div>
                           <div className="flex-1">
-                            <div className="flex justify-between items-start">
+                            <div className="flex justify-between items-start gap-4">
                               <div>
-                                <p className="font-bold text-gray-800">
+                                <p className="font-bold text-lg text-gray-800">
                                   {a.street}
                                 </p>
-                                <p className="text-sm text-gray-600">
+                                <p className="text-sm text-gray-700 mt-1">
                                   {a.city}, {a.state} - {a.zip}
                                 </p>
-                                <p className="text-sm text-gray-600">
+                                <p className="text-sm text-gray-700">
                                   {a.country}
                                 </p>
                               </div>
                               {defaultAddressId === a.id && (
-                                <span className="text-xs bg-brand-yellow text-brand-blue px-2 py-1 rounded font-bold">
+                                <span className="text-xs bg-gradient-to-r from-brand-yellow to-[#d4a835] text-brand-blue px-3 py-1 rounded-full font-bold">
                                   Default
                                 </span>
                               )}
                             </div>
                           </div>
                         </div>
-                        <div className="flex gap-2">
+                        <div className="flex gap-3 flex-shrink-0">
                           <button
                             onClick={() => handleEditAddress(a)}
-                            className="px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded hover:bg-blue-200 font-medium"
+                            className="px-4 py-2 text-sm bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 font-medium transition-colors"
                           >
                             Edit
                           </button>
                           {defaultAddressId !== a.id && (
                             <button
                               onClick={() => setShowDeleteConfirm(a.id)}
-                              className="px-3 py-1 text-sm bg-red-100 text-red-700 rounded hover:bg-red-200 font-medium"
+                              className="px-4 py-2 text-sm bg-red-100 text-red-700 rounded-lg hover:bg-red-200 font-medium transition-colors"
                             >
                               Delete
                             </button>
@@ -1053,21 +1081,21 @@ export default function Profile() {
 
                 {/* Delete Address Confirmation */}
                 {showDeleteConfirm && (
-                  <div className="mt-4 p-4 border border-red-200 bg-red-50 rounded-lg">
-                    <p className="text-sm text-gray-700 mb-3">
+                  <div className="mt-6 p-6 border-2 border-red-200 bg-red-50 rounded-lg">
+                    <p className="text-sm text-gray-800 mb-4 font-medium">
                       Are you sure you want to delete this address?
                     </p>
-                    <div className="flex gap-3">
+                    <div className="flex gap-4">
                       <button
                         onClick={() => handleDeleteAddress(showDeleteConfirm)}
                         disabled={loadingProfile}
-                        className="px-4 py-2 bg-red-600 text-white rounded font-medium text-sm hover:bg-red-700 disabled:opacity-50"
+                        className="px-6 py-2 bg-red-600 text-white rounded-lg font-medium text-sm hover:bg-red-700 disabled:opacity-50 transition-colors"
                       >
                         Delete
                       </button>
                       <button
                         onClick={() => setShowDeleteConfirm(null)}
-                        className="px-4 py-2 bg-gray-300 text-gray-800 rounded font-medium text-sm hover:bg-gray-400"
+                        className="px-6 py-2 bg-gray-300 text-gray-800 rounded-lg font-medium text-sm hover:bg-gray-400 transition-colors"
                       >
                         Cancel
                       </button>
@@ -1077,57 +1105,57 @@ export default function Profile() {
 
                 {/* Show Address Form */}
                 {showAddForm && (
-                  <div className="mt-8 border-t pt-6 bg-gray-50 p-6 rounded-lg">
-                    <h3 className="font-bold mb-4">
+                  <div className="mt-8 border-2 border-gray-300 pt-8 bg-gradient-to-b from-gray-50 to-white p-8 rounded-lg">
+                    <h3 className="font-bold text-xl mb-6 text-curemist-purple">
                       {editingAddressId ? "Edit Address" : "Add New Address"}
                     </h3>
-                    <div className="grid grid-cols-1 gap-4">
+                    <div className="grid grid-cols-1 gap-5">
                       <input
                         value={newAddressLine}
                         onChange={(e) => setNewAddressLine(e.target.value)}
-                        className="border p-3 rounded"
+                        className="border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-brand-yellow focus:border-transparent outline-none transition-all"
                         placeholder="Address Line (Street, Flat, etc.)"
                       />
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                         <input
                           value={newCity}
                           onChange={(e) => setNewCity(e.target.value)}
-                          className="border p-3 rounded"
+                          className="border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-brand-yellow focus:border-transparent outline-none transition-all"
                           placeholder="City"
                         />
                         <input
                           value={newState}
                           onChange={(e) => setNewState(e.target.value)}
-                          className="border p-3 rounded"
+                          className="border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-brand-yellow focus:border-transparent outline-none transition-all"
                           placeholder="State"
                         />
                       </div>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                         <input
                           value={newPincode}
                           onChange={(e) => setNewPincode(e.target.value)}
-                          className="border p-3 rounded"
+                          className="border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-brand-yellow focus:border-transparent outline-none transition-all"
                           placeholder="Pincode/Zip"
                         />
                         <input
                           value={newCountry}
                           onChange={(e) => setNewCountry(e.target.value)}
-                          className="border p-3 rounded"
+                          className="border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-brand-yellow focus:border-transparent outline-none transition-all"
                           placeholder="Country"
                         />
                       </div>
 
-                      <div className="flex justify-end gap-3 pt-2">
+                      <div className="flex justify-end gap-4 pt-4 border-t border-gray-200">
                         <button
                           onClick={handleCancelEdit}
-                          className="text-gray-500 hover:text-gray-700 font-semibold px-4"
+                          className="text-gray-600 hover:text-gray-800 font-semibold px-6 py-2 rounded-lg border border-gray-300 transition-colors"
                         >
                           Cancel
                         </button>
                         <button
                           onClick={handleSaveAddress}
                           disabled={loadingProfile}
-                          className="bg-brand-yellow text-brand-blue px-6 py-3 rounded font-bold shadow-sm hover:shadow disabled:opacity-50"
+                          className="bg-gradient-to-r from-brand-yellow to-[#d4a835] text-brand-blue px-8 py-2 rounded-lg font-bold shadow-md hover:shadow-lg disabled:opacity-50 transition-all"
                         >
                           {editingAddressId ? "Update Address" : "Save Address"}
                         </button>
@@ -1137,9 +1165,12 @@ export default function Profile() {
                 )}
               </div>
             )}
+            </div>
           </section>
         </div>
       </div>
     </div>
+    <Footer />
+    </>
   );
 }

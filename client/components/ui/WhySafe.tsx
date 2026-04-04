@@ -31,7 +31,7 @@ const cards = [
   {
     num: "05",
     icon: "🧪",
-    title: "100% PFAS-Free Formulation",
+    title: "No PFAS Guaranteed",
     desc: "Completely free of polyfluoroalkyl substances (PFAS). Formulated with a safe, eco-friendly acrylic monomer instead of harmful fluorinated compounds.",
   },
 ];
@@ -63,7 +63,7 @@ const WhySafe: React.FC = () => {
         @media (max-width: 1024px) {
           .ws-grid {
             display: flex !important;
-            gap: 0 !important;
+            gap: 24px !important;
             overflow: visible !important;
             scroll-snap-type: none !important;
             padding-bottom: 0 !important;
@@ -71,15 +71,14 @@ const WhySafe: React.FC = () => {
             padding-right: 0 !important;
           }
           .embla-slide {
-            flex: 0 0 70% !important;
+            flex: 0 0 75% !important;
             min-width: 0 !important;
             scroll-snap-align: none !important;
-            margin: 0 12px !important;
+            margin: 0 !important;
           }
           .ws-card.embla-slide {
             box-sizing: border-box;
             border-right: 1.5px solid rgba(213, 160, 0, 0.18) !important;
-            transform: scale(0.95);
             padding-top: 40px !important;
             padding-bottom: 40px !important;
           }

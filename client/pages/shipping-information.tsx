@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import AnnouncementBar from "@/components/AnnouncementBar";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -161,12 +162,12 @@ const ShippingInformation = () => {
             <p className="text-gray-500 text-sm md:text-base mb-4">
               Have a question about your order or delivery?
             </p>
-            <a
-              href="mailto:contact@altuspharma.in"
+            <Link
+              to="/contact"
               className="inline-flex items-center gap-2 bg-brand-blue text-white font-bold text-sm px-8 py-3 rounded-xl hover:bg-brand-blue/90 transition-all duration-200"
             >
               Contact Support
-            </a>
+            </Link>
           </div>
         </div>
       </section>
