@@ -19,12 +19,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
+    // Try to parse a session from the URL first (this handles
+    // Supabase redirect flows such as password reset links). If
+    // nothing is present in the URL, fall back to getting the
+    // current session.
+    (async () => {
+      try {
+        // The client is configured with `detectSessionInUrl: true` which
+        // will parse auth tokens out of the URL on initialization. That
+        // parsing happens asynchronously during client init, and calling
+        // `getSession()` immediately can race with that parsing. Wait a
+        // tiny tick so the detection can complete, then fetch the session.
+        if (typeof window !== "undefined") {
+          await new Promise((resolve) => setTimeout(resolve, 250));
+        }
+
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+        setSession(session);
+        setUser(session?.user ?? null);
+        setLoading(false);
+      } catch (err) {
+        setLoading(false);
+      }
+    })();
 
     // Listen for auth changes
     const {
