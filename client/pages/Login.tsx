@@ -116,7 +116,7 @@ export default function Login() {
     const { data, error } = await supabase.auth.resetPasswordForEmail(
       resetEmail,
       {
-        redirectTo: `${getAuthRedirectUrl()}/#recovery`,
+        redirectTo: `${getAuthRedirectUrl()}/reset-password`,
       },
     );
     console.log("Reset password result:", { data, error });

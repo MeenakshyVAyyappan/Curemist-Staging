@@ -47,9 +47,27 @@ export default function ResetPassword() {
   const passwordStrength = getPasswordStrength(newPassword);
 
   useEffect(() => {
+    // If user is already set, we're good
+    if (user) {
+      setCheckingSession(false);
+      return;
+    }
+
+    // Check if we have a recovery token in the URL or hash
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const searchParams = new URLSearchParams(window.location.search);
+    const isRecovery =
+      hashParams.get("type") === "recovery" ||
+      hashParams.get("access_token") ||
+      searchParams.get("token");
+
+    // If it's a recovery link, wait longer (2.5s) for Supabase to process it
+    // Otherwise wait only 1.2s
+    const waitTime = isRecovery ? 2500 : 1200;
+
     const timeout = setTimeout(() => {
       setCheckingSession(false);
-    }, 800);
+    }, waitTime);
 
     return () => clearTimeout(timeout);
   }, [user]);
@@ -102,12 +120,20 @@ export default function ResetPassword() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 pt-[110px] pb-10 px-4">
         <Card className="w-full max-w-md text-center py-10 px-6">
+          <div className="flex justify-center mb-6">
+            <div className="h-20 w-20 bg-brand-blue/10 rounded-full flex items-center justify-center animate-pulse">
+              <Lock className="h-10 w-10 text-brand-blue" />
+            </div>
+          </div>
           <CardTitle className="text-2xl font-bold mb-4">
-            Validating reset link...
+            Security Check
           </CardTitle>
-          <CardDescription className="text-gray-700 text-base">
-            Please wait while we prepare your password reset page.
+          <CardDescription className="text-gray-700 text-base mb-6">
+            We're validating your password reset link. This will only take a moment.
           </CardDescription>
+          <div className="flex justify-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-blue"></div>
+          </div>
         </Card>
       </div>
     );
@@ -121,12 +147,13 @@ export default function ResetPassword() {
             Password Reset Link
           </CardTitle>
           <CardDescription className="text-gray-700 text-base mb-6">
-            Please open the password reset link from your email again. You
-            should be redirected automatically with the correct authorization
-            token.
+            Your reset link may have expired or is invalid. Please request a new link from the login page.
           </CardDescription>
-          <Button onClick={() => navigate("/login")} className="w-full">
-            Go to Login
+          <Button
+            onClick={() => navigate("/login")}
+            className="w-full bg-brand-blue hover:bg-brand-blue/90"
+          >
+            Return to Login
           </Button>
         </Card>
       </div>
@@ -231,7 +258,11 @@ export default function ResetPassword() {
                 </button>
               </div>
             </div>
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button
+              type="submit"
+              className="w-full bg-brand-blue hover:bg-brand-blue/90"
+              disabled={loading}
+            >
               {loading ? "Resetting Password..." : "Reset Password"}
             </Button>
           </form>
