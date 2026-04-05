@@ -34,6 +34,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           await new Promise((resolve) => setTimeout(resolve, 250));
         }
 
+        
         const {
           data: { session },
         } = await supabase.auth.getSession();
