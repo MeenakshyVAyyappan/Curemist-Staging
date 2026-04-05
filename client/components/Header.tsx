@@ -2,7 +2,6 @@ import { ShoppingCart, User, LogOut, Settings, Menu, X, Award } from "lucide-rea
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "@/lib/cart";
 import React, { useState, useRef, useEffect } from "react";
-import AuthPopup from "./Authpopup";
 import { useAuth } from "@/lib/auth";
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 
@@ -14,11 +13,7 @@ function CartCount() {
 
 export default function Header() {
   // State for showing/hiding profile popup
-  const [showProfilePopup, setShowProfilePopup] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  // toggle profile popup visibility
-  const toggleProfilePopup = () => setShowProfilePopup(!showProfilePopup);
 
   // auth
   const { user, signOut } = useAuth();
@@ -130,13 +125,13 @@ export default function Header() {
               </Link>
               {/* Profile Button / Login.... */}
               {!user ? (
-                <button
-                  onClick={toggleProfilePopup}
+                <Link
+                  to="/login"
                   className="flex items-center gap-0.5 text-black text-sm font-medium hover:opacity-80 flex-shrink-0"
                 >
                   <User className="w-[17px] h-[22px] flex-shrink-0" />
                   <span className="text-sm">Login</span>
-                </button>
+                </Link>
               ) : (
                 <div
                   className="flex items-center gap-3 relative flex-shrink-0"
@@ -207,7 +202,7 @@ export default function Header() {
           >
             <X className="w-8 h-8" />
           </button>
-          
+
           <div className="flex flex-col gap-8 mt-8">
             <Link
               to="/blog"
@@ -216,18 +211,16 @@ export default function Header() {
             >
               BLOG
             </Link>
-            
+
             {!user ? (
-              <button
-                onClick={() => {
-                  toggleProfilePopup();
-                  setIsMobileMenuOpen(false);
-                }}
+              <Link
+                to="/login"
+                onClick={() => setIsMobileMenuOpen(false)}
                 className="flex items-center gap-2 text-xl font-medium text-black text-left"
               >
                 <User className="w-6 h-6 flex-shrink-0" />
                 <span>Login / My Account</span>
-              </button>
+              </Link>
             ) : (
               <div className="flex flex-col gap-6">
                 <div className="flex items-center gap-3">
@@ -239,28 +232,28 @@ export default function Header() {
                   <span className="text-xl font-medium">My Profile</span>
                 </div>
                 <div className="pl-14 flex flex-col gap-6">
-                    <Link
-                      to="/profile"
-                      className="flex items-center gap-3 text-black text-lg font-medium"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      <Settings className="w-6 h-6" />
-                      <span>Account Settings</span>
-                    </Link>
-                    <button
-                      onClick={() => {
-                         handleLogout();
-                         setIsMobileMenuOpen(false);
-                      }}
-                      className="flex items-center gap-3 text-red-500 text-lg font-medium text-left"
-                    >
-                      <LogOut className="w-6 h-6" />
-                      <span>Logout</span>
-                    </button>
+                  <Link
+                    to="/profile"
+                    className="flex items-center gap-3 text-black text-lg font-medium"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <Settings className="w-6 h-6" />
+                    <span>Account Settings</span>
+                  </Link>
+                  <button
+                    onClick={() => {
+                      handleLogout();
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="flex items-center gap-3 text-red-500 text-lg font-medium text-left"
+                  >
+                    <LogOut className="w-6 h-6" />
+                    <span>Logout</span>
+                  </button>
                 </div>
               </div>
             )}
-            
+
             <button
               onClick={() => {
                 setIsCartOpen(true);
@@ -278,7 +271,6 @@ export default function Header() {
       )}
 
       {/* Render Profile Popup if visible */}
-      {showProfilePopup && <AuthPopup onClose={toggleProfilePopup} />}
     </header>
   );
 }
