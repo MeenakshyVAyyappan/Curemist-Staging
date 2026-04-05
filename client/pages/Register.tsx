@@ -16,6 +16,7 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { FaGoogle } from "react-icons/fa";
+import ReCAPTCHA from "react-google-recaptcha";
 
 export default function Register() {
   const [email, setEmail] = useState("");
@@ -25,6 +26,8 @@ export default function Register() {
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const recaptchaRef = React.useRef<ReCAPTCHA>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -35,6 +38,15 @@ export default function Register() {
       toast({
         title: "Error",
         description: "Passwords do not match",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!captchaToken) {
+      toast({
+        title: "Captcha Required",
+        description: "Please complete the captcha verification.",
         variant: "destructive",
       });
       return;
@@ -222,6 +234,13 @@ export default function Register() {
                   )}
                 </button>
               </div>
+            </div>
+            <div className="flex justify-center py-2">
+              <ReCAPTCHA
+                ref={recaptchaRef}
+                sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
+                onChange={(token) => setCaptchaToken(token)}
+              />
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Registering..." : "Register"}
