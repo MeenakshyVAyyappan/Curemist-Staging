@@ -53,23 +53,35 @@ export default function ResetPassword() {
       return;
     }
 
+    // Direct listener as a fallback
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        setCheckingSession(false);
+      }
+    });
+
     // Check if we have a recovery token in the URL or hash
     const hashParams = new URLSearchParams(window.location.hash.substring(1));
     const searchParams = new URLSearchParams(window.location.search);
     const isRecovery =
       hashParams.get("type") === "recovery" ||
       hashParams.get("access_token") ||
-      searchParams.get("token");
+      searchParams.get("token") ||
+      window.location.hash.includes("recovery") ||
+      window.location.hash.includes("access_token");
 
-    // If it's a recovery link, wait longer (2.5s) for Supabase to process it
-    // Otherwise wait only 1.2s
-    const waitTime = isRecovery ? 2500 : 1200;
+    // If it's a recovery link, wait significantly longer (6s) for Supabase to process it
+    // because cold starts or slow networks can take time.
+    const waitTime = isRecovery ? 6000 : 1500;
 
     const timeout = setTimeout(() => {
       setCheckingSession(false);
     }, waitTime);
 
-    return () => clearTimeout(timeout);
+    return () => {
+      subscription.unsubscribe();
+      clearTimeout(timeout);
+    };
   }, [user]);
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();

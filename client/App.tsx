@@ -92,7 +92,7 @@ function AppRoutes() {
           description: "Please set a new password.",
         });
         if (location.pathname !== "/reset-password") {
-          navigate("/reset-password", { replace: true });
+          navigate("/reset-password" + location.hash, { replace: true });
         }
       }
     }
