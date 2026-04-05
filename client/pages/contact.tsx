@@ -13,6 +13,7 @@ import {
   CheckCircle2,
   AlertCircle,
 } from "lucide-react";
+import ReCAPTCHA from "react-google-recaptcha";
 
 /* ─── Types ─── */
 interface FormData {
@@ -96,10 +97,9 @@ function Input({ error, className = "", ...props }: InputProps) {
       <input
         {...props}
         className={`w-full px-4 py-3 rounded-xl border text-sm font-medium outline-none transition-all duration-200 bg-white
-          ${
-            error
-              ? "border-red-400 focus:ring-2 focus:ring-red-200"
-              : "border-gray-200 focus:border-brand-blue focus:ring-2 focus:ring-blue-100"
+          ${error
+            ? "border-red-400 focus:ring-2 focus:ring-red-200"
+            : "border-gray-200 focus:border-brand-blue focus:ring-2 focus:ring-blue-100"
           } ${className}`}
       />
       {error && (
@@ -121,10 +121,9 @@ function Textarea({ error, className = "", ...props }: TextareaProps) {
       <textarea
         {...props}
         className={`w-full px-4 py-3 rounded-xl border text-sm font-medium outline-none transition-all duration-200 bg-white resize-none
-          ${
-            error
-              ? "border-red-400 focus:ring-2 focus:ring-red-200"
-              : "border-gray-200 focus:border-brand-blue focus:ring-2 focus:ring-blue-100"
+          ${error
+            ? "border-red-400 focus:ring-2 focus:ring-red-200"
+            : "border-gray-200 focus:border-brand-blue focus:ring-2 focus:ring-blue-100"
           } ${className}`}
       />
       {error && (
@@ -154,6 +153,8 @@ const ContactUs = () => {
   const [errors, setErrors] = useState<FormErrors>({});
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const recaptchaRef = React.useRef<ReCAPTCHA>(null);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -173,6 +174,16 @@ const ContactUs = () => {
       setErrors(newErrors);
       return;
     }
+
+    if (!captchaToken) {
+      toast({
+        title: "Captcha Required",
+        description: "Please complete the captcha verification.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setSubmitting(true);
     // Send the form to the server which will forward via Resend
     (async () => {
@@ -180,7 +191,7 @@ const ContactUs = () => {
         const resp = await fetch("/api/contact", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(form),
+          body: JSON.stringify({ ...form, captchaToken }),
         });
 
         if (!resp.ok) {
@@ -356,6 +367,14 @@ const ContactUs = () => {
                       placeholder="Tell us more about your query..."
                       rows={5}
                       error={errors.message}
+                    />
+                  </div>
+
+                  <div className="flex justify-center py-2">
+                    <ReCAPTCHA
+                      ref={recaptchaRef}
+                      sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
+                      onChange={(token) => setCaptchaToken(token)}
                     />
                   </div>
 

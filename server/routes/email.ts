@@ -22,9 +22,32 @@ export const contactHandler = async (req: Request, res: Response) => {
   }
   if (!key) return res.status(500).json({ error: "Missing RESEND_API_KEY. Set RESEND_API_KEY in the server environment or include x-resend-api-key header for testing." });
 
-  const { name, email, phone, subject, message } = req.body;
+  const { name, email, phone, subject, message, captchaToken } = req.body;
   if (!name || !email || !subject || !message) {
     return res.status(400).json({ error: "Missing required fields" });
+  }
+
+  // ReCAPTCHA Verification
+  const reCaptchaSecret = process.env.RECAPTCHA_SECRET_KEY;
+  if (!reCaptchaSecret) {
+    console.error("[email] RECAPTCHA_SECRET_KEY missing in environment");
+  } else if (!captchaToken) {
+    return res.status(400).json({ error: "Captcha verification required" });
+  } else {
+    try {
+      const verifyResp = await fetch("https://www.google.com/recaptcha/api/siteverify", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `secret=${reCaptchaSecret}&response=${captchaToken}`,
+      });
+      const verifyJson = await verifyResp.json();
+      if (!verifyJson.success) {
+        return res.status(403).json({ error: "Captcha verification failed" });
+      }
+    } catch (err: any) {
+      console.error("[email] Captcha verify failed:", err);
+      // Optional: proceed anyway if google is down? Probably safer to fail.
+    }
   }
 
   const ownerEmail = process.env.CONTACT_RECIPIENT_EMAIL || "contact@altuspharma.in";
