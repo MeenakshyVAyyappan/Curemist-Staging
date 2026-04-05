@@ -35,6 +35,7 @@ import { formatOrderDate, formatOrderId } from "@/lib/utils";
 
 export default function AdminOrders() {
   const [orders, setOrders] = useState<any[]>([]);
+  const [orderNotes, setOrderNotes] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -73,6 +74,12 @@ export default function AdminOrders() {
       });
     } else {
       setOrders(data || []);
+      // Initialize notes state from fetched orders so textareas are controlled
+      const notesMap: Record<string, string> = {};
+      (data || []).forEach((o: any) => {
+        if (o && o.id) notesMap[o.id] = o.admin_note ?? "";
+      });
+      setOrderNotes(notesMap);
       console.log("Orders fetched:", data?.length); // Debug log
     }
     setLoading(false);
@@ -97,6 +104,38 @@ export default function AdminOrders() {
       });
     } else {
       toast({ title: "Success", description: `Order updated to ${newStatus}` });
+      fetchOrders();
+    }
+  };
+
+  const saveOrderNote = async (orderId: string) => {
+    const raw = orderNotes[orderId];
+    const note = raw === "" ? null : raw ?? null;
+    const { error } = await supabase.from("orders").update({ admin_note: note }).eq("id", orderId);
+
+    if (error) {
+      toast({ title: "Error", description: "Failed to save note", variant: "destructive" });
+    } else {
+      toast({ title: "Success", description: "Note saved" });
+      fetchOrders();
+    }
+  };
+
+  const deleteOrderNote = async (orderId: string) => {
+    const confirmed = window.confirm("Delete this note? This will remove it for the customer.");
+    if (!confirmed) return;
+
+    const { error } = await supabase.from("orders").update({ admin_note: null }).eq("id", orderId);
+    if (error) {
+      toast({ title: "Error", description: "Failed to delete note", variant: "destructive" });
+    } else {
+      // remove from local state too
+      setOrderNotes((prev) => {
+        const copy = { ...prev };
+        delete copy[orderId];
+        return copy;
+      });
+      toast({ title: "Success", description: "Note deleted" });
       fetchOrders();
     }
   };
@@ -668,6 +707,35 @@ export default function AdminOrders() {
                                     </SelectItem>
                                   </SelectContent>
                                 </Select>
+                                <div className="mt-4">
+                                  <label className="block text-sm font-medium text-gray-700">
+                                    Admin Note
+                                  </label>
+                                  <textarea
+                                    className="mt-1 block w-full border rounded p-2 text-sm"
+                                    placeholder="Add an internal note for the customer (visible in their order history)"
+                                    value={orderNotes[order.id] ?? order.admin_note ?? ""}
+                                    onChange={(e) =>
+                                      setOrderNotes((prev) => ({
+                                        ...prev,
+                                        [order.id]: e.target.value,
+                                      }))
+                                    }
+                                    rows={3}
+                                  />
+                                  <div className="mt-2 flex gap-2">
+                                    <Button size="sm" onClick={() => saveOrderNote(order.id)}>
+                                      Save Note
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="destructive"
+                                      onClick={() => deleteOrderNote(order.id)}
+                                    >
+                                      Delete Note
+                                    </Button>
+                                  </div>
+                                </div>
                               </div>
                             </div>
                           </DialogContent>

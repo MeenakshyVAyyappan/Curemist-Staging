@@ -174,19 +174,34 @@ const ContactUs = () => {
       return;
     }
     setSubmitting(true);
-    // Simulate API call
-    setTimeout(() => {
-      setSubmitting(false);
-      setSubmitted(true);
-      setForm({ name: "", email: "", phone: "", subject: "", message: "" });
-      setErrors({});
-      toast({
-        title: "Message Sent!",
-        description:
-          "Thank you for reaching out. We'll get back to you within 24 hours.",
-      });
-      setTimeout(() => setSubmitted(false), 4000);
-    }, 1200);
+    // Send the form to the server which will forward via Resend
+    (async () => {
+      try {
+        const resp = await fetch("/api/contact", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(form),
+        });
+
+        if (!resp.ok) {
+          const json = await resp.json().catch(() => ({}));
+          throw new Error(json?.error || "Failed to send message");
+        }
+
+        setSubmitted(true);
+        setForm({ name: "", email: "", phone: "", subject: "", message: "" });
+        setErrors({});
+        toast({
+          title: "Message Sent!",
+          description: "Thank you for reaching out. We'll get back to you within 24 hours.",
+        });
+        setTimeout(() => setSubmitted(false), 4000);
+      } catch (err: any) {
+        toast({ title: "Send failed", description: err?.message || "Unable to send message", variant: "destructive" });
+      } finally {
+        setSubmitting(false);
+      }
+    })();
   };
 
   return (

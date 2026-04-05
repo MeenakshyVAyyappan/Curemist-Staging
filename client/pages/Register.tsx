@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { FiEye, FiEyeOff } from "react-icons/fi";
+import { FaGoogle } from "react-icons/fa";
 
 export default function Register() {
   const [email, setEmail] = useState("");
@@ -62,6 +63,27 @@ export default function Register() {
         title: "Success",
         description: "Registration successful! Please confirm your email.",
       });
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo: getAuthRedirectUrl() },
+      });
+
+      if (error) {
+        toast({ title: "Google Sign-In Failed", description: error.message, variant: "destructive" });
+        return;
+      }
+
+      if (data?.url) {
+        window.location.href = data.url;
+      }
+    } catch (err: any) {
+      console.error("Google sign-in error:", err);
+      toast({ title: "Error", description: "Unable to start Google Sign-In.", variant: "destructive" });
     }
   };
 
@@ -137,6 +159,12 @@ export default function Register() {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          <div className="mb-4 flex justify-center">
+            <Button variant="outline" className="w-full max-w-xs flex items-center gap-2" onClick={handleGoogleSignIn}>
+              <FaGoogle className="h-5 w-5" />
+              Continue with Google
+            </Button>
+          </div>
           <form onSubmit={handleRegister} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
