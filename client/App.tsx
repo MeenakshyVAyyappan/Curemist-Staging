@@ -91,7 +91,9 @@ function AppRoutes() {
           title: "Password Reset",
           description: "Please set a new password.",
         });
-        navigate("/reset-password", { replace: true });
+        if (location.pathname !== "/reset-password") {
+          navigate("/reset-password", { replace: true });
+        }
       }
     }
 
