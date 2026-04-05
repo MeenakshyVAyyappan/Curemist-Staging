@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
 import { createRazorpayOrder, verifyRazorpayPayment } from "./routes/razorpay";
+import { contactHandler, notifyResetHandler } from "./routes/email";
 
 export function createServer() {
   const app = express();
@@ -23,6 +24,10 @@ export function createServer() {
   // Razorpay routes
   app.post("/api/create-razorpay-order", createRazorpayOrder);
   app.post("/api/verify-razorpay-payment", verifyRazorpayPayment);
+
+  // Email endpoints (Resend)
+  app.post("/api/contact", contactHandler);
+  app.post("/api/notify-reset", notifyResetHandler);
 
   return app;
 }

@@ -177,6 +177,20 @@ USING (
     )
 );
 
+-- Allow admins to view all order items (so admin users can see product details
+-- when selecting orders with related order_items). Adjust `profiles.is_admin`
+-- to match your admin flag.
+CREATE POLICY "Admins can view all order items" 
+ON order_items FOR SELECT
+TO authenticated
+USING (
+    EXISTS (
+        SELECT 1 FROM profiles
+        WHERE profiles.id = auth.uid()
+        AND profiles.is_admin = true
+    )
+);
+
 CREATE POLICY "Users can insert their own order items"
 ON order_items FOR INSERT
 TO authenticated

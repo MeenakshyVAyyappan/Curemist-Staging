@@ -783,6 +783,11 @@ export default function Profile() {
                           </div>
                         </div>
                         <div className="p-6 bg-white">
+                          {ord.admin_note && (
+                            <p className="text-sm text-gray-700 font-medium">
+                              <span className="text-gray-600">Note:</span> {ord.admin_note}
+                            </p>
+                          )}
                           <p className="text-sm text-gray-700 font-medium">
                             <span className="text-gray-600">Items:</span> {ord.order_items?.length ?? 0} item{(ord.order_items?.length ?? 0) === 1 ? "" : "s"}
                           </p>
@@ -903,6 +908,11 @@ export default function Profile() {
                                     Payment Method:
                                   </span>{" "}
                                   {selectedOrder.payment_method}
+                                </p>
+                              )}
+                              {selectedOrder.admin_note && (
+                                <p className="mt-2">
+                                  <span className="font-medium">Note:</span> {selectedOrder.admin_note}
                                 </p>
                               )}
                             </div>
