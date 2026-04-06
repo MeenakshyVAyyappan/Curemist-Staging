@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { supabase, getAuthRedirectUrl } from "@/lib/supabase";
 import { useToast } from "@/components/ui/use-toast";
 import { FiEye, FiEyeOff } from "react-icons/fi";
+import { FcGoogle } from "react-icons/fc";
+import ReCAPTCHA from "react-google-recaptcha";
 
 const AuthPopup = ({ onClose }: { onClose: () => void }) => {
   const [view, setView] = useState<"login" | "register" | "forgot">("login");
@@ -18,12 +20,34 @@ const AuthPopup = ({ onClose }: { onClose: () => void }) => {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const recaptchaRef = React.useRef<ReCAPTCHA>(null);
 
   const toggleForm = () => {
     setView(view === "login" ? "register" : "login");
     setEmail("");
     setPassword("");
     setConfirmPassword("");
+    setCaptchaToken(null);
+    recaptchaRef.current?.reset();
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: getAuthRedirectUrl(),
+        },
+      });
+      if (error) throw error;
+    } catch (err: any) {
+      toast({
+        title: "Google Login Failed",
+        description: err.message,
+        variant: "destructive",
+      });
+    }
   };
 
   const handleResetPassword = async (e: React.FormEvent) => {
@@ -32,6 +56,15 @@ const AuthPopup = ({ onClose }: { onClose: () => void }) => {
       toast({
         title: "Error",
         description: "Please enter your email address.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!captchaToken) {
+      toast({
+        title: "Captcha Required",
+        description: "Please complete the captcha verification.",
         variant: "destructive",
       });
       return;
@@ -67,6 +100,16 @@ const AuthPopup = ({ onClose }: { onClose: () => void }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!captchaToken) {
+      toast({
+        title: "Captcha Required",
+        description: "Please complete the captcha verification.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -227,6 +270,19 @@ const AuthPopup = ({ onClose }: { onClose: () => void }) => {
                 required
               />
             </div>
+            <div className="mb-4 flex justify-center min-h-[78px]">
+              {import.meta.env.VITE_RECAPTCHA_SITE_KEY ? (
+                <ReCAPTCHA
+                  ref={recaptchaRef}
+                  sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
+                  onChange={(token) => setCaptchaToken(token)}
+                />
+              ) : (
+                <div className="text-xs text-red-500 border border-red-200 p-2 bg-red-50 rounded w-full text-center">
+                  Missing VITE_RECAPTCHA_SITE_KEY in .env
+                </div>
+              )}
+            </div>
             <div className="mb-4 flex flex-col gap-2">
               <button
                 type="submit"
@@ -237,7 +293,11 @@ const AuthPopup = ({ onClose }: { onClose: () => void }) => {
               </button>
               <button
                 type="button"
-                onClick={() => setView("login")}
+                onClick={() => {
+                  setView("login");
+                  setCaptchaToken(null);
+                  recaptchaRef.current?.reset();
+                }}
                 className="w-full text-gray-500 hover:text-gray-800 text-sm font-semibold"
               >
                 Back to Login
@@ -293,7 +353,11 @@ const AuthPopup = ({ onClose }: { onClose: () => void }) => {
               {view === "login" && (
                 <button
                   type="button"
-                  onClick={() => setView("forgot")}
+                  onClick={() => {
+                    setView("forgot");
+                    setCaptchaToken(null);
+                    recaptchaRef.current?.reset();
+                  }}
                   className="text-xs text-brand-blue font-semibold hover:underline"
                 >
                   Forgot Password?
@@ -353,6 +417,20 @@ const AuthPopup = ({ onClose }: { onClose: () => void }) => {
             </div>
           )}
 
+          <div className="mb-4 flex justify-center min-h-[78px]">
+            {import.meta.env.VITE_RECAPTCHA_SITE_KEY ? (
+              <ReCAPTCHA
+                ref={recaptchaRef}
+                sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
+                onChange={(token) => setCaptchaToken(token)}
+              />
+            ) : (
+              <div className="text-xs text-red-500 border border-red-200 p-2 bg-red-50 rounded w-full text-center">
+                Missing VITE_RECAPTCHA_SITE_KEY in .env
+              </div>
+            )}
+          </div>
+
           <div className="mb-4 flex justify-end">
             <button
               type="submit"
@@ -363,6 +441,29 @@ const AuthPopup = ({ onClose }: { onClose: () => void }) => {
             </button>
           </div>
         </form>
+
+        {(view === "login" || view === "register") && (
+          <>
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-gray-300"></span>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white text-gray-500">
+                  Or continue with
+                </span>
+              </div>
+            </div>
+
+            <button
+              onClick={handleGoogleLogin}
+              className="w-full flex items-center justify-center gap-2 border border-gray-300 p-2 rounded hover:bg-gray-50 transition-colors font-semibold"
+            >
+              <FcGoogle size={20} />
+              Google
+            </button>
+          </>
+        )}
 
         <div className="text-center text-sm mt-4">
           {view === "login" ? (

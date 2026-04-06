@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { Eye, EyeOff, Lock, CheckCircle2 } from "lucide-react";
+import ReCAPTCHA from "react-google-recaptcha";
 
 export default function ResetPassword() {
   const [newPassword, setNewPassword] = useState("");
@@ -23,6 +24,8 @@ export default function ResetPassword() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [success, setSuccess] = useState(false);
   const [checkingSession, setCheckingSession] = useState(true);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const recaptchaRef = React.useRef<ReCAPTCHA>(null);
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
@@ -90,6 +93,15 @@ export default function ResetPassword() {
       toast({
         title: "Error",
         description: "Passwords do not match",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!captchaToken) {
+      toast({
+        title: "Captcha Required",
+        description: "Please complete the captcha verification.",
         variant: "destructive",
       });
       return;
@@ -269,6 +281,13 @@ export default function ResetPassword() {
                   )}
                 </button>
               </div>
+            </div>
+            <div className="flex justify-center py-2">
+              <ReCAPTCHA
+                ref={recaptchaRef}
+                sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
+                onChange={(token) => setCaptchaToken(token)}
+              />
             </div>
             <Button
               type="submit"
