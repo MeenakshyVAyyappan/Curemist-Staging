@@ -4,37 +4,27 @@ import { products } from "@/lib/products";
 import {
   ChevronLeft,
   ChevronRight,
-  Activity,
-  Target,
-  Droplet,
-  Flame,
-  Zap,
-  ShieldAlert,
-  Scissors,
-  FileText,
-  Bug,
-  Thermometer,
 } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { AnimatePresence, motion } from "framer-motion";
 
 const conditionsList = [
-  { name: "Nail Fungus", icon: Zap },
-  { name: "Tinea / Ringworm", icon: Target },
-  { name: "Eczema", icon: Droplet },
-  { name: "Jock Itch", icon: Activity },
-  { name: "Bed sore ulcers/wounds", icon: ShieldAlert },
-  { name: "Minor burns(Degree 1 & 2)", icon: Flame },
-  { name: "Foot ulcers", icon: Activity },
-  { name: "Shoe bites", icon: Zap },
-  { name: "Varicose vein ulcers", icon: Activity },
-  { name: "Radiation treatment wounds", icon: Target },
-  { name: "Minor cuts & scratches", icon: Scissors },
-  { name: "Shaving cuts", icon: Scissors },
-  { name: "Paper cuts", icon: FileText },
-  { name: "Kitchen injuries", icon: Flame },
-  { name: "Insect bites", icon: Bug },
-  { name: "Redness or skin irritation", icon: Thermometer },
+  { name: "Nail Fungus", image: "/Productcards/nailfungus.png" },
+  { name: "Tinea / Ringworm", image: "/Productcards/tinea_ringworm.png" },
+  { name: "Eczema", image: "/Productcards/Eczema.png" },
+  { name: "Jock Itch", image: "/Productcards/jockitch.png" },
+  { name: "Bed sore ulcers/wounds", image: "/Productcards/bedsore.png" },
+  { name: "Minor burns(Degree 1 & 2)", image: "/Productcards/minorburns.png" },
+  { name: "Foot ulcers", image: "/Productcards/footulcers.png" },
+  { name: "Shoe bites", image: "/Productcards/shoebites.png" },
+  { name: "Varicose vein ulcers", image: "/Productcards/vericosvein.png" },
+  { name: "Radiation treatment wounds", image: "/Productcards/radiationtreatment.png" },
+  { name: "Minor cuts & scratches", image: "/Productcards/minorcutburns.png" },
+  { name: "Shaving cuts", image: "/Productcards/shavingcuts.png" },
+  { name: "Paper cuts", image: "/Productcards/papercuts.png" },
+  { name: "Kitchen injuries", image: "/Productcards/kitchen-injuries.png" },
+  { name: "Insect bites", image: "/Productcards/insectbites.png" },
+  { name: "Redness or skin irritation", image: "/Productcards/redness.png" },
 ];
 
 export default function ProductSection() {
@@ -76,11 +66,10 @@ export default function ProductSection() {
           <div className="max-w-6xl mx-auto mt-8 md:mt-12">
             <motion.div
               layout
-              className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2 md:gap-3"
+              className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-8 gap-4 md:gap-6"
             >
               <AnimatePresence>
                 {visibleConditions.map((condition) => {
-                  const Icon = condition.icon;
                   return (
                     <motion.div
                       key={condition.name}
@@ -89,25 +78,12 @@ export default function ProductSection() {
                       exit={{ opacity: 0, scale: 0.9 }}
                       transition={{ duration: 0.25, ease: "easeOut" }}
                       layout
-                      className="group relative overflow-hidden rounded-[9px] md:rounded-[14px] p-1.5 md:p-2 h-full min-h-[72px] md:min-h-[80px] flex flex-col items-center justify-center text-center border-[1.2px] border-[#ffe38d] transition-all duration-[250ms] md:hover:-translate-y-1.5 md:hover:scale-[1.04] shadow-[0_4px_16px_0_rgba(40,43,112,0.1),0_1.5px_6px_0_rgba(255,209,71,0.08)] md:hover:shadow-[0_12px_36px_0_rgba(40,43,112,0.18),0_2px_8px_0_rgba(255,209,71,0.13)]"
-                      style={{
-                        background:
-                          "linear-gradient(135deg, #fffbe6 0%, #ffe38d 100%)",
-                      }}
+                      className="group relative flex flex-col items-center cursor-pointer"
                     >
-                      {/* Glare overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-br from-white/25 to-white/5 pointer-events-none" />
-
-                      <div className="mb-0.5 md:mb-1 text-[#282b70] relative z-10 drop-shadow-[0_2px_8px_rgba(255,227,141,0.53)]">
-                        <Icon
-                          className="w-[18px] h-[18px] md:w-5 md:h-5"
-                          strokeWidth={2.5}
-                        />
+                      <div className="w-[70px] h-[70px] md:w-[100px] md:h-[100px] rounded-full overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 border-2 border-[#252c74]">
+                        <img src={condition.image} alt={condition.name} className="w-full h-full object-cover" />
                       </div>
-                      <span
-                        className="text-[10px] md:text-xs font-semibold text-[#282b70] leading-tight px-0.5 relative z-10 tracking-[0.01em]"
-                        style={{ textShadow: "0 1px 0 #fffbe6" }}
-                      >
+                      <span className="text-xs md:text-sm font-medium text-center mt-2 max-w-[80px] md:max-w-[110px] leading-tight text-gray-700">
                         {condition.name}
                       </span>
                     </motion.div>
