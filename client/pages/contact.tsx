@@ -13,7 +13,7 @@ import {
   CheckCircle2,
   AlertCircle,
 } from "lucide-react";
-import ReCAPTCHA from "react-google-recaptcha";
+// import ReCAPTCHA from "react-google-recaptcha";
 
 /* ─── Types ─── */
 interface FormData {
@@ -153,8 +153,8 @@ const ContactUs = () => {
   const [errors, setErrors] = useState<FormErrors>({});
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
-  const recaptchaRef = React.useRef<ReCAPTCHA>(null);
+  // const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  // const recaptchaRef = React.useRef<ReCAPTCHA>(null);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -175,14 +175,14 @@ const ContactUs = () => {
       return;
     }
 
-    if (!captchaToken) {
-      toast({
-        title: "Captcha Required",
-        description: "Please complete the captcha verification.",
-        variant: "destructive",
-      });
-      return;
-    }
+    // if (!captchaToken) {
+    //   toast({
+    //     title: "Captcha Required",
+    //     description: "Please complete the captcha verification.",
+    //     variant: "destructive",
+    //   });
+    //   return;
+    // }
 
     setSubmitting(true);
     // Send the form to the server which will forward via Resend
@@ -191,7 +191,7 @@ const ContactUs = () => {
         const resp = await fetch("/api/contact", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...form, captchaToken }),
+          body: JSON.stringify({ ...form }), // captchaToken removed for localhost testing
         });
 
         if (!resp.ok) {
@@ -370,13 +370,13 @@ const ContactUs = () => {
                     />
                   </div>
 
-                  <div className="flex justify-center py-2">
+                  {/* <div className="flex justify-center py-2">
                     <ReCAPTCHA
                       ref={recaptchaRef}
                       sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
                       onChange={(token) => setCaptchaToken(token)}
                     />
-                  </div>
+                  </div> */}
 
                   <button
                     type="submit"

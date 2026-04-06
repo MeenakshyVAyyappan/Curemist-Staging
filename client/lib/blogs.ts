@@ -74,9 +74,9 @@ export const blogPosts: BlogPost[] = [
     ],
   },
   {
-    id: "Heal-Diabetic-Foot-Ulcers-Naturally-Cure-Mist’s-Fast-Acting-Herbal-Film-Spray!",
+    id: "Heal-Foot-Ulcers-Naturally-Cure-Mist’s-Fast-Acting-Herbal-Film-Spray!",
     title:
-      "Heal Diabetic Foot Ulcers Naturally – Cure Mist’s Fast-Acting Herbal Film Spray!",
+      "Heal Foot Ulcers Naturally – Cure Mist’s Fast-Acting Herbal Film Spray!",
     date: "Jan 10, 2026",
     image: "/blogimages/blog2.png",
     excerpt:

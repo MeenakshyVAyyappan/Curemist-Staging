@@ -113,7 +113,7 @@
 /* ── Grid ── */
 .ws-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 16px;
   max-width: 1300px;
   margin: 0 auto;

@@ -24,12 +24,6 @@ const cards = [
   },
   {
     num: "04",
-    icon: "🛡️",
-    title: "No Heavy Metals — Lab Verified",
-    desc: "Independently tested and certified free of lead, mercury, arsenic, cadmium, and all regulated heavy metals — meeting international safety thresholds in every batch.",
-  },
-  {
-    num: "05",
     icon: "🧪",
     title: "No PFAS Guaranteed",
     desc: "Completely free of polyfluoroalkyl substances (PFAS). Formulated with a safe, eco-friendly acrylic monomer instead of harmful fluorinated compounds.",

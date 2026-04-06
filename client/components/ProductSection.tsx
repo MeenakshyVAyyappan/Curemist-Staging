@@ -24,11 +24,11 @@ const conditionsList = [
   { name: "Eczema", icon: Droplet },
   { name: "Jock Itch", icon: Activity },
   { name: "Bed sore ulcers/wounds", icon: ShieldAlert },
-  { name: "Small burns(Degree 1 & 2)", icon: Flame },
+  { name: "Minor burns(Degree 1 & 2)", icon: Flame },
   { name: "Foot ulcers", icon: Activity },
   { name: "Shoe bites", icon: Zap },
   { name: "Varicose vein ulcers", icon: Activity },
-  { name: "Cancer treatment Radiation wounds", icon: Target },
+  { name: "Radiation treatment wounds", icon: Target },
   { name: "Minor cuts & scratches", icon: Scissors },
   { name: "Shaving cuts", icon: Scissors },
   { name: "Paper cuts", icon: FileText },
@@ -69,10 +69,9 @@ export default function ProductSection() {
             We Are A Wound Care Company 
           </h2>
           <p className="text-base md:text-xl font-medium text-gray-700 max-w-3xl mx-auto leading-relaxed">
-            Fast relief for sports injuries & active lifestyles. Protects and
-            heals scrapes, turf burns & workout wounds instantly.
+            Fast relief for sports injuries & active lifestyles. Protects and heals scrapes, turf burns & workout wounds instantly.
           </p>
-
+          <p className="text-base md:text-xl font-medium text-gray-700 max-w-3xl mx-auto leading-relaxed">Essential at every Household for healing various conditions!</p>
           {/* Premium Condition Cards */}
           <div className="max-w-6xl mx-auto mt-8 md:mt-12">
             <motion.div

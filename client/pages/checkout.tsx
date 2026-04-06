@@ -151,26 +151,56 @@ export default function Checkout() {
     }
   }, [user]);
 
-  // Intersection Observer for sticky button
+  // Intersection Observer for sticky button - Reliable visibility detection
   useEffect(() => {
+    // Helper function to check if element is in viewport
+    const checkButtonVisibility = () => {
+      const payButton = document.getElementById('main-pay-button');
+      if (!payButton) return;
+
+      const rect = payButton.getBoundingClientRect();
+      const isInView = rect.top >= 0 && rect.left >= 0 && rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && rect.right <= (window.innerWidth || document.documentElement.clientWidth);
+      
+      setShowStickyButton(!isInView);
+    };
+
+    // Check visibility on initial mount with a small delay to ensure DOM is ready
+    const initialCheckTimeout = setTimeout(() => {
+      checkButtonVisibility();
+    }, 100);
+
     const payButton = document.getElementById('main-pay-button');
-    if (!payButton) return;
+    if (!payButton) {
+      clearTimeout(initialCheckTimeout);
+      return;
+    }
 
     const observer = new IntersectionObserver(
       ([entry]) => {
+        // Show sticky button only when the main button is completely out of view
+        // Hide sticky button when the main button is even partially visible
         setShowStickyButton(!entry.isIntersecting);
       },
       {
         root: null,
-        threshold: 0,
-        rootMargin: '-100px 0px -100px 0px'
+        threshold: [0, 0.25, 0.5, 0.75, 1], // Check at multiple visibility levels for reliability
+        rootMargin: '0px' // No margin - detect exact visibility
       }
     );
 
     observer.observe(payButton);
 
+    // Also add scroll listener as fallback for edge cases
+    const handleScroll = () => {
+      checkButtonVisibility();
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
     return () => {
+      clearTimeout(initialCheckTimeout);
       observer.disconnect();
+      window.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
@@ -1276,10 +1306,10 @@ export default function Checkout() {
 
               {/* Sticky Pay Button for Mobile */}
               {showStickyButton && (
-                <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t p-4 shadow-lg z-10">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-semibold">Total: ₹{totalPrice}</span>
-                    <span className="text-green-600 text-xs">Free Shipping</span>
+                <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-300 p-4 shadow-2xl z-40 safe-area-inset-bottom animate-in slide-in-from-bottom duration-200">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="font-bold text-lg text-gray-800">Total: ₹{totalPrice}</span>
+                    <span className="text-green-600 text-xs font-semibold">FREE SHIPPING</span>
                   </div>
                   <button
                     onClick={(e) => {
@@ -1295,7 +1325,7 @@ export default function Checkout() {
                       handlePlaceOrder(e as any);
                     }}
                     disabled={loading || processingPayment}
-                    className="w-full font-bold py-3 rounded-lg text-base transition-colors disabled:opacity-50 shadow-md bg-[#4A0E4E] text-white hover:bg-[#3a0b3e]"
+                    className="w-full font-bold py-4 rounded-lg text-base transition-all duration-200 disabled:opacity-50 shadow-md bg-[#4A0E4E] text-white hover:bg-[#3a0b3e] active:scale-95 disabled:cursor-not-allowed"
                   >
                     {loading || processingPayment
                       ? "Processing..."
@@ -1304,8 +1334,8 @@ export default function Checkout() {
                 </div>
               )}
 
-              {/* Add padding bottom for mobile sticky button */}
-              {showStickyButton && <div className="lg:hidden h-24"></div>}
+              {/* Add padding bottom for mobile sticky button when visible */}
+              {showStickyButton && <div className="md:hidden h-28"></div>}
             </div>
 
             {/* Order Summary Sidebar */}

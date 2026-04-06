@@ -27,7 +27,7 @@ export const products: Product[] = [
       "/Products/CommonProduct.jpg",
       "/Products/Product3.4.png",
     ],
-    benefit: "Anti Fungal",
+    benefit: "Anti Microbial",
     form: "Spray",
     description:
       "CureMist – The World's First Ayurvedic Wound Spray. 100% Ayurvedic and AYUSH-approved, it delivers fast, hands-free healing with a waterproof, dust-proof protective layer, harnessing turmeric's anti-bacterial, anti-fungal, and anti-inflammatory power for safe use across all ages.",
@@ -47,7 +47,7 @@ export const products: Product[] = [
       "/Products/CommonProduct.jpg",
       "/Products/Product2.5.JPG",
     ],
-    benefit: "Anti Fungal",
+    benefit: "AAnti Microbial",
     form: "Spray",
     description:
       "CureMist – The World's First Ayurvedic Wound Spray. 100% Ayurvedic and AYUSH-approved, it delivers fast, hands-free healing with a waterproof, dust-proof protective layer, harnessing turmeric's anti-bacterial, anti-fungal, and anti-inflammatory power for safe use across all ages.",
@@ -67,7 +67,7 @@ export const products: Product[] = [
       "/Products/CommonProduct.jpg",
       "/Products/Product1.3.png",
     ],
-    benefit: "Anti Fungal",
+    benefit: "Anti Microbial",
     form: "Spray",
     description:
       "CureMist – The World's First Ayurvedic Wound Spray. 100% Ayurvedic and AYUSH-approved, it delivers fast, hands-free healing with a waterproof, dust-proof protective layer, harnessing turmeric's anti-bacterial, anti-fungal, and anti-inflammatory power for safe use across all ages.",
@@ -86,7 +86,7 @@ export const products: Product[] = [
       "/Products/CommonProduct.jpg",
       "/Products/Product3.3.png",
     ],
-    benefit: "Anti Fungal",
+    benefit: "Anti Microbial",
     form: "Spray",
     description:
       "CureMist – The World's First Ayurvedic Wound Spray. 100% Ayurvedic and AYUSH-approved, it delivers fast, hands-free healing with a waterproof, dust-proof protective layer, harnessing turmeric's anti-bacterial, anti-fungal, and anti-inflammatory power for safe use across all ages.",

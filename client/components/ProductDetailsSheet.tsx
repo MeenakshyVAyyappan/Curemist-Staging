@@ -82,7 +82,7 @@ export default function ProductDetailsSheet({
               <div className="flex justify-between">
                 <span className="text-sm text-gray-600">Product Benefit</span>
                 <span className="text-sm font-bold text-black">
-                  {benefit ?? "Anti Fungal"}
+                  {benefit ?? "Anti Microbial"}
                 </span>
               </div>
               <div className="flex justify-between">

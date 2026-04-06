@@ -20,6 +20,10 @@ export default function ProductDetailsPage() {
   const { addItem } = useCart();
   const { user } = useAuth();
 
+  /* Sticky button state and ref */
+  const [isCtaVisible, setIsCtaVisible] = React.useState(true);
+  const ctaRef = React.useRef<HTMLDivElement>(null);
+
   /* Find product */
   const product = products.find((p) => p.slug === slug);
 
@@ -49,6 +53,23 @@ export default function ProductDetailsPage() {
     }, 3000);
     return () => clearInterval(interval);
   }, [emblaApi]);
+
+  /* Intersection Observer for sticky button visibility */
+  useEffect(() => {
+    if (!ctaRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          setIsCtaVisible(entry.isIntersecting);
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(ctaRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   /* Redirect if not found */
   if (!product) {
@@ -265,7 +286,7 @@ export default function ProductDetailsPage() {
             </div>
 
             {/* CTAs */}
-            <div className="pd-cta-row">
+            <div className="pd-cta-row" ref={ctaRef}>
               <button className="pd-btn-buy" onClick={handleBuyNow}>
                 BUY NOW
               </button>
@@ -667,7 +688,7 @@ export default function ProductDetailsPage() {
                 "Turmeric (Curcumin)",
                 "Onion Extract",
                 "Clove (Eugenol)",
-                "Brahmi",
+                "Mandukaparni",
               ].map((ing) => (
                 <div key={ing} className="pd-ingredient-chip">
                   <span className="dot" />
@@ -714,6 +735,27 @@ export default function ProductDetailsPage() {
           </div>
         </section>
       </div>
+
+      {/* Sticky Pay Button for Mobile */}
+      {!isCtaVisible && (
+        <div className="fixed bottom-0 left-0 right-0 md:hidden bg-white border-t border-gray-200 p-4 shadow-2xl z-50 animate-in slide-in-from-bottom-2 duration-200">
+          <div className="flex gap-3 max-w-md mx-auto">
+            <button
+              onClick={handleBuyNow}
+              className="flex-1 bg-gradient-to-r from-brand-blue to-[#1a2b5f] text-brand-yellow font-bold py-3 rounded-lg hover:shadow-lg transition-shadow active:scale-95"
+            >
+              BUY NOW
+            </button>
+            <button
+              onClick={handleAddToCart}
+              className="flex-1 border-2 border-brand-blue text-brand-blue font-bold py-3 rounded-lg hover:bg-brand-blue/5 transition-colors active:scale-95"
+            >
+              ADD TO CART
+            </button>
+          </div>
+        </div>
+      )}
+
       <Footer />
     </>
   );

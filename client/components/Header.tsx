@@ -105,14 +105,15 @@ export default function Header() {
           </Link>
           {/* Right Actions */}
           <div className="flex items-center gap-1.5 md:gap-6 justify-end flex-shrink-0">
-            <div className="flex items-center justify-center bg-[#FDE073] border md:border-2 border-white text-[#173b75] font-bold text-[10px] sm:text-xs md:text-sm px-2 py-1 md:px-4 md:py-1.5 rounded-full shadow-sm whitespace-nowrap gap-1">
-              <Award className="w-3 h-3 md:w-[18px] md:h-[18px]" />
-              Patented
-            </div>
+            {/* Hide Patented badge and logo on mobile */}
+            <div className="flex items-center justify-center gap-1 bg-[#FDE073] border border-white md:border-2 text-[#173b75] font-bold text-[8px] sm:text-lg md:text-sm px-2 py-1 rounded-full shadow-sm whitespace-nowrap min-w-fit leading-none">
+          <Award className="w-2.5 h-2.5 md:w-[18px] md:h-[18px] shrink-0" />
+           <span className="leading-none">Patented</span>
+           </div>
             <img
               src="/Headerlogo/curemist 4.png"
               alt="CureMist Certified Logo"
-              className="block h-8 sm:h-10 md:h-20 w-auto object-contain"
+              className="hidden sm:block h-8 sm:h-10 md:h-20 w-auto object-contain"
             />
 
             {/* Desktop Navigation Links (Hidden on Mobile) */}
@@ -182,6 +183,38 @@ export default function Header() {
               </button>
             </div>
 
+            {/* Mobile Header Actions (Login/Profile & Cart) */}
+            <div className="md:hidden flex items-center gap-3">
+              {!user ? (
+                <Link
+                  to="/login"
+                  className="flex items-center gap-1 text-black p-1 hover:opacity-80"
+                >
+                  <User className="w-5 h-5" />
+                </Link>
+              ) : (
+                <button
+                  onClick={() => navigate("/profile")}
+                  className="flex items-center gap-1 text-black p-1 hover:opacity-80"
+                >
+                  <Avatar className="w-6 h-6">
+                    <AvatarFallback className="bg-brand-yellow text-black font-bold text-xs border border-black rounded-full w-full h-full flex items-center justify-center box-border">
+                      {user?.email?.slice(0, 1).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                </button>
+              )}
+              <button
+                onClick={() => setIsCartOpen(true)}
+                className="flex items-center gap-1.5 text-black p-1 hover:opacity-80"
+              >
+                <ShoppingCart className="w-5 h-5" />
+                <span className="text-xs font-semibold">
+                  <CartCount />
+                </span>
+              </button>
+            </div>
+
             {/* Mobile Hamburger Menu Icon */}
             <button
               className="md:hidden flex items-center text-black p-1"
@@ -203,27 +236,20 @@ export default function Header() {
             <X className="w-8 h-8" />
           </button>
 
-          <div className="flex flex-col gap-8 mt-8">
-            <Link
-              to="/blog"
-              className="text-xl font-semibold text-black"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              BLOG
-            </Link>
-
+          <div className="flex flex-col mt-8">
+            {/* Profile/Login Section */}
             {!user ? (
               <Link
                 to="/login"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center gap-2 text-xl font-medium text-black text-left"
+                className="flex items-center gap-2 text-xl font-medium text-black text-left py-4 px-0"
               >
                 <User className="w-6 h-6 flex-shrink-0" />
-                <span>Login / My Account</span>
+                <span>Login / My Profile</span>
               </Link>
             ) : (
-              <div className="flex flex-col gap-6">
-                <div className="flex items-center gap-3">
+              <div className="flex flex-col py-4 px-0">
+                <div className="flex items-center gap-3 pb-4">
                   <Avatar className="w-12 h-12">
                     <AvatarFallback className="bg-brand-yellow text-black font-bold text-lg border-2 border-black rounded-full w-full h-full flex items-center justify-center box-border">
                       {user?.email?.slice(0, 1).toUpperCase()}
@@ -231,13 +257,13 @@ export default function Header() {
                   </Avatar>
                   <span className="text-xl font-medium">My Profile</span>
                 </div>
-                <div className="pl-14 flex flex-col gap-6">
+                <div className="flex flex-col gap-0 border-l-2 border-brand-yellow pl-6">
                   <Link
                     to="/profile"
-                    className="flex items-center gap-3 text-black text-lg font-medium"
+                    className="flex items-center gap-3 text-black text-lg font-medium py-3 px-0"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    <Settings className="w-6 h-6" />
+                    <Settings className="w-5 h-5" />
                     <span>Account Settings</span>
                   </Link>
                   <button
@@ -245,27 +271,79 @@ export default function Header() {
                       handleLogout();
                       setIsMobileMenuOpen(false);
                     }}
-                    className="flex items-center gap-3 text-red-500 text-lg font-medium text-left"
+                    className="flex items-center gap-3 text-red-500 text-lg font-medium text-left py-3 px-0"
                   >
-                    <LogOut className="w-6 h-6" />
+                    <LogOut className="w-5 h-5" />
                     <span>Logout</span>
                   </button>
                 </div>
               </div>
             )}
 
+            {/* Divider */}
+            <div className="border-t-2 border-gray-200 my-2"></div>
+
+            {/* Cart */}
             <button
               onClick={() => {
                 setIsCartOpen(true);
                 setIsMobileMenuOpen(false);
               }}
-              className="flex items-center gap-2 text-xl font-medium text-black text-left"
+              className="flex items-center gap-2 text-xl font-medium text-black text-left py-4 px-0"
             >
               <ShoppingCart className="w-6 h-6" />
               <span>
                 <CartCount />
               </span>
             </button>
+
+            {/* Divider */}
+            <div className="border-t-2 border-gray-200 my-2"></div>
+
+            {/* Navigation Links */}
+            <Link
+              to="/blog"
+              className="text-xl font-medium text-black py-4 px-0 border-b border-gray-100"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Blog
+            </Link>
+
+            <Link
+              to="/contact"
+              className="text-xl font-medium text-black py-4 px-0 border-b border-gray-100"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Contact Us
+            </Link>
+
+            {/* Divider */}
+            <div className="border-t-2 border-gray-200 my-2"></div>
+
+            {/* Legal Links */}
+            <Link
+              to="/privacy-policy"
+              className="text-lg font-medium text-gray-700 py-3 px-0 border-b border-gray-100"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Privacy Policy
+            </Link>
+
+            <Link
+              to="/terms-conditions"
+              className="text-lg font-medium text-gray-700 py-3 px-0 border-b border-gray-100"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Terms & Conditions
+            </Link>
+
+            <Link
+              to="/shipping-information"
+              className="text-lg font-medium text-gray-700 py-3 px-0"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Shipping Information
+            </Link>
           </div>
         </div>
       )}

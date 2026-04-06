@@ -65,7 +65,7 @@ export default function FAQSection() {
           <li>Foot ulcers</li>
           <li>Varicose vein ulcers</li>
           <li>Bed sore ulcers/wounds</li>
-          <li>Cancer treatment Radiation wounds</li>
+          <li>Radiation treatment wounds</li>
           <li>Minor cuts & scratches</li>
           <li>Shaving cuts</li>
           <li>Shoe bites</li>

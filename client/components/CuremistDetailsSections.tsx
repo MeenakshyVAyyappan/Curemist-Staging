@@ -106,7 +106,7 @@ export default function CuremistDetailsSections() {
                     icon: "🦠",
                     title: "Antimicrobial Activity",
                     detail: "Direct Antimicrobial Effects",
-                    text: "Curemist has broad-spectrum antimicrobial properties by inhibiting the growth of various bacteria & fungi",
+                    text: "Curemist has broad-spectrum antimicrobial properties that kills the growth of various bacteria & fungi.",
                   },
                   {
                     icon: "🧬",
@@ -258,7 +258,7 @@ export default function CuremistDetailsSections() {
               "Turmeric (Curcumin)",
               "Onion Extract",
               "Clove (Eugenol)",
-              "Brahmi",
+              "Mandukaparni",
             ].map((ing) => (
               <div key={ing} className="pd-ingredient-chip">
                 <span className="dot" />

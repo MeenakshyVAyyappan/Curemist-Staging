@@ -65,7 +65,7 @@ export default function Profile() {
 
   // Order History State
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 4;
+  const pageSize = 10;
   const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
   const [showOrderDialog, setShowOrderDialog] = useState(false);
 
@@ -1012,14 +1012,14 @@ export default function Profile() {
             {/* Address Information Tab */}
             {active === 2 && (
               <div>
-                <div className="flex items-center justify-between mb-6 pb-6 border-b border-gray-200">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 pb-6 border-b border-gray-200">
                   <div>
-                    <h2 className="text-2xl font-bold text-curemist-purple mb-1">Address Information</h2>
+                    <h2 className="text-xl sm:text-2xl font-bold text-curemist-purple mb-1">Address Information</h2>
                     <p className="text-gray-600 text-sm">Manage your delivery addresses</p>
                   </div>
                   <button
                     onClick={() => setShowAddForm(true)}
-                    className="bg-gradient-to-r from-brand-yellow to-[#d4a835] text-brand-blue px-6 py-3 rounded-lg font-bold text-sm shadow-md hover:shadow-lg transition-all"
+                    className="w-full sm:w-auto bg-gradient-to-r from-brand-yellow to-[#d4a835] text-brand-blue px-6 py-3 rounded-lg font-bold text-sm shadow-md hover:shadow-lg transition-all whitespace-nowrap"
                   >
                     + ADD NEW ADDRESS
                   </button>
@@ -1035,10 +1035,10 @@ export default function Profile() {
                     {addresses.map((a, i) => (
                       <div
                         key={i}
-                        className={`border-2 p-6 rounded-lg flex items-start justify-between gap-4 transition-all ${defaultAddressId === a.id ? "border-brand-yellow bg-yellow-50 shadow-md" : "border-gray-300 hover:shadow-md"}`}
+                        className={`border-2 p-4 sm:p-6 rounded-lg flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 transition-all ${defaultAddressId === a.id ? "border-brand-yellow bg-yellow-50 shadow-md" : "border-gray-300 hover:shadow-md"}`}
                       >
-                        <div className="flex items-start gap-4 flex-1">
-                          <div className="pt-1">
+                        <div className="flex items-start gap-4 flex-1 min-w-0">
+                          <div className="pt-1 flex-shrink-0">
                             <input
                               type="radio"
                               name="default_addr"
@@ -1047,10 +1047,10 @@ export default function Profile() {
                               className="w-5 h-5 cursor-pointer text-brand-yellow focus:ring-brand-yellow"
                             />
                           </div>
-                          <div className="flex-1">
-                            <div className="flex justify-between items-start gap-4">
-                              <div>
-                                <p className="font-bold text-lg text-gray-800">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 sm:gap-4">
+                              <div className="min-w-0">
+                                <p className="font-bold text-base sm:text-lg text-gray-800 break-words">
                                   {a.street}
                                 </p>
                                 <p className="text-sm text-gray-700 mt-1">
@@ -1061,24 +1061,24 @@ export default function Profile() {
                                 </p>
                               </div>
                               {defaultAddressId === a.id && (
-                                <span className="text-xs bg-gradient-to-r from-brand-yellow to-[#d4a835] text-brand-blue px-3 py-1 rounded-full font-bold">
+                                <span className="text-xs bg-gradient-to-r from-brand-yellow to-[#d4a835] text-brand-blue px-3 py-1 rounded-full font-bold whitespace-nowrap flex-shrink-0">
                                   Default
                                 </span>
                               )}
                             </div>
                           </div>
                         </div>
-                        <div className="flex gap-3 flex-shrink-0">
+                        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 flex-shrink-0 w-full sm:w-auto">
                           <button
                             onClick={() => handleEditAddress(a)}
-                            className="px-4 py-2 text-sm bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 font-medium transition-colors"
+                            className="w-full sm:w-auto px-4 py-2 text-sm bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 font-medium transition-colors"
                           >
                             Edit
                           </button>
                           {defaultAddressId !== a.id && (
                             <button
                               onClick={() => setShowDeleteConfirm(a.id)}
-                              className="px-4 py-2 text-sm bg-red-100 text-red-700 rounded-lg hover:bg-red-200 font-medium transition-colors"
+                              className="w-full sm:w-auto px-4 py-2 text-sm bg-red-100 text-red-700 rounded-lg hover:bg-red-200 font-medium transition-colors"
                             >
                               Delete
                             </button>

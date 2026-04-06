@@ -205,7 +205,7 @@ export default function ProductImageDialog({
                         Product Benefit
                       </span>
                       <span className="text-xs sm:text-sm font-bold text-gray-900">
-                        {benefit ?? "Anti Fungal"}
+                        {benefit ?? "Anti Microbial"}
                       </span>
                     </div>
                     <div className="flex justify-between items-center py-1.5 sm:py-2">
