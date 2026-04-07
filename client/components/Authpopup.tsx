@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { supabase, getAuthRedirectUrl } from "@/lib/supabase";
 import { useToast } from "@/components/ui/use-toast";
 import { FiEye, FiEyeOff } from "react-icons/fi";
-import { FcGoogle } from "react-icons/fc";
 import ReCAPTCHA from "react-google-recaptcha";
 
 const AuthPopup = ({ onClose }: { onClose: () => void }) => {
@@ -459,7 +458,7 @@ const AuthPopup = ({ onClose }: { onClose: () => void }) => {
               onClick={handleGoogleLogin}
               className="w-full flex items-center justify-center gap-2 border border-gray-300 p-2 rounded hover:bg-gray-50 transition-colors font-semibold"
             >
-              <FcGoogle size={20} />
+              <img src="/icons/google.png" alt="Google" className="w-5 h-5" />
               Google
             </button>
           </>

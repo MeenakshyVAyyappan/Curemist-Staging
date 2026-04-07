@@ -23,7 +23,6 @@ import {
 } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
 import { FiEye, FiEyeOff } from "react-icons/fi";
-import { FaGoogle } from "react-icons/fa";
 import ReCAPTCHA from "react-google-recaptcha";
 
 export default function Login() {
@@ -184,7 +183,7 @@ export default function Login() {
         <CardContent>
           <div className="mb-4 flex justify-center">
             <Button variant="outline" className="w-full max-w-xs flex items-center gap-2" onClick={handleGoogleSignIn}>
-              <FaGoogle className="h-5 w-5" />
+              <img src="/icons/google.png" alt="Google" className="h-5 w-5" />
               Continue with Google
             </Button>
           </div>
