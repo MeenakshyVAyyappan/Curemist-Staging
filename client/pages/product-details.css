@@ -10,6 +10,7 @@
   min-height: 100vh;
   background: #fff;
   padding-top: 145px;
+  overflow-x: hidden;
   /* header height offset */
 }
 
@@ -66,10 +67,20 @@
 }
 
 .pd-main-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
   transition: transform 0.4s ease;
+}
+
+.pd-main-image,
+.pd-main-image img,
+.pd-thumbs,
+.pd-info,
+.pd-hero {
+  min-width: 0;
 }
 
 .pd-main-image:hover img {
@@ -80,6 +91,7 @@
   display: flex;
   gap: 10px;
   overflow-x: auto;
+  width: 100%;
   padding-bottom: 4px;
 }
 
@@ -1358,6 +1370,10 @@
 
 /* ── Responsive ── */
 @media (max-width: 1024px) {
+  .pd-page {
+    padding-top: 120px;
+  }
+
   .pd-hero {
     grid-template-columns: 1fr;
     gap: 32px;
@@ -1366,6 +1382,14 @@
 
   .pd-images {
     position: static;
+  }
+
+  .pd-main-image {
+    min-width: 0;
+  }
+
+  .pd-thumbs {
+    -webkit-overflow-scrolling: touch;
   }
 
   .pd-natural-features {
@@ -1598,10 +1622,43 @@
 @media (max-width: 640px) {
   .pd-page {
     padding-top: 115px;
+    overflow-x: hidden;
   }
 
   .pd-hero {
     padding: 0 16px 40px;
+    overflow-x: hidden;
+  }
+
+  .pd-images {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .pd-main-image {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .pd-main-image img {
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+  }
+
+  .pd-info {
+    min-width: 0;
+  }
+
+  .pd-thumbs {
+    width: 100%;
+    padding-bottom: 8px;
+  }
+
+  .pd-thumb {
+    width: 64px;
+    height: 64px;
   }
 
   .pd-container {

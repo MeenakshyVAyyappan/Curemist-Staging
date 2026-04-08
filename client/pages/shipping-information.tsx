@@ -4,7 +4,6 @@ import AnnouncementBar from "@/components/AnnouncementBar";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BlogHero from "@/components/BlogHero";
-import WhatsAppButton from "@/components/WhatsAppButton";
 import {
   Package,
   Clock,
@@ -47,7 +46,7 @@ function InfoCard({ icon, title, items, accent = false }: InfoCardProps) {
             className={`flex gap-2.5 text-sm leading-relaxed ${accent ? "text-white/85" : "text-gray-600"}`}
           >
             <span
-              className={`flex-shrink-0 mt-0.5 w-1.5 h-1.5 rounded-full mt-2 ${accent ? "bg-brand-yellow" : "bg-brand-blue"}`}
+              className={`flex-shrink-0 w-1.5 h-1.5 rounded-full mt-0.5 ${accent ? "bg-brand-yellow" : "bg-brand-blue"}`}
             />
             {item}
           </li>
@@ -173,7 +172,6 @@ const ShippingInformation = () => {
       </section>
 
       <Footer />
-      <WhatsAppButton />
     </div>
   );
 };

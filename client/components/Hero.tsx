@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, type TouchEvent } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const BANNERS = [
@@ -28,34 +28,65 @@ const BANNERS = [
 
 export default function Hero() {
   const [currentBanner, setCurrentBanner] = useState(0);
+  const [sliderIndex, setSliderIndex] = useState(1);
+  const [transitionEnabled, setTransitionEnabled] = useState(true);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const minSwipeDistance = 50;
+  const transitionTimer = useRef<number | null>(null);
+
+  const sliderItems = [BANNERS[BANNERS.length - 1], ...BANNERS, BANNERS[0]];
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentBanner((prev) => (prev + 1) % BANNERS.length);
+    const timer = window.setInterval(() => {
+      setCurrentBanner((prev) => {
+        setSliderIndex((prevIndex) => prevIndex + 1);
+        return (prev + 1) % BANNERS.length;
+      });
     }, 10000);
 
-    return () => clearInterval(timer);
+    return () => window.clearInterval(timer);
   }, []);
 
   const prevBanner = () => {
     setCurrentBanner((prev) => (prev - 1 + BANNERS.length) % BANNERS.length);
+    setSliderIndex((prev) => prev - 1);
   };
 
   const nextBanner = () => {
     setCurrentBanner((prev) => (prev + 1) % BANNERS.length);
+    setSliderIndex((prev) => prev + 1);
   };
 
-  const goToBanner = (index: number) => setCurrentBanner(index);
+  const goToBanner = (index: number) => {
+    setCurrentBanner(index);
+    setSliderIndex(index + 1);
+  };
 
-  const onTouchStartHandler = (e: React.TouchEvent) => {
+  const resetTransition = () => {
+    setTransitionEnabled(false);
+    window.clearTimeout(transitionTimer.current ?? undefined);
+    transitionTimer.current = window.setTimeout(() => {
+      setTransitionEnabled(true);
+    }, 40);
+  };
+
+  const onTransitionEnd = () => {
+    if (sliderIndex === 0) {
+      setSliderIndex(BANNERS.length);
+      resetTransition();
+    } else if (sliderIndex === sliderItems.length - 1) {
+      setSliderIndex(1);
+      resetTransition();
+    }
+  };
+
+  const onTouchStartHandler = (e: TouchEvent<HTMLDivElement>) => {
     setTouchEnd(null);
     setTouchStart(e.targetTouches[0].clientX);
   };
 
-  const onTouchMoveHandler = (e: React.TouchEvent) => {
+  const onTouchMoveHandler = (e: TouchEvent<HTMLDivElement>) => {
     setTouchEnd(e.targetTouches[0].clientX);
   };
 
@@ -83,24 +114,27 @@ export default function Hero() {
     >
       {/* Background */}
       <div className="absolute inset-0 overflow-hidden">
-        {BANNERS.map((b, index) => (
-          <div
-            key={index}
-            className={`absolute inset-0 transition-opacity duration-1000 ${
-              index === currentBanner ? "opacity-100 z-10" : "opacity-0 z-0"
-            }`}
-          >
-            <div
-              className="absolute inset-0 bg-cover bg-no-repeat md:bg-center"
-              style={{
-                backgroundImage: `url(${b.image})`,
-                backgroundSize: "cover",
-                // ✅ mobile crop control (keeps face clear)
-                backgroundPosition: b.mobileBgPos,
-              }}
-            />
-          </div>
-        ))}
+        <div
+          className={`flex h-full transition-transform duration-700 ease-out ${
+            transitionEnabled ? "" : "duration-0"
+          }`}
+          style={{ transform: `translateX(-${sliderIndex * 100}%)` }}
+          onTransitionEnd={onTransitionEnd}
+        >
+          {sliderItems.map((b, index) => (
+            <div key={index} className="relative min-w-full h-full">
+              <div
+                className="absolute inset-0 bg-cover bg-no-repeat md:bg-center"
+                style={{
+                  backgroundImage: `url(${b.image})`,
+                  backgroundSize: "cover",
+                  // ✅ mobile crop control (keeps face clear)
+                  backgroundPosition: b.mobileBgPos,
+                }}
+              />
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Content */}

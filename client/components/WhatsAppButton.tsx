@@ -1,9 +1,9 @@
-const WhatsAppButton = () => (
+const WhatsAppButton = ({ hideOnMobile }: { hideOnMobile?: boolean }) => (
   <a
     href="https://wa.me/918848815296"
     target="_blank"
     rel="noreferrer"
-    className="fixed right-5 bottom-6 md:right-8 md:bottom-8 z-50 flex flex-col items-center gap-2 hover:scale-110 transition-transform"
+    className={`fixed right-5 bottom-6 md:right-8 md:bottom-8 z-50 flex flex-col items-center gap-2 hover:scale-110 transition-transform ${hideOnMobile ? "hidden md:flex" : ""}`}
     aria-label="Contact us on WhatsApp"
   >
     {/* Icon inside a small green circle */}

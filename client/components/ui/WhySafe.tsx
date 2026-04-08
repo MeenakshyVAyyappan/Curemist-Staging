@@ -25,7 +25,7 @@ const cards = [
   {
     num: "04",
     icon: "🧪",
-    title: "No PFAS Guaranteed",
+    title: "No PFAS — Guaranteed",
     desc: "Completely free of polyfluoroalkyl substances (PFAS). Formulated with a safe, eco-friendly acrylic monomer instead of harmful fluorinated compounds.",
   },
 ];

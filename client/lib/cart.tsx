@@ -3,6 +3,8 @@ import { useAuth } from "@/lib/auth";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/components/ui/use-toast";
 
+const PENDING_CART_ITEM_KEY = "pendingCartItem";
+
 export interface CartItem {
   id: string; // product id
   title: string;
@@ -108,7 +110,67 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   useEffect(() => {
-    fetchCart();
+    const syncCart = async () => {
+      await fetchCart();
+
+      if (!user) return;
+      const pendingJson = window.localStorage.getItem(PENDING_CART_ITEM_KEY);
+      if (!pendingJson) return;
+
+      try {
+        const pending = JSON.parse(pendingJson) as {
+          item?: CartItem;
+          qty?: number;
+          redirectTo?: string;
+        };
+        if (!pending?.item) return;
+
+        const cartId = await getCartId();
+        if (!cartId) return;
+
+        const item = pending.item as CartItem;
+        const qty = typeof pending.qty === "number" ? pending.qty : 1;
+
+        const { data: existing, error: existingError } = await supabase
+          .from("cart_items")
+          .select("quantity")
+          .eq("cart_id", cartId)
+          .eq("product_id", item.id)
+          .single();
+
+        if (existingError && existingError.code !== "PGRST116") {
+          throw existingError;
+        }
+
+        if (existing?.quantity) {
+          const newQty = existing.quantity + qty;
+          await supabase
+            .from("cart_items")
+            .update({ quantity: newQty })
+            .eq("cart_id", cartId)
+            .eq("product_id", item.id);
+        } else {
+          await supabase.from("cart_items").insert({
+            cart_id: cartId,
+            product_id: item.id,
+            quantity: qty,
+            title: item.title,
+            price: item.price,
+            original_price: item.originalPrice,
+            image: item.image,
+            size: item.size,
+          });
+        }
+
+        window.localStorage.removeItem(PENDING_CART_ITEM_KEY);
+        await fetchCart();
+        setIsCartOpen(true);
+      } catch (error) {
+        console.error("Error processing pending cart item:", error);
+      }
+    };
+
+    syncCart();
   }, [user]);
 
   const getCartId = async () => {

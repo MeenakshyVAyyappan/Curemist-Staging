@@ -7,7 +7,6 @@ import Certifications from "@/components/ui/Certification";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import FAQSection from "@/components/FAQSection";
 import Footer from "@/components/Footer";
-import WhatsAppButton from "@/components/WhatsAppButton";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
@@ -42,54 +41,54 @@ export default function Index() {
         <Hero />
 
         {/* Mobile Properties Section (Anti-fungal, etc) */}
-        <div className="md:hidden py-5 px-1 bg-white">
-          <div className="container mx-auto">
-            <div className="grid grid-cols-4 gap-1 sm:gap-2 text-center items-start">
-              <div className="flex flex-col items-center">
-                <div className="bg-[#FFE9AE]/30 rounded-full p-2 mb-2">
+        <div className="md:hidden py-5 bg-white">
+          <div className="container mx-auto px-3">
+            <div className="grid grid-cols-4 gap-3">
+              <div className="flex flex-col items-center text-center">
+                <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center mb-2">
                   <img
                     src="/banners/Mask group.png"
                     alt="Anti-fungal"
-                    className="w-[45px] sm:w-[55px] h-auto object-contain"
+                    className="w-15 h-auto object-contain"
                   />
                 </div>
-                <span className="text-[9px] sm:text-[11px] whitespace-nowrap tracking-tight font-bold text-[#282b70] leading-[1.15]">
+                <span className="text-[8px] font-semibold text-[#282b70] leading-[1.2]">
                   Anti-fungal
                 </span>
               </div>
-              <div className="flex flex-col items-center">
-                <div className="bg-[#FFE9AE]/30 rounded-full p-2 mb-2">
+              <div className="flex flex-col items-center text-center">
+                <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center mb-2">
                   <img
                     src="/banners/Mask group (3).png"
                     alt="Anti-microbial"
-                    className="w-[45px] sm:w-[55px] h-auto object-contain"
+                    className="w-15 h-auto object-contain"
                   />
                 </div>
-                <span className="text-[9px] sm:text-[11px] whitespace-nowrap tracking-tight font-bold text-[#282b70] leading-[1.15]">
+                <span className="text-[8px] font-semibold text-[#282b70] leading-[1.2]">
                   Anti-microbial
                 </span>
               </div>
-              <div className="flex flex-col items-center">
-                <div className="bg-[#FFE9AE]/30 rounded-full p-2 mb-2">
+              <div className="flex flex-col items-center text-center">
+                <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center mb-2">
                   <img
                     src="/banners/Mask group (2).png"
                     alt="Anti-inflammatory"
-                    className="w-[45px] sm:w-[55px] h-auto object-contain"
+                    className="w-15 h-auto object-contain"
                   />
                 </div>
-                <span className="text-[9px] sm:text-[11px] whitespace-nowrap tracking-tight font-bold text-[#282b70] leading-[1.15]">
+                <span className="text-[8px] font-semibold text-[#282b70] leading-[1.2]">
                   Anti-inflammatory
                 </span>
               </div>
-              <div className="flex flex-col items-center">
-                <div className="bg-[#FFE9AE]/30 rounded-full p-2 mb-2">
+              <div className="flex flex-col items-center text-center">
+                <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center mb-2">
                   <img
                     src="/banners/Mask group (1).png"
                     alt="Anti-septic"
-                    className="w-[45px] sm:w-[55px] h-auto object-contain"
+                    className="w-15 h-auto object-contain"
                   />
                 </div>
-                <span className="text-[9px] sm:text-[11px] whitespace-nowrap tracking-tight font-bold text-[#282b70] leading-[1.15]">
+                <span className="text-[8px] font-semibold text-[#282b70] leading-[1.2]">
                   Anti-septic
                 </span>
               </div>
@@ -107,8 +106,6 @@ export default function Index() {
         <FAQSection />
         <Footer />
       </main>
-      <WhatsAppButton />
-
       <Dialog open={showWelcome} onOpenChange={setShowWelcome}>
         <DialogContent className="sm:max-w-md text-center">
           <DialogHeader>

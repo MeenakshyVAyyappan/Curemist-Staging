@@ -4,7 +4,6 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BlogHero from "@/components/BlogHero";
 import BlogCard from "@/components/BlogCard";
-import WhatsAppButton from "@/components/WhatsAppButton";
 import { blogPosts } from "@/lib/blogs";
 import { Button } from "@/components/ui/button";
 
@@ -86,7 +85,6 @@ const Blog = () => {
       </main>
 
       <Footer />
-      <WhatsAppButton />
     </div>
   );
 };

@@ -8,7 +8,9 @@ import {
   SheetClose,
 } from "./ui/sheet";
 import { FiMinus, FiPlus } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
 import { useCart } from "@/lib/cart";
+import { useAuth } from "@/lib/auth";
 import { toast } from "@/components/ui/use-toast";
 
 interface ProductDetailsSheetProps {
@@ -37,6 +39,8 @@ export default function ProductDetailsSheet({
   form,
   description,
 }: ProductDetailsSheetProps) {
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const { addItem } = useCart();
   const [qty, setQty] = useState<number>(1);
 
@@ -149,6 +153,22 @@ export default function ProductDetailsSheet({
             onClick={() => {
               const slug = `${title.replace(/\s+/g, "-").toLowerCase()}-${size.replace(/\s+/g, "").toLowerCase()}`;
               const numPrice = Number(price.replace(/[^\d]/g, "")) || 0;
+              if (!user) {
+                const item = {
+                  id: slug,
+                  title,
+                  image,
+                  price: numPrice,
+                  quantity: qty,
+                  size,
+                };
+                localStorage.setItem(
+                  "pendingCartItem",
+                  JSON.stringify({ item, qty, redirectTo: "/cart" }),
+                );
+                navigate("/login", { state: { from: { pathname: "/cart" } } });
+                return;
+              }
               addItem(
                 {
                   id: slug,

@@ -1,5 +1,5 @@
 import { ShoppingCart, User, LogOut, Settings, Menu, X, Award } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useCart } from "@/lib/cart";
 import React, { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/lib/auth";
@@ -21,7 +21,16 @@ export default function Header() {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const profileMenuRef = useRef<HTMLDivElement>(null);
 
+  const location = useLocation();
+  const isProductDetailsPage = location.pathname.startsWith("/product/");
   const { setIsCartOpen } = useCart();
+
+  const handleLogoClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    if (location.pathname === "/") {
+      event.preventDefault();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
 
   // Handle logout
   const handleLogout = () => {
@@ -48,7 +57,7 @@ export default function Header() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white">
       {/* Top Scrolling Banner */}
-      <div className="bg-brand-blue h-[50px] overflow-hidden relative">
+      <div className={`bg-brand-blue h-[50px] overflow-hidden relative ${isProductDetailsPage ? "hidden md:block" : ""}`}>
         <div className="absolute inset-0 flex items-center">
           <div className="marquee-track">
             <div className="marquee-content">
@@ -97,7 +106,7 @@ export default function Header() {
       <div className="bg-brand-yellow h-[60px] md:h-[95px]">
         <div className="container mx-auto px-2 md:px-6 lg:px-24 h-full flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center flex-shrink-0">
+          <Link to="/" onClick={handleLogoClick} className="flex items-center flex-shrink-0">
             <img
               src="/Logo/curemist.svg"
               className="h-[28px] md:h-[62px] w-auto"

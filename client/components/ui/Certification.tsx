@@ -277,7 +277,7 @@ const Certifications: React.FC = () => {
           <span>Verified &amp; Certified</span>
         </div>
 
-        <h2 className="ct-title">Our Certifications Lab Reports</h2>
+        <h2 className="ct-title">Our Certifications & Lab Reports</h2>
         <p className="ct-sub">
           Transparency is the foundation of trust. Every certificate and lab
           report is publicly available — download them to see exactly what makes

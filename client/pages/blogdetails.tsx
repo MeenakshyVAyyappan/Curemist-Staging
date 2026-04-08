@@ -4,7 +4,6 @@ import { Share2 } from "lucide-react";
 import AnnouncementBar from "@/components/AnnouncementBar";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import WhatsAppButton from "@/components/WhatsAppButton";
 import { blogPosts } from "@/lib/blogs";
 import { Button } from "@/components/ui/button";
 import {
@@ -185,7 +184,6 @@ const BlogDetail = () => {
       </main>
 
       <Footer />
-      <WhatsAppButton />
     </div>
   );
 };

@@ -3,7 +3,6 @@ import AnnouncementBar from "@/components/AnnouncementBar";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BlogHero from "@/components/BlogHero";
-import WhatsAppButton from "@/components/WhatsAppButton";
 import { useToast } from "@/components/ui/use-toast";
 import {
   MapPin,
@@ -421,7 +420,6 @@ const ContactUs = () => {
       </section>
 
       <Footer />
-      <WhatsAppButton />
     </div>
   );
 };

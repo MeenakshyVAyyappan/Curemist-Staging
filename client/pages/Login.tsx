@@ -23,16 +23,18 @@ import {
 } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
 import { FiEye, FiEyeOff } from "react-icons/fi";
-import ReCAPTCHA from "react-google-recaptcha";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [gender, setGender] = useState("");
+  const [dob, setDob] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
-  const recaptchaRef = React.useRef<ReCAPTCHA>(null);
-  const resetRecaptchaRef = React.useRef<ReCAPTCHA>(null);
+  // Temporarily disabled for local testing
+  // const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  // const recaptchaRef = React.useRef<any>(null);
+  // const resetRecaptchaRef = React.useRef<any>(null);
 
   // Reset Password State
   const [resetEmail, setResetEmail] = useState("");
@@ -46,6 +48,7 @@ export default function Login() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    /*
     if (!captchaToken) {
       toast({
         title: "Captcha Required",
@@ -54,13 +57,16 @@ export default function Login() {
       });
       return;
     }
+    */
 
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
+        gender,
+        dob,
       });
 
       if (error) {
@@ -69,15 +75,35 @@ export default function Login() {
           description: error.message,
           variant: "destructive",
         });
-      } else {
-        toast({
-          title: "Success",
-          description: "Logged in successfully!",
-        });
-        // Redirect to previous page if available, else home
-        const from = (location.state as any)?.from?.pathname || "/";
-        navigate(from, { replace: true });
+        return;
       }
+
+      const session =
+        data?.session ||
+        (await supabase.auth.getSession()).data?.session;
+
+      if (!session) {
+        toast({
+          title: "Login Failed",
+          description: "Unable to confirm your login. Please try again.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: "Success",
+        description: "Logged in successfully!",
+      });
+
+      const from = (location.state as any)?.from?.pathname;
+      const pendingJson = window.localStorage.getItem("pendingCartItem");
+      const pendingRedirect = pendingJson
+        ? ((JSON.parse(pendingJson) as { redirectTo?: string }).redirectTo || null)
+        : null;
+      const redirectTo = from && from !== "/login" ? from : pendingRedirect || "/";
+
+      navigate(redirectTo, { replace: true, state: null });
     } catch (err: any) {
       console.error("Login error:", err);
       toast({
@@ -124,6 +150,7 @@ export default function Login() {
       return;
     }
 
+    /* Temporarily disabled for local testing
     if (!captchaToken) {
       toast({
         title: "Captcha Required",
@@ -132,6 +159,7 @@ export default function Login() {
       });
       return;
     }
+    */
 
     console.log("Attempting to reset password for:", resetEmail);
     setResetLoading(true);
@@ -168,9 +196,9 @@ export default function Login() {
           <div className="flex justify-between items-center mb-2">
             <button
               onClick={() => navigate("/")}
-              className="text-sm text-gray-600 hover:text-brand-blue font-medium flex items-center gap-1"
+              className="text-sm text-[#252c74] hover:text-brand-blue font-bold flex items-center gap-1"
             >
-              ← Back to Website
+                            ← Back to Website
             </button>
           </div>
           <CardTitle className="text-2xl font-bold text-center">
@@ -182,7 +210,7 @@ export default function Login() {
         </CardHeader>
         <CardContent>
           <div className="mb-4 flex justify-center">
-            <Button variant="outline" className="w-full max-w-xs flex items-center gap-2" onClick={handleGoogleSignIn}>
+            <Button variant="outline" className="w-full max-w-xs bg-[#efb506] flex items-center gap-2" onClick={handleGoogleSignIn}>
               <img src="/icons/google.png" alt="Google" className="h-5 w-5" />
               Continue with Google
             </Button>
@@ -235,11 +263,13 @@ export default function Login() {
                         />
                       </div>
                       <div className="flex justify-center py-2">
+                        {/*
                         <ReCAPTCHA
                           ref={resetRecaptchaRef}
                           sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
                           onChange={(token) => setCaptchaToken(token)}
                         />
+                        */}
                       </div>
                       <DialogFooter>
                         <Button type="submit" disabled={resetLoading}>
@@ -270,11 +300,13 @@ export default function Login() {
               </div>
             </div>
             <div className="flex justify-center py-2">
+              {/*
               <ReCAPTCHA
                 ref={recaptchaRef}
                 sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
                 onChange={(token) => setCaptchaToken(token)}
               />
+              */}
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Logging in..." : "Login"}

@@ -5,7 +5,6 @@ import { supabase } from "@/lib/supabase";
 import { FiMinus, FiPlus, FiTrash2 } from "react-icons/fi";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import WhatsAppButton from "@/components/WhatsAppButton";
 
 export default function CartPage() {
   const {
@@ -254,12 +253,16 @@ export default function CartPage() {
                     const shortTitle = `CureMist Ayurvedic....${item.size === "Combo" ? "Combo pack (12.5g + 25g)" : item.size}`;
 
                     // Determine discount percentage based on product size
-                    let discountPercentage = 5; // default
-                    if (item.size === "12.5 gm" || item.size === "25 gm") {
-                      discountPercentage = 4;
-                    } else if (item.size === "50 gm" || item.size === "Combo") {
-                      discountPercentage = 5;
-                    }
+                     let discountPercentage; // default
+                  if (item.size === "50 gm" ) {
+                    discountPercentage = 20;
+                  } else if (item.size === "25 gm") {
+                    discountPercentage = 10;
+                  } else if (item.size === "12.5 gm") {
+                    discountPercentage = 40;
+                  } else if (item.size === "Combo") {
+                    discountPercentage = 40;
+                  }
 
                     const discountAmountItem = originalPrice - salePrice;
 
@@ -441,7 +444,6 @@ export default function CartPage() {
       </main>
 
       <Footer />
-      <WhatsAppButton />
     </div>
   );
 }

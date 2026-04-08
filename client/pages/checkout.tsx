@@ -16,7 +16,6 @@ declare global {
 
 interface CustomerInfo {
   firstName: string;
-  lastName: string;
   email: string;
   phone: string;
   sex: string;
@@ -33,7 +32,7 @@ interface Address {
 }
 
 export default function Checkout() {
-  const { items, subtotal, clearCart, appliedCoupon } = useCart();
+  const { items, subtotal, clearCart, appliedCoupon, setAppliedCoupon } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -41,11 +40,17 @@ export default function Checkout() {
   const [currentOrderId, setCurrentOrderId] = useState<string | null>(null);
   const [currentOrderStatus, setCurrentOrderStatus] = useState<string>("");
   const [showThankYouModal, setShowThankYouModal] = useState(false);
+  const [coupon, setCoupon] = useState("");
+  const [availableCoupons, setAvailableCoupons] = useState<any[]>([]);
+  const [showCoupons, setShowCoupons] = useState(false);
+  const [couponApplied, setCouponApplied] = useState(false);
+  const [showDeliveryInfo, setShowDeliveryInfo] = useState(false);
+  const [showShippingAddress, setShowShippingAddress] = useState(false);
+  const [showAllAddresses, setShowAllAddresses] = useState(false);
 
   // Customer Information
   const [customerInfo, setCustomerInfo] = useState<CustomerInfo>({
     firstName: "",
-    lastName: "",
     email: "",
     phone: "",
     sex: "",
@@ -57,7 +62,6 @@ export default function Checkout() {
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(
     null,
   );
-  const [showAllAddresses, setShowAllAddresses] = useState(false);
   const [showStickyButton, setShowStickyButton] = useState(false);
 
   // Shipping Address
@@ -80,6 +84,44 @@ export default function Checkout() {
   });
   const [showErrors, setShowErrors] = useState(false);
 
+  const fetchAvailableCoupons = async () => {
+    const { data, error } = await supabase
+      .from("coupons")
+      .select("*")
+      .eq("is_active", true)
+      .order("created_at", { ascending: false });
+
+    if (data && !error) {
+      setAvailableCoupons(data);
+    }
+  };
+
+  const applyCoupon = async () => {
+    if (!coupon.trim()) return;
+
+    const { data, error } = await supabase
+      .from("coupons")
+      .select("*")
+      .eq("code", coupon.trim().toUpperCase())
+      .eq("is_active", true)
+      .single();
+
+    if (data) {
+      let discount = 0;
+      if (data.discount_percentage) {
+        discount = Math.round(subtotal * data.discount_percentage);
+      } else if (data.discount_amount) {
+        discount = data.discount_amount;
+      }
+      setAppliedCoupon({ code: coupon.trim().toUpperCase(), discount });
+      setCouponApplied(true);
+      setTimeout(() => setCouponApplied(false), 3000);
+    } else {
+      setAppliedCoupon(null);
+      alert("Invalid coupon code");
+    }
+  };
+
   useEffect(() => {
     if (user) {
       setCustomerInfo((prev) => ({ ...prev, email: user.email || "" }));
@@ -94,7 +136,6 @@ export default function Checkout() {
         if (data) {
           setCustomerInfo({
             firstName: data.first_name || "",
-            lastName: data.last_name || "",
             email: data.email || user.email || "",
             phone: data.phone || "",
             sex: data.sex || "",
@@ -126,6 +167,10 @@ export default function Checkout() {
 
       fetchProfile();
       fetchAddresses();
+      fetchAvailableCoupons();
+      if (appliedCoupon?.code) {
+        setCoupon(appliedCoupon.code);
+      }
 
       // Real-time subscription to profile changes
       const subscription = supabase
@@ -337,7 +382,6 @@ export default function Checkout() {
       const { error: profileError } = await supabase.from("profiles").upsert({
         id: user.id,
         first_name: customerInfo.firstName,
-        last_name: customerInfo.lastName,
         phone: customerInfo.phone,
         sex: customerInfo.sex,
         dob: customerInfo.dob || null,
@@ -454,7 +498,7 @@ export default function Checkout() {
           }
         },
         prefill: {
-          name: `${customerInfo.firstName} ${customerInfo.lastName}`,
+          name: `${customerInfo.firstName}}`,
           email: customerInfo.email,
           contact: customerInfo.phone,
         },
@@ -739,16 +783,13 @@ export default function Checkout() {
                       ))}
 
                       {/* Add more link */}
-                      {savedAddresses.length > 1 && !showAllAddresses && (
-                        <button
-                          type="button"
-                          onClick={() => setShowAllAddresses(true)}
-                          className="text-left text-sm text-brand-yellow hover:text-brand-yellow/80 font-medium transition-colors"
-                        >
-                          + Add more...
-                        </button>
-                      )}
-
+                          <button
+                        type="button"
+                        onClick={() => setShowAllAddresses(!showAllAddresses)}
+                        className="text-sm text-red-700 hover:text-brand-blue/80 font-bold"
+                      >
+                        {showAllAddresses ? "- See less" : "+ See more..."}
+                      </button>
                       {/* Add new address option */}
                       <div
                         className={`flex items-center gap-3 border p-3 rounded cursor-pointer hover:bg-gray-50 transition-colors ${selectedAddressId === null ? "border-brand-yellow bg-yellow-50" : ""}`}
@@ -778,16 +819,27 @@ export default function Checkout() {
 
                 {/* Customer Information and Shipping Address */}
                 <div className="grid md:grid-cols-2 gap-4">
-                  {/* Customer Information */}
+                  {/* Delivery Information */}
                   <section className="bg-white rounded-lg border p-4">
-                    <h2 className="text-lg font-bold text-curemist-purple mb-3">
-                      Customer Information
-                    </h2>
-                    <div className="space-y-3">
-                      <div className="grid grid-cols-2 gap-3">
+                    <div className="flex items-center justify-between mb-3">
+                      <h2 className="text-lg font-bold text-curemist-purple">
+                        Delivery Information
+                      </h2>
+                      <button
+                        type="button"
+                        onClick={() => setShowDeliveryInfo(!showDeliveryInfo)}
+                        className="text-sm text-red-700 hover:text-brand-blue/80 font-bold"
+                      >
+                        {showDeliveryInfo ? "- See less" : "+ See more..."}
+                      </button>
+                    </div>
+
+                    {/* Always visible fields - Customer Name */}
+                    <div className="space-y-3 border-t pt-3 mt-3">
+                      <div>
                         <div>
                           <label className="block text-sm font-medium mb-1">
-                            First Name *
+                            Full Name *
                           </label>
                           <input
                             type="text"
@@ -808,11 +860,10 @@ export default function Checkout() {
                             </p>
                           )}
                         </div>
-                        <div>
-                          <label className="block text-sm font-medium mb-1">
+                          {/* <label className="block text-sm font-medium mb-1">
                             Last Name *
-                          </label>
-                          <input
+                          </label> */}
+                          {/* <input
                             type="text"
                             value={customerInfo.lastName}
                             onChange={(e) =>
@@ -824,129 +875,144 @@ export default function Checkout() {
                             className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-brand-yellow text-sm"
                             placeholder="Last Name"
                             required
-                          />
-                          {showErrors && !customerInfo.lastName && (
+                          /> */}
+                          {/* {showErrors && !customerInfo.lastName && (
                             <p className="text-red-500 text-xs mt-1 font-medium">
                               Required
                             </p>
-                          )}
+                          )} */}
+                      </div>
+
+                      {/* Collapsible additional fields */}
+                      {showDeliveryInfo && (
+                        <div className="space-y-3 border-t pt-3 mt-3">
+                          <div>
+                            <label className="block text-sm font-medium mb-1">
+                              Email Address *
+                            </label>
+                            <input
+                              type="email"
+                              value={customerInfo.email}
+                              onChange={(e) =>
+                                setCustomerInfo({
+                                  ...customerInfo,
+                                  email: e.target.value,
+                                })
+                              }
+                              className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-brand-yellow text-sm"
+                              placeholder="Email Address"
+                              required
+                            />
+                            {showErrors && !customerInfo.email && (
+                              <p className="text-red-500 text-xs mt-1 font-medium">
+                                Required
+                              </p>
+                            )}
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium mb-1">
+                              Phone Number *
+                            </label>
+                            <input
+                              type="tel"
+                              minLength={10}
+                              maxLength={10}
+                              pattern="\d{10}"
+                              value={customerInfo.phone}
+                              onChange={(e) => {
+                                const val = e.target.value.replace(/\D/g, ""); // restrict to digits
+                                setCustomerInfo({ ...customerInfo, phone: val });
+                              }}
+                              className={`w-full border p-2 rounded focus:outline-none focus:ring-2 text-sm ${
+                                showErrors &&
+                                (!customerInfo.phone ||
+                                  customerInfo.phone.length < 10)
+                                  ? "border-red-500 focus:ring-red-500"
+                                  : "focus:ring-brand-yellow"
+                              }`}
+                              placeholder="Phone Number"
+                              required
+                            />
+                            {showErrors &&
+                              (!customerInfo.phone ||
+                                customerInfo.phone.length < 10) && (
+                                <p className="text-red-500 text-xs mt-1 font-medium">
+                                  Valid 10-digit number required
+                                </p>
+                              )}
+                          </div>
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <label className="block text-sm font-medium mb-1">
+                                Gender *
+                              </label>
+                              <select
+                                value={customerInfo.sex}
+                                onChange={(e) =>
+                                  setCustomerInfo({
+                                    ...customerInfo,
+                                    sex: e.target.value,
+                                  })
+                                }
+                                className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-brand-yellow bg-white text-sm"
+                                required
+                              >
+                                <option value="">Select</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                              </select>
+                              {showErrors && !customerInfo.sex && (
+                                <p className="text-red-500 text-xs mt-1 font-medium">
+                                  Required
+                                </p>
+                              )}
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium mb-1">
+                                Date of Birth *
+                              </label>
+                              <input
+                                type="date"
+                                value={customerInfo.dob}
+                                onChange={(e) =>
+                                  setCustomerInfo({
+                                    ...customerInfo,
+                                    dob: e.target.value,
+                                  })
+                                }
+                                max="2009-12-31"
+                                className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-brand-yellow text-sm"
+                                required
+                              />
+                              {showErrors && !customerInfo.dob && (
+                                <p className="text-red-500 text-xs mt-1 font-medium">
+                                  Required
+                                </p>
+                              )}
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium mb-1">
-                          Email Address *
-                        </label>
-                        <input
-                          type="email"
-                          value={customerInfo.email}
-                          onChange={(e) =>
-                            setCustomerInfo({
-                              ...customerInfo,
-                              email: e.target.value,
-                            })
-                          }
-                          className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-brand-yellow text-sm"
-                          placeholder="Email Address"
-                          required
-                        />
-                        {showErrors && !customerInfo.email && (
-                          <p className="text-red-500 text-xs mt-1 font-medium">
-                            Required
-                          </p>
-                        )}
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium mb-1">
-                          Phone Number *
-                        </label>
-                        <input
-                          type="tel"
-                          minLength={10}
-                          maxLength={10}
-                          pattern="\d{10}"
-                          value={customerInfo.phone}
-                          onChange={(e) => {
-                            const val = e.target.value.replace(/\D/g, ""); // restrict to digits
-                            setCustomerInfo({ ...customerInfo, phone: val });
-                          }}
-                          className={`w-full border p-2 rounded focus:outline-none focus:ring-2 text-sm ${
-                            showErrors &&
-                            (!customerInfo.phone ||
-                              customerInfo.phone.length < 10)
-                              ? "border-red-500 focus:ring-red-500"
-                              : "focus:ring-brand-yellow"
-                          }`}
-                          placeholder="Phone Number"
-                          required
-                        />
-                        {showErrors &&
-                          (!customerInfo.phone ||
-                            customerInfo.phone.length < 10) && (
-                            <p className="text-red-500 text-xs mt-1 font-medium">
-                              Valid 10-digit number required
-                            </p>
-                          )}
-                      </div>
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <label className="block text-sm font-medium mb-1">
-                            Gender *
-                          </label>
-                          <select
-                            value={customerInfo.sex}
-                            onChange={(e) =>
-                              setCustomerInfo({
-                                ...customerInfo,
-                                sex: e.target.value,
-                              })
-                            }
-                            className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-brand-yellow bg-white text-sm"
-                            required
-                          >
-                            <option value="">Select</option>
-                            <option value="Male">Male</option>
-                            <option value="Female">Female</option>
-                            <option value="Other">Other</option>
-                          </select>
-                          {showErrors && !customerInfo.sex && (
-                            <p className="text-red-500 text-xs mt-1 font-medium">
-                              Required
-                            </p>
-                          )}
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium mb-1">
-                            Date of Birth *
-                          </label>
-                          <input
-                            type="date"
-                            value={customerInfo.dob}
-                            onChange={(e) =>
-                              setCustomerInfo({
-                                ...customerInfo,
-                                dob: e.target.value,
-                              })
-                            }
-                            max="2009-12-31"
-                            className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-brand-yellow text-sm"
-                            required
-                          />
-                          {showErrors && !customerInfo.dob && (
-                            <p className="text-red-500 text-xs mt-1 font-medium">
-                              Required
-                            </p>
-                          )}
-                        </div>
-                      </div>
+                      )}
                     </div>
                   </section>
 
                   {/* Shipping Address */}
                   <section className="bg-white rounded-lg border p-4">
-                    <h2 className="text-lg font-bold text-curemist-purple mb-3">
-                      Shipping Address
-                    </h2>
+                    <div className="flex items-center justify-between mb-3">
+                      <h2 className="text-lg font-bold text-curemist-purple">
+                        Shipping Address
+                      </h2>
+                      <button
+                        type="button"
+                        onClick={() => setShowShippingAddress(!showShippingAddress)}
+                        className="text-sm text-red-700 hover:text-brand-blue/80 font-bold"
+                      >
+                        {showShippingAddress ? "- See less" : "+ See more..."}
+                      </button>
+                    </div>
                     <div className="space-y-3">
+                      {/* Always visible field - Street Address */}
                       <div>
                         <label className="block text-sm font-medium mb-1">
                           Street Address *
@@ -970,102 +1036,108 @@ export default function Checkout() {
                           </p>
                         )}
                       </div>
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <label className="block text-sm font-medium mb-1">
-                            City/Town *
-                          </label>
-                          <input
-                            type="text"
-                            value={shippingAddress.city}
-                            onChange={(e) =>
-                              setShippingAddress({
-                                ...shippingAddress,
-                                city: e.target.value,
-                              })
-                            }
-                            className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-brand-yellow text-sm"
-                            placeholder="City/Town"
-                            required
-                          />
-                          {showErrors && !shippingAddress.city && (
-                            <p className="text-red-500 text-xs mt-1 font-medium">
-                              Required
-                            </p>
-                          )}
+
+                      {/* Collapsible additional fields */}
+                      {showShippingAddress && (
+                        <div className="space-y-3 border-t pt-3 mt-3">
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <label className="block text-sm font-medium mb-1">
+                                City/Town *
+                              </label>
+                              <input
+                                type="text"
+                                value={shippingAddress.city}
+                                onChange={(e) =>
+                                  setShippingAddress({
+                                    ...shippingAddress,
+                                    city: e.target.value,
+                                  })
+                                }
+                                className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-brand-yellow text-sm"
+                                placeholder="City/Town"
+                                required
+                              />
+                              {showErrors && !shippingAddress.city && (
+                                <p className="text-red-500 text-xs mt-1 font-medium">
+                                  Required
+                                </p>
+                              )}
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium mb-1">
+                                State/Province *
+                              </label>
+                              <input
+                                type="text"
+                                value={shippingAddress.state}
+                                onChange={(e) =>
+                                  setShippingAddress({
+                                    ...shippingAddress,
+                                    state: e.target.value,
+                                  })
+                                }
+                                className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-brand-yellow text-sm"
+                                placeholder="State/Province"
+                                required
+                              />
+                              {showErrors && !shippingAddress.state && (
+                                <p className="text-red-500 text-xs mt-1 font-medium">
+                                  Required
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <label className="block text-sm font-medium mb-1">
+                                ZIP/Postal Code *
+                              </label>
+                              <input
+                                type="text"
+                                value={shippingAddress.zip}
+                                onChange={(e) =>
+                                  setShippingAddress({
+                                    ...shippingAddress,
+                                    zip: e.target.value,
+                                  })
+                                }
+                                className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-brand-yellow text-sm"
+                                placeholder="ZIP/Postal Code"
+                                required
+                              />
+                              {showErrors && !shippingAddress.zip && (
+                                <p className="text-red-500 text-xs mt-1 font-medium">
+                                  Required
+                                </p>
+                              )}
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium mb-1">
+                                Country *
+                              </label>
+                              <input
+                                type="text"
+                                value={shippingAddress.country}
+                                onChange={(e) =>
+                                  setShippingAddress({
+                                    ...shippingAddress,
+                                    country: e.target.value,
+                                  })
+                                }
+                                className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-brand-yellow text-sm"
+                                placeholder="Country"
+                                required
+                              />
+                              {showErrors && !shippingAddress.country && (
+                                <p className="text-red-500 text-xs mt-1 font-medium">
+                                  Required
+                                </p>
+                              )}
+                            </div>
+                          </div>
                         </div>
-                        <div>
-                          <label className="block text-sm font-medium mb-1">
-                            State/Province *
-                          </label>
-                          <input
-                            type="text"
-                            value={shippingAddress.state}
-                            onChange={(e) =>
-                              setShippingAddress({
-                                ...shippingAddress,
-                                state: e.target.value,
-                              })
-                            }
-                            className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-brand-yellow text-sm"
-                            placeholder="State/Province"
-                            required
-                          />
-                          {showErrors && !shippingAddress.state && (
-                            <p className="text-red-500 text-xs mt-1 font-medium">
-                              Required
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <label className="block text-sm font-medium mb-1">
-                            ZIP/Postal Code *
-                          </label>
-                          <input
-                            type="text"
-                            value={shippingAddress.zip}
-                            onChange={(e) =>
-                              setShippingAddress({
-                                ...shippingAddress,
-                                zip: e.target.value,
-                              })
-                            }
-                            className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-brand-yellow text-sm"
-                            placeholder="ZIP/Postal Code"
-                            required
-                          />
-                          {showErrors && !shippingAddress.zip && (
-                            <p className="text-red-500 text-xs mt-1 font-medium">
-                              Required
-                            </p>
-                          )}
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium mb-1">
-                            Country *
-                          </label>
-                          <input
-                            type="text"
-                            value={shippingAddress.country}
-                            onChange={(e) =>
-                              setShippingAddress({
-                                ...shippingAddress,
-                                country: e.target.value,
-                              })
-                            }
-                            className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-brand-yellow text-sm"
-                            placeholder="Country"
-                            required
-                          />
-                          {showErrors && !shippingAddress.country && (
-                            <p className="text-red-500 text-xs mt-1 font-medium">
-                              Required
-                            </p>
-                          )}
-                        </div>
-                      </div>
+                      )}
                     </div>
                   </section>
                 </div>
@@ -1355,12 +1427,17 @@ export default function Checkout() {
                   const shortTitle = `CureMist Ayurvedic....${item.size === "Combo" ? "Combo pack (12.5g + 25g)" : item.size}`;
 
                   // Determine discount percentage based on product size
-                  let discountPercentage = 5; // default
-                  if (item.size === "12.5 gm" || item.size === "25 gm") {
-                    discountPercentage = 4;
-                  } else if (item.size === "50 gm" || item.size === "Combo") {
-                    discountPercentage = 5;
+                  let discountPercentage; // default
+                  if (item.size === "50 gm" ) {
+                    discountPercentage = 20;
+                  } else if (item.size === "25 gm") {
+                    discountPercentage = 10;
+                  } else if (item.size === "12.5 gm") {
+                    discountPercentage = 40;
+                  } else if (item.size === "Combo") {
+                    discountPercentage = 40;
                   }
+
 
                   const discountAmountItem = originalPrice - salePrice;
 
@@ -1417,6 +1494,79 @@ export default function Checkout() {
                   <span>Subtotal</span>
                   <span className="text-brand-blue">₹{Math.round(subtotal)}</span>
                 </div>
+
+                <div className="rounded-lg border border-dashed border-slate-300 p-4 bg-slate-50 mb-4">
+                  <div className="flex items-center justify-between gap-3 mb-3">
+                    <div>
+                      <p className="text-sm font-semibold">Coupon Code</p>
+                      <p className="text-xs text-gray-500">
+                        Apply a coupon to reduce your total.
+                      </p>
+                    </div>
+                    {appliedCoupon && (
+                      <button
+                        onClick={() => {
+                          setAppliedCoupon(null);
+                          setCoupon("");
+                        }}
+                        className="text-sm text-red-600 hover:text-red-700"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                  <div className="flex gap-2">
+                    <input
+                      value={coupon}
+                      onChange={(e) => setCoupon(e.target.value)}
+                      placeholder="Enter coupon code"
+                      className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-brand-blue focus:outline-none"
+                    />
+                    <button
+                      onClick={applyCoupon}
+                      className="rounded-lg bg-brand-blue px-6 py-2 text-sm font-semibold text-white hover:bg-brand-blue/90 whitespace-nowrap"
+                    >
+                      Apply
+                    </button>
+                  </div>
+                  {couponApplied && (
+                    <p className="mt-2 text-sm text-green-600">
+                      ✓ Coupon applied successfully!
+                    </p>
+                  )}
+                  {availableCoupons.length > 0 && (
+                    <div className="mt-3 text-sm">
+                      <button
+                        onClick={() => setShowCoupons((prev) => !prev)}
+                        className="text-brand-blue font-medium hover:underline"
+                      >
+                        {showCoupons ? "Hide" : "View Available Coupons"}
+                      </button>
+                      {showCoupons && (
+                        <div className="mt-2 space-y-2">
+                          {availableCoupons.map((c) => (
+                            <button
+                              key={c.code}
+                              onClick={() => {
+                                setCoupon(c.code);
+                                setShowCoupons(false);
+                              }}
+                              className="w-full text-left rounded-md border border-slate-200 bg-white px-3 py-2 text-sm hover:bg-slate-100"
+                            >
+                              <div className="font-medium">{c.code}</div>
+                              <div className="text-xs text-gray-500">
+                                {c.discount_percentage
+                                  ? `${Math.round(c.discount_percentage * 100)}% off`
+                                  : `₹${c.discount_amount} off`}
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
                 {/* Coupon Discount Display */}
                 {appliedCoupon && (
                   <div className="flex justify-between text-green-600">

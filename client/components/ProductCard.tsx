@@ -34,7 +34,22 @@ function AddToCartButton({
 
   const handleAdd = () => {
     if (!user) {
-      navigate("/login");
+      const item = {
+        id: slug,
+        title,
+        image,
+        price: Number(price.replace(/[^\d]/g, "")) || 0,
+        originalPrice: originalPrice
+          ? Number(originalPrice.replace(/[^\d]/g, "")) || 0
+          : Number(price.replace(/[^\d]/g, "")) || 0,
+        quantity: 1,
+        size,
+      };
+      localStorage.setItem(
+        "pendingCartItem",
+        JSON.stringify({ item, qty: 1, redirectTo: "/cart" }),
+      );
+      navigate("/login", { state: { from: { pathname: "/cart" } } });
       return;
     }
     const numericPrice = Number(price.replace(/[^\d]/g, "")) || 0;
@@ -100,7 +115,7 @@ export default function ProductCard({
           </span>
         </div>
         {/* ✅ FREE SHIPPING banner — top right (like "BESTSELLER" in reference) */}
-        <div className="absolute top-0 right-0 bg-brand-yellow text-brand-blue px-2 py-1 md:px-3 md:py-1.5 rounded-bl-xl rounded-tr-xl shadow-sm">
+        <div className="absolute top-0 right-0 bg-[#05d131] text-brand-blue px-2 py-1 md:px-3 md:py-1.5 rounded-bl-xl rounded-tr-xl shadow-sm">
           <span className="text-[8px] md:text-[10px] font-extrabold uppercase tracking-wide leading-tight block text-center">
             Free Shipping
           </span>

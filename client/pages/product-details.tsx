@@ -119,6 +119,33 @@ export default function ProductDetailsPage() {
   /* Local state */
   const [activeImg, setActiveImg] = useState(0);
   const [qty, setQty] = useState(1);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const minSwipeDistance = 60;
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (touchStart === null || touchEnd === null) return;
+    const distance = touchStart - touchEnd;
+
+    if (distance > minSwipeDistance) {
+      setActiveImg((prev) =>
+        prev < productImages.length - 1 ? prev + 1 : 0,
+      );
+    } else if (distance < -minSwipeDistance) {
+      setActiveImg((prev) =>
+        prev > 0 ? prev - 1 : productImages.length - 1,
+      );
+    }
+  };
 
   const numPrice = parseNum(product.price);
   const numOrig = parseNum(product.originalPrice);
@@ -147,7 +174,11 @@ export default function ProductDetailsPage() {
 
   const handleAddToCart = () => {
     if (!user) {
-      navigate("/login");
+      localStorage.setItem(
+        "pendingCartItem",
+        JSON.stringify({ item: getCartItem(), qty, redirectTo: "/cart" }),
+      );
+      navigate("/login", { state: { from: { pathname: "/cart" } } });
       return;
     }
     addItem(getCartItem(), qty);
@@ -156,7 +187,7 @@ export default function ProductDetailsPage() {
         title: "✓ Added to cart",
         description: `${qty} item(s) added successfully`,
       });
-    } catch { }
+    } catch {}
   };
 
   /* Related products (other 3) */
@@ -181,7 +212,12 @@ export default function ProductDetailsPage() {
         <div className="pd-hero">
           {/* Left: Image Gallery */}
           <div className="pd-images">
-            <div className="pd-main-image relative group">
+            <div
+              className="pd-main-image relative group"
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+            >
               {productImages.length > 1 && (
                 <>
                   <button
@@ -739,19 +775,42 @@ export default function ProductDetailsPage() {
       {/* Sticky Pay Button for Mobile */}
       {!isCtaVisible && (
         <div className="fixed bottom-0 left-0 right-0 md:hidden bg-white border-t border-gray-200 p-4 shadow-2xl z-50 animate-in slide-in-from-bottom-2 duration-200">
-          <div className="flex gap-3 max-w-md mx-auto">
-            <button
-              onClick={handleBuyNow}
-              className="flex-1 bg-gradient-to-r from-brand-blue to-[#1a2b5f] text-brand-yellow font-bold py-3 rounded-lg hover:shadow-lg transition-shadow active:scale-95"
-            >
-              BUY NOW
-            </button>
-            <button
-              onClick={handleAddToCart}
-              className="flex-1 border-2 border-brand-blue text-brand-blue font-bold py-3 rounded-lg hover:bg-brand-blue/5 transition-colors active:scale-95"
-            >
-              ADD TO CART
-            </button>
+          <div className="flex items-center justify-between gap-3 max-w-md mx-auto">
+            <div className="flex-1">
+              <div className="text-xs uppercase tracking-wider text-gray-500">
+                Price
+              </div>
+              <div className="mt-2 flex items-center gap-2">
+                <span className="text-lg font-bold text-curemist-purple">
+                  {product.price}
+                </span>
+                <button
+                  onClick={handleBuyNow}
+                  className="rounded-lg bg-gradient-to-r from-brand-blue to-[#1a2b5f] px-4 py-3 text-sm font-bold text-brand-yellow hover:shadow-lg transition-shadow active:scale-95"
+                >
+                  BUY NOW
+                </button>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-slate-50 px-2 py-2">
+              <button
+                type="button"
+                onClick={() => setQty((q) => Math.max(1, q - 1))}
+                className="h-10 w-10 rounded-lg bg-white text-lg font-bold text-brand-blue shadow-sm transition hover:bg-brand-blue/5"
+              >
+                −
+              </button>
+              <span className="min-w-[32px] text-center text-base font-semibold">
+                {qty}
+              </span>
+              <button
+                type="button"
+                onClick={() => setQty((q) => q + 1)}
+                className="h-10 w-10 rounded-lg bg-white text-lg font-bold text-brand-blue shadow-sm transition hover:bg-brand-blue/5"
+              >
+                +
+              </button>
+            </div>
           </div>
         </div>
       )}

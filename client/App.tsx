@@ -62,6 +62,21 @@ function AppRoutes() {
   }, [location.pathname]);
 
   useEffect(() => {
+    if (!user) return;
+    const pendingJson = window.localStorage.getItem("pendingCartItem");
+    if (!pendingJson) return;
+
+    try {
+      const pending = JSON.parse(pendingJson) as { redirectTo?: string };
+      if (pending?.redirectTo && pending.redirectTo !== location.pathname) {
+        navigate(pending.redirectTo, { replace: true });
+      }
+    } catch (err) {
+      console.error("Unable to parse pending cart redirect:", err);
+    }
+  }, [user, location.pathname, navigate]);
+
+  useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;
 
     if (firstLoad.current) {
@@ -100,6 +115,9 @@ function AppRoutes() {
     return () => clearTimeout(timer);
   }, [location, user, navigate]);
 
+  const hideWhatsApp = ["/login", "/checkout"].includes(location.pathname);
+  const hideWhatsAppOnMobile = location.pathname.startsWith("/product/");
+
   return (
     <>
       {loading && <Preloader />}
@@ -132,6 +150,7 @@ function AppRoutes() {
 
         <Route path="*" element={<NotFound />} />
       </Routes>
+      {!hideWhatsApp && <WhatsAppButton hideOnMobile={hideWhatsAppOnMobile} />}
     </>
   );
 }
@@ -147,7 +166,6 @@ const App = () => (
         <CartProvider>
           <BrowserRouter>
             <CartDrawer />
-            <WhatsAppButton />
             <AppRoutes />
           </BrowserRouter>
         </CartProvider>

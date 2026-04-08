@@ -5,7 +5,6 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { AnimatePresence, motion } from "framer-motion";
 
 const conditionsList = [
@@ -29,10 +28,9 @@ const conditionsList = [
 
 export default function ProductSection() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const isMobile = useIsMobile();
   const [showAllConditions, setShowAllConditions] = useState(false);
 
-  const visibleCount = isMobile ? 6 : 8;
+  const visibleCount = 8;
   const visibleConditions = showAllConditions
     ? conditionsList
     : conditionsList.slice(0, visibleCount);
@@ -56,17 +54,18 @@ export default function ProductSection() {
         {/* Section Header */}
         <div className="text-center mb-10 md:mb-16">
           <h2 className="text-3xl md:text-4xl lg:text-[40px] font-bold text-black mb-4 tracking-tight">
-            We Are A Wound Care Company 
+            We are a Wound Care Company❤️
           </h2>
           <p className="text-base md:text-xl font-medium text-gray-700 max-w-3xl mx-auto leading-relaxed">
             Fast relief for sports injuries & active lifestyles. Protects and heals scrapes, turf burns & workout wounds instantly.
           </p>
+          <br />
           <p className="text-base md:text-xl font-medium text-gray-700 max-w-3xl mx-auto leading-relaxed">Essential at every Household for healing various conditions!</p>
           {/* Premium Condition Cards */}
           <div className="max-w-6xl mx-auto mt-8 md:mt-12">
             <motion.div
               layout
-              className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-8 gap-4 md:gap-6"
+              className="grid grid-cols-4 md:grid-cols-5 lg:grid-cols-8 gap-4 md:gap-6"
             >
               <AnimatePresence>
                 {visibleConditions.map((condition) => {
@@ -83,7 +82,7 @@ export default function ProductSection() {
                       <div className="w-[70px] h-[70px] md:w-[100px] md:h-[100px] rounded-full overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 border-2 border-[#252c74]">
                         <img src={condition.image} alt={condition.name} className="w-full h-full object-cover" />
                       </div>
-                      <span className="text-xs md:text-sm font-medium text-center mt-2 max-w-[80px] md:max-w-[110px] leading-tight text-gray-700">
+                      <span className="text-xs md:text-sm font-medium text-center mt-2 max-w-[80px] md:max-w-[110px] leading-tight text-black">
                         {condition.name}
                       </span>
                     </motion.div>

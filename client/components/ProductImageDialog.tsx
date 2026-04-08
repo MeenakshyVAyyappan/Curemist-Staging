@@ -75,19 +75,22 @@ export default function ProductImageDialog({
   };
 
   const handleBuyNow = () => {
+    const slug = `${title.replace(/\s+/g, "-").toLowerCase()}-${size.replace(/\s+/g, "").toLowerCase()}`;
+    const numPrice = Number(price.replace(/[^\d]/g, "")) || 0;
+    const item = { id: slug, title, image, price: numPrice, quantity: qty, size };
+
     if (!user) {
       onOpenChange(false);
+      localStorage.setItem(
+        "pendingCartItem",
+        JSON.stringify({ item, qty, redirectTo: "/checkout" }),
+      );
       navigate("/login", { state: { from: { pathname: "/checkout" } } });
       return;
     }
 
     // Add item to cart first
-    const slug = `${title.replace(/\s+/g, "-").toLowerCase()}-${size.replace(/\s+/g, "").toLowerCase()}`;
-    const numPrice = Number(price.replace(/[^\d]/g, "")) || 0;
-    addItem(
-      { id: slug, title, image, price: numPrice, quantity: qty, size },
-      qty,
-    );
+    addItem(item, qty);
 
     // Close dialog and navigate to checkout
     onOpenChange(false);
@@ -205,7 +208,7 @@ export default function ProductImageDialog({
                         Product Benefit
                       </span>
                       <span className="text-xs sm:text-sm font-bold text-gray-900">
-                        {benefit ?? "Anti Microbial"}
+                        {benefit ?? "Anti Fungal & Anti Microbial"}
                       </span>
                     </div>
                     <div className="flex justify-between items-center py-1.5 sm:py-2">
@@ -290,18 +293,25 @@ export default function ProductImageDialog({
                     const numOriginalPrice = originalPrice
                       ? Number(originalPrice.replace(/[^\d]/g, "")) || 0
                       : numPrice;
-                    addItem(
-                      {
-                        id: slug,
-                        title,
-                        image,
-                        price: numPrice,
-                        originalPrice: numOriginalPrice,
-                        quantity: qty,
-                        size,
-                      },
-                      qty,
-                    );
+                    const item = {
+                      id: slug,
+                      title,
+                      image,
+                      price: numPrice,
+                      originalPrice: numOriginalPrice,
+                      quantity: qty,
+                      size,
+                    };
+                    if (!user) {
+                      localStorage.setItem(
+                        "pendingCartItem",
+                        JSON.stringify({ item, qty, redirectTo: "/cart" }),
+                      );
+                      onOpenChange(false);
+                      navigate("/login", { state: { from: { pathname: "/cart" } } });
+                      return;
+                    }
+                    addItem(item, qty);
                     try {
                       toast({
                         title: "✓ Added to cart",

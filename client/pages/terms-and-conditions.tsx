@@ -3,7 +3,6 @@ import AnnouncementBar from "@/components/AnnouncementBar";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BlogHero from "@/components/BlogHero";
-import WhatsAppButton from "@/components/WhatsAppButton";
 import { ChevronDown } from "lucide-react";
 
 interface Section {
@@ -133,7 +132,7 @@ const TermsAndConditions = () => {
           {/* Intro Banner */}
           <div className="bg-gradient-to-r from-brand-blue to-[#1a2a6c] rounded-2xl p-6 md:p-8 mb-10 text-white">
             <h2 className="text-lg md:text-xl font-bold mb-2">
-              Please Read Carefully
+              PLEASE READ CAREFULLY
             </h2>
             <p className="text-white/80 text-sm md:text-base leading-relaxed">
               These Terms & Conditions govern your use of the CureMist website
@@ -157,7 +156,6 @@ const TermsAndConditions = () => {
       </section>
 
       <Footer />
-      <WhatsAppButton />
     </div>
   );
 };
