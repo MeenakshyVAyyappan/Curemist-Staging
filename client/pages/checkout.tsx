@@ -37,6 +37,7 @@ export default function Checkout() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [processingPayment, setProcessingPayment] = useState(false);
+  const [isRazorpayOpen, setIsRazorpayOpen] = useState(false);
   const [currentOrderId, setCurrentOrderId] = useState<string | null>(null);
   const [currentOrderStatus, setCurrentOrderStatus] = useState<string>("");
   const [showThankYouModal, setShowThankYouModal] = useState(false);
@@ -330,7 +331,7 @@ export default function Checkout() {
 
     const orderItems = items.map((item) => ({
       order_id: order.id,
-      product_id: null,
+      product_id: item.id,
       title: item.title,
       price: item.price,
       quantity: item.quantity,
@@ -383,8 +384,6 @@ export default function Checkout() {
         id: user.id,
         first_name: customerInfo.firstName,
         phone: customerInfo.phone,
-        sex: customerInfo.sex,
-        dob: customerInfo.dob || null,
         updated_at: new Date(),
       });
 
@@ -495,6 +494,7 @@ export default function Checkout() {
           } finally {
             setLoading(false);
             setProcessingPayment(false);
+            setIsRazorpayOpen(false);
           }
         },
         prefill: {
@@ -511,6 +511,8 @@ export default function Checkout() {
         modal: {
           ondismiss: () => {
             setLoading(false);
+            setProcessingPayment(false);
+            setIsRazorpayOpen(false);
             toast({
               title: "Payment Cancelled",
               description: "You can try again anytime.",
@@ -524,6 +526,7 @@ export default function Checkout() {
       rzp.on("payment.failed", async (response: any) => {
         setLoading(false);
         setProcessingPayment(false);
+        setIsRazorpayOpen(false);
         console.error("Payment failed:", response);
 
         if (currentOrderId) {
@@ -538,10 +541,12 @@ export default function Checkout() {
           variant: "destructive",
         });
       });
+      setIsRazorpayOpen(true);
       rzp.open();
     } catch (err: any) {
       setLoading(false);
       setProcessingPayment(false);
+      setIsRazorpayOpen(false);
       console.error("Razorpay error:", err);
       toast({
         title: "Payment Error",
@@ -593,11 +598,13 @@ export default function Checkout() {
     }
 
     try {
+      setLoading(true); // Initiate loading state!
       await createPendingOrder();
       await initiateRazorpayPayment();
     } catch (err: any) {
       setLoading(false);
       setProcessingPayment(false);
+      setIsRazorpayOpen(false);
       toast({
         title: "Payment Error",
         description: err.message || "Could not create order before payment",
@@ -629,7 +636,7 @@ export default function Checkout() {
   return (
     <>
       <Header />
-      {(processingPayment || loading) && (
+      {(processingPayment || (loading && !isRazorpayOpen)) && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
           <div className="max-w-md rounded-lg bg-white p-6 text-center shadow-lg">
             <h2 className="text-xl font-bold mb-2 text-gray-900">
@@ -941,57 +948,7 @@ export default function Checkout() {
                                 </p>
                               )}
                           </div>
-                          <div className="grid grid-cols-2 gap-3">
-                            <div>
-                              <label className="block text-sm font-medium mb-1">
-                                Gender *
-                              </label>
-                              <select
-                                value={customerInfo.sex}
-                                onChange={(e) =>
-                                  setCustomerInfo({
-                                    ...customerInfo,
-                                    sex: e.target.value,
-                                  })
-                                }
-                                className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-brand-yellow bg-white text-sm"
-                                required
-                              >
-                                <option value="">Select</option>
-                                <option value="Male">Male</option>
-                                <option value="Female">Female</option>
-                                <option value="Other">Other</option>
-                              </select>
-                              {showErrors && !customerInfo.sex && (
-                                <p className="text-red-500 text-xs mt-1 font-medium">
-                                  Required
-                                </p>
-                              )}
-                            </div>
-                            <div>
-                              <label className="block text-sm font-medium mb-1">
-                                Date of Birth *
-                              </label>
-                              <input
-                                type="date"
-                                value={customerInfo.dob}
-                                onChange={(e) =>
-                                  setCustomerInfo({
-                                    ...customerInfo,
-                                    dob: e.target.value,
-                                  })
-                                }
-                                max="2009-12-31"
-                                className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-brand-yellow text-sm"
-                                required
-                              />
-                              {showErrors && !customerInfo.dob && (
-                                <p className="text-red-500 text-xs mt-1 font-medium">
-                                  Required
-                                </p>
-                              )}
-                            </div>
-                          </div>
+                          {/* Removed Gender and Date of Birth fields */}
                         </div>
                       )}
                     </div>
@@ -1360,6 +1317,8 @@ export default function Checkout() {
                 </button>
 
                 {currentOrderId &&
+                  !loading && 
+                  !processingPayment &&
                   (currentOrderStatus === "payment_failed" ||
                     currentOrderStatus === "payment_processing") && (
                     <button

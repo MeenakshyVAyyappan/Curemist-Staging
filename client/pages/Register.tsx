@@ -16,11 +16,21 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import ReCAPTCHA from "react-google-recaptcha";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 
 export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [gender, setGender] = useState("");
+  const [dob, setDob] = useState("");
   const [loading, setLoading] = useState(false);
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -42,6 +52,24 @@ export default function Register() {
       return;
     }
 
+    if (!gender) {
+      toast({
+        title: "Validation Error",
+        description: "Please select your gender.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!dob) {
+      toast({
+        title: "Validation Error",
+        description: "Please select your date of birth.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (!captchaToken) {
       toast({
         title: "Captcha Required",
@@ -57,6 +85,10 @@ export default function Register() {
       password,
       options: {
         emailRedirectTo: getAuthRedirectUrl(),
+        data: {
+          gender,
+          dob: dob || null,
+        }
       },
     });
 
@@ -185,6 +217,31 @@ export default function Register() {
                 placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="gender">Gender</Label>
+              <Select onValueChange={setGender} value={gender} required>
+                <SelectTrigger id="gender" className="w-full">
+                  <SelectValue placeholder="Select your gender" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Male">Male</SelectItem>
+                  <SelectItem value="Female">Female</SelectItem>
+                  <SelectItem value="Other">Other</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="dob">Date of Birth</Label>
+              <Input
+                id="dob"
+                type="date"
+                max="2009-12-31"
+                value={dob}
+                onChange={(e) => setDob(e.target.value)}
+                className="w-full text-left font-normal justify-start block"
                 required
               />
             </div>

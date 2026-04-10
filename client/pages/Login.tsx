@@ -27,8 +27,6 @@ import { FiEye, FiEyeOff } from "react-icons/fi";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [gender, setGender] = useState("");
-  const [dob, setDob] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   // Temporarily disabled for local testing
@@ -65,8 +63,6 @@ export default function Login() {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
-        gender,
-        dob,
       });
 
       if (error) {

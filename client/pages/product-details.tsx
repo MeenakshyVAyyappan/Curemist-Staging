@@ -781,8 +781,8 @@ export default function ProductDetailsPage() {
                 Price
               </div>
               <div className="mt-2 flex items-center gap-2">
-                <span className="text-lg font-bold text-curemist-purple">
-                  {product.price}
+                <span className="text-lg font-bold text-curemist-purple whitespace-nowrap">
+                  ₹{total}
                 </span>
                 <button
                   onClick={handleBuyNow}

@@ -29,56 +29,69 @@ const BANNERS = [
 export default function Hero() {
   const [currentBanner, setCurrentBanner] = useState(0);
   const [sliderIndex, setSliderIndex] = useState(1);
-  const [transitionEnabled, setTransitionEnabled] = useState(true);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const minSwipeDistance = 50;
-  const transitionTimer = useRef<number | null>(null);
+  const isTransitioningRef = useRef(false);
+  const sliderRef = useRef<HTMLDivElement>(null);
 
   const sliderItems = [BANNERS[BANNERS.length - 1], ...BANNERS, BANNERS[0]];
 
   useEffect(() => {
-    const timer = window.setInterval(() => {
-      setCurrentBanner((prev) => {
-        setSliderIndex((prevIndex) => prevIndex + 1);
-        return (prev + 1) % BANNERS.length;
-      });
-    }, 10000);
+    const timer = window.setTimeout(() => {
+      if (isTransitioningRef.current) return;
+      isTransitioningRef.current = true;
+      setCurrentBanner((prev) => (prev + 1) % BANNERS.length);
+      setSliderIndex((prev) => prev + 1);
+    }, 8000);
 
-    return () => window.clearInterval(timer);
-  }, []);
+    return () => window.clearTimeout(timer);
+  }, [currentBanner]);
 
   const prevBanner = () => {
+    if (isTransitioningRef.current) return;
+    isTransitioningRef.current = true;
     setCurrentBanner((prev) => (prev - 1 + BANNERS.length) % BANNERS.length);
     setSliderIndex((prev) => prev - 1);
   };
 
   const nextBanner = () => {
+    if (isTransitioningRef.current) return;
+    isTransitioningRef.current = true;
     setCurrentBanner((prev) => (prev + 1) % BANNERS.length);
     setSliderIndex((prev) => prev + 1);
   };
 
   const goToBanner = (index: number) => {
+    if (isTransitioningRef.current || index === currentBanner) return;
+    isTransitioningRef.current = true;
     setCurrentBanner(index);
     setSliderIndex(index + 1);
   };
 
-  const resetTransition = () => {
-    setTransitionEnabled(false);
-    window.clearTimeout(transitionTimer.current ?? undefined);
-    transitionTimer.current = window.setTimeout(() => {
-      setTransitionEnabled(true);
-    }, 40);
-  };
-
   const onTransitionEnd = () => {
-    if (sliderIndex === 0) {
+    if (sliderIndex <= 0) {
+      if (sliderRef.current) {
+        sliderRef.current.style.transition = "none";
+        sliderRef.current.style.transform = `translateX(-${BANNERS.length * 100}%)`;
+        void sliderRef.current.offsetWidth; // Force synchronous reflow
+        sliderRef.current.style.transition = "";
+      }
       setSliderIndex(BANNERS.length);
-      resetTransition();
-    } else if (sliderIndex === sliderItems.length - 1) {
+    } else if (sliderIndex >= sliderItems.length - 1) {
+      if (sliderRef.current) {
+        sliderRef.current.style.transition = "none";
+        sliderRef.current.style.transform = `translateX(-100%)`;
+        void sliderRef.current.offsetWidth; // Force synchronous reflow
+        sliderRef.current.style.transition = "";
+      }
       setSliderIndex(1);
-      resetTransition();
     }
+    
+    // Safety delay to prevent rapid double-clicks from misaligning state right after a loop
+    setTimeout(() => {
+      isTransitioningRef.current = false;
+    }, 20);
   };
 
   const onTouchStartHandler = (e: TouchEvent<HTMLDivElement>) => {
@@ -115,9 +128,8 @@ export default function Hero() {
       {/* Background */}
       <div className="absolute inset-0 overflow-hidden">
         <div
-          className={`flex h-full transition-transform duration-700 ease-out ${
-            transitionEnabled ? "" : "duration-0"
-          }`}
+          ref={sliderRef}
+          className="flex h-full transition-transform duration-700 ease-out"
           style={{ transform: `translateX(-${sliderIndex * 100}%)` }}
           onTransitionEnd={onTransitionEnd}
         >
