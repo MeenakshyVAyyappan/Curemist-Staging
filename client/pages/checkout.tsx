@@ -598,9 +598,15 @@ export default function Checkout() {
     }
 
     try {
-      setLoading(true); // Initiate loading state!
-      await createPendingOrder();
-      await initiateRazorpayPayment();
+      if (currentOrderId && (currentOrderStatus === "payment_failed" || currentOrderStatus === "payment_processing")) {
+        setLoading(true);
+        setProcessingPayment(true);
+        await initiateRazorpayPayment();
+      } else {
+        setLoading(true); // Initiate loading state!
+        await createPendingOrder();
+        await initiateRazorpayPayment();
+      }
     } catch (err: any) {
       setLoading(false);
       setProcessingPayment(false);
@@ -1313,26 +1319,10 @@ export default function Checkout() {
                 >
                   {loading || processingPayment
                     ? "Processing..."
-                    : `Pay ₹${totalPrice} Now`}
+                    : currentOrderId && (currentOrderStatus === "payment_failed" || currentOrderStatus === "payment_processing")
+                      ? `Pay ₹${totalPrice}`
+                      : `Pay ₹${totalPrice} Now`}
                 </button>
-
-                {currentOrderId &&
-                  !loading && 
-                  !processingPayment &&
-                  (currentOrderStatus === "payment_failed" ||
-                    currentOrderStatus === "payment_processing") && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setLoading(true);
-                        setProcessingPayment(true);
-                        initiateRazorpayPayment();
-                      }}
-                      className="w-full mt-2 font-semibold py-2 rounded-lg text-sm transition-colors shadow-md bg-amber-500 text-white hover:bg-amber-600"
-                    >
-                      Retry Payment
-                    </button>
-                  )}
               </form>
 
               {/* Sticky Pay Button for Mobile */}
@@ -1360,7 +1350,9 @@ export default function Checkout() {
                   >
                     {loading || processingPayment
                       ? "Processing..."
-                      : `Pay ₹${totalPrice} Now`}
+                      : currentOrderId && (currentOrderStatus === "payment_failed" || currentOrderStatus === "payment_processing")
+                        ? `Pay ₹${totalPrice}`
+                        : `Pay ₹${totalPrice} Now`}
                   </button>
                 </div>
               )}
@@ -1504,21 +1496,35 @@ export default function Checkout() {
                       {showCoupons && (
                         <div className="mt-2 space-y-2">
                           {availableCoupons.map((c) => (
-                            <button
+                            <div
                               key={c.code}
+                              className="flex items-center justify-between bg-white p-2 rounded border border-slate-200 cursor-pointer hover:border-brand-blue transition-colors"
                               onClick={() => {
                                 setCoupon(c.code);
                                 setShowCoupons(false);
                               }}
-                              className="w-full text-left rounded-md border border-slate-200 bg-white px-3 py-2 text-sm hover:bg-slate-100"
                             >
-                              <div className="font-medium">{c.code}</div>
-                              <div className="text-xs text-gray-500">
-                                {c.discount_percentage
-                                  ? `${Math.round(c.discount_percentage * 100)}% off`
-                                  : `₹${c.discount_amount} off`}
+                              <div className="flex-1">
+                                <p className="text-xs font-bold font-mono text-brand-blue">
+                                  {c.code}
+                                </p>
+                                <p className="text-xs text-gray-600">
+                                  {c.discount_percentage
+                                    ? `${(c.discount_percentage * 100).toFixed(0)}% off`
+                                    : `₹${c.discount_amount} off`}
+                                </p>
                               </div>
-                            </button>
+                              <button
+                                className="text-xs bg-brand-yellow text-brand-blue px-2 py-1 rounded font-semibold hover:bg-yellow-400"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setCoupon(c.code);
+                                  setShowCoupons(false);
+                                }}
+                              >
+                                Use
+                              </button>
+                            </div>
                           ))}
                         </div>
                       )}

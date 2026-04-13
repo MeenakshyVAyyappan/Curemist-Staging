@@ -116,6 +116,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
       if (!user) return;
       const pendingJson = window.localStorage.getItem(PENDING_CART_ITEM_KEY);
       if (!pendingJson) return;
+      
+      // Remove immediately to prevent race conditions during React Strict Mode double-invocations
+      window.localStorage.removeItem(PENDING_CART_ITEM_KEY);
 
       try {
         const pending = JSON.parse(pendingJson) as {
@@ -143,12 +146,17 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
         }
 
         if (existing?.quantity) {
-          const newQty = existing.quantity + qty;
-          await supabase
-            .from("cart_items")
-            .update({ quantity: newQty })
-            .eq("cart_id", cartId)
-            .eq("product_id", item.id);
+          // Instead of adding qty to existing.quantity (which caused the "extra item" perceived bug upon login),
+          // we just ensure the cart has at least the pending quantity.
+          const newQty = Math.max(existing.quantity, qty);
+          
+          if (newQty !== existing.quantity) {
+            await supabase
+              .from("cart_items")
+              .update({ quantity: newQty })
+              .eq("cart_id", cartId)
+              .eq("product_id", item.id);
+          }
         } else {
           await supabase.from("cart_items").insert({
             cart_id: cartId,
@@ -162,7 +170,6 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
           });
         }
 
-        window.localStorage.removeItem(PENDING_CART_ITEM_KEY);
         await fetchCart();
         setIsCartOpen(true);
       } catch (error) {
@@ -262,6 +269,12 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const updateQty = async (id: string, qty: number) => {
     if (!user) return;
+    
+    // Ensure quantity is never less than 1
+    if (qty < 1) {
+      qty = 1;
+    }
+    
     try {
       const cartId = await getCartId();
       if (!cartId) return;

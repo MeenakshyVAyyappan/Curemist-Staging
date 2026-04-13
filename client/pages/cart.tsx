@@ -195,8 +195,9 @@ export default function CartPage() {
                         <div className="flex flex-col md:flex-row md:items-center gap-3">
                           <div className="inline-flex items-center rounded-md bg-[#FFF8EC] p-2">
                             <button
-                              onClick={() => updateQty(it.id, it.quantity - 1)}
-                              className="px-3 py-2 text-lg text-brand-blue font-bold"
+                              onClick={() => updateQty(it.id, Math.max(1, it.quantity - 1))}
+                              disabled={it.quantity <= 1}
+                              className={`px-3 py-2 text-lg font-bold ${it.quantity <= 1 ? "text-gray-400 cursor-not-allowed" : "text-brand-blue"}`}
                             >
                               <FiMinus />
                             </button>
