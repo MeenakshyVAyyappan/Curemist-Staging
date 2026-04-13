@@ -202,11 +202,18 @@ export default function Login() {
         </CardHeader>
         <CardContent>
           <div className="mb-4 flex justify-center">
-            <Button variant="outline" className="w-full max-w-xs bg-[#efb506] flex items-center gap-2" onClick={handleGoogleSignIn}>
+            <Button variant="outline" className="w-full max-w-xs bg-[#efb506] border-none hover:bg-[#efb506]/90 flex items-center gap-2" onClick={handleGoogleSignIn}>
               <img src="/icons/google.png" alt="Google" className="h-5 w-5" />
               Continue with Google
             </Button>
           </div>
+
+          <div className="relative my-6 flex items-center justify-center">
+            <div className="flex-grow border-t border-gray-200"></div>
+            <span className="flex-shrink-0 px-3 text-xs font-medium text-gray-400 uppercase">Or</span>
+            <div className="flex-grow border-t border-gray-200"></div>
+          </div>
+
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
