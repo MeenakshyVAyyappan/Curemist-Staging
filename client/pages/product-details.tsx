@@ -8,6 +8,7 @@ import { toast } from "@/components/ui/use-toast";
 import { products } from "@/lib/products";
 import useEmblaCarousel from "embla-carousel-react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { trackEvent } from "@/lib/pixel";
 import "./product-details.css";
 
 /* ──────────────── helpers ──────────────── */
@@ -164,6 +165,14 @@ export default function ProductDetailsPage() {
   });
 
   const handleBuyNow = () => {
+    trackEvent("AddToCart", {
+      content_name: product.title,
+      content_ids: [product.slug],
+      content_type: "product",
+      value: numPrice * qty,
+      currency: "INR",
+    });
+    trackEvent("InitiateCheckout");
     if (!user) {
       navigate("/login", { state: { from: { pathname: "/checkout" } } });
       return;
@@ -173,6 +182,13 @@ export default function ProductDetailsPage() {
   };
 
   const handleAddToCart = () => {
+    trackEvent("AddToCart", {
+      content_name: product.title,
+      content_ids: [product.slug],
+      content_type: "product",
+      value: numPrice * qty,
+      currency: "INR",
+    });
     if (!user) {
       localStorage.setItem(
         "pendingCartItem",

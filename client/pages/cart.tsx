@@ -4,6 +4,7 @@ import { useCart } from "@/lib/cart";
 import { supabase } from "@/lib/supabase";
 import { FiMinus, FiPlus, FiTrash2 } from "react-icons/fi";
 import Header from "@/components/Header";
+import { trackEvent } from "@/lib/pixel";
 import Footer from "@/components/Footer";
 
 export default function CartPage() {
@@ -433,7 +434,10 @@ export default function CartPage() {
                 </p>
 
                 <button
-                  onClick={() => navigate("/checkout")}
+                  onClick={() => {
+                    trackEvent("InitiateCheckout", { value: totalPayable, currency: "INR" });
+                    navigate("/checkout");
+                  }}
                   className="w-full bg-brand-yellow text-brand-blue font-bold py-3 rounded mt-6 hover:bg-[#816306] transition-colors text-sm md:text-base"
                 >
                   Checkout

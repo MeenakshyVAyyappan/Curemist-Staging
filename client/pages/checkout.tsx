@@ -4,6 +4,7 @@ import { useCart } from "@/lib/cart";
 import { useAuth } from "@/lib/auth";
 import { toast } from "@/components/ui/use-toast";
 import { supabase } from "@/lib/supabase";
+import { trackEvent } from "@/lib/pixel";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -460,6 +461,8 @@ export default function Checkout() {
               // 4. Finalize pending order
               console.log("Finalizing order status in database...");
               await finalizeOrderStatus("paid", response.razorpay_payment_id);
+              
+              trackEvent("Purchase", { value: totalPrice, currency: "INR" });
 
               toast({
                 title: "Payment Successful! 🎉",
