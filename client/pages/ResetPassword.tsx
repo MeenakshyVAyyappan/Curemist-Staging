@@ -98,14 +98,14 @@ export default function ResetPassword() {
       return;
     }
 
-    if (!captchaToken) {
-      toast({
-        title: "Captcha Required",
-        description: "Please complete the captcha verification.",
-        variant: "destructive",
-      });
-      return;
-    }
+    // if (!captchaToken) {
+    //   toast({
+    //     title: "Captcha Required",
+    //     description: "Please complete the captcha verification.",
+    //     variant: "destructive",
+    //   });
+    //   return;
+    // }
 
     if (newPassword.length < 6) {
       toast({
@@ -282,13 +282,13 @@ export default function ResetPassword() {
                 </button>
               </div>
             </div>
-            <div className="flex justify-center py-2">
+            {/* <div className="flex justify-center py-2">
               <ReCAPTCHA
                 ref={recaptchaRef}
                 sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
                 onChange={(token) => setCaptchaToken(token)}
               />
-            </div>
+            </div> */}
             <Button
               type="submit"
               className="w-full bg-brand-blue hover:bg-brand-blue/90"

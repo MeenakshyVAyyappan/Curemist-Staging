@@ -637,7 +637,7 @@ export default function AdminOrders() {
                                 </h3>
                                 <div className="space-y-2">
                                   {order.order_items &&
-                                  order.order_items.length > 0 ? (
+                                    order.order_items.length > 0 ? (
                                     order.order_items.map(
                                       (item: any, index: number) => (
                                         <div

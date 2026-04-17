@@ -90,7 +90,12 @@ export const contactHandler = async (req: Request, res: Response) => {
 
     if (!resp.ok) {
       const text = await resp.text();
-      return res.status(502).json({ error: "Resend API error", details: text });
+      let errorMessage = "Resend API error";
+      try {
+        const parsed = JSON.parse(text);
+        if (parsed.message) errorMessage = parsed.message;
+      } catch (e) {}
+      return res.status(502).json({ error: errorMessage, details: text });
     }
 
     return res.json({ ok: true });

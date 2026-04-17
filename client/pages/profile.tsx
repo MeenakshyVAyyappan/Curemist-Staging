@@ -108,7 +108,7 @@ export default function Profile() {
 
     setProfile(prof || null);
     setFirstName(defaultFullName.trim());
-    setLastName(""); 
+    setLastName("");
     setPhone(prof?.phone || meta.phone || "");
     setSex(prof?.sex || meta.gender || meta.sex || "");
     setDob(prof?.dob || meta.dob || "");
@@ -446,8 +446,8 @@ export default function Profile() {
                       key={t}
                       onClick={() => setActive(i)}
                       className={`w-full text-left px-4 py-3 rounded-lg font-medium transition-all duration-200 ${i === active
-                          ? "bg-gradient-to-r from-brand-yellow to-[#d4a835] text-brand-blue shadow-md scale-105 border-l-4 border-brand-blue"
-                          : "text-gray-700 hover:bg-gray-100 border-l-4 border-transparent hover:border-gray-300"
+                        ? "bg-gradient-to-r from-brand-yellow to-[#d4a835] text-brand-blue shadow-md scale-105 border-l-4 border-brand-blue"
+                        : "text-gray-700 hover:bg-gray-100 border-l-4 border-transparent hover:border-gray-300"
                         }`}
                     >
                       {t}

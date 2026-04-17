@@ -60,14 +60,14 @@ const AuthPopup = ({ onClose }: { onClose: () => void }) => {
       return;
     }
 
-    if (!captchaToken) {
-      toast({
-        title: "Captcha Required",
-        description: "Please complete the captcha verification.",
-        variant: "destructive",
-      });
-      return;
-    }
+    // if (!captchaToken) {
+    //   toast({
+    //     title: "Captcha Required",
+    //     description: "Please complete the captcha verification.",
+    //     variant: "destructive",
+    //   });
+    //   return;
+    // }
 
     console.log("Attempting to reset password for:", resetEmail);
     setResetLoading(true);
@@ -100,14 +100,14 @@ const AuthPopup = ({ onClose }: { onClose: () => void }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!captchaToken) {
-      toast({
-        title: "Captcha Required",
-        description: "Please complete the captcha verification.",
-        variant: "destructive",
-      });
-      return;
-    }
+    // if (!captchaToken) {
+    //   toast({
+    //     title: "Captcha Required",
+    //     description: "Please complete the captcha verification.",
+    //     variant: "destructive",
+    //   });
+    //   return;
+    // }
 
     setLoading(true);
 
@@ -269,7 +269,7 @@ const AuthPopup = ({ onClose }: { onClose: () => void }) => {
                 required
               />
             </div>
-            <div className="mb-4 flex justify-center min-h-[78px]">
+            {/* <div className="mb-4 flex justify-center min-h-[78px]">
               {import.meta.env.VITE_RECAPTCHA_SITE_KEY ? (
                 <ReCAPTCHA
                   ref={recaptchaRef}
@@ -281,7 +281,7 @@ const AuthPopup = ({ onClose }: { onClose: () => void }) => {
                   Missing VITE_RECAPTCHA_SITE_KEY in .env
                 </div>
               )}
-            </div>
+            </div> */}
             <div className="mb-4 flex flex-col gap-2">
               <button
                 type="submit"
@@ -416,7 +416,7 @@ const AuthPopup = ({ onClose }: { onClose: () => void }) => {
             </div>
           )}
 
-          <div className="mb-4 flex justify-center min-h-[78px]">
+          {/* <div className="mb-4 flex justify-center min-h-[78px]">
             {import.meta.env.VITE_RECAPTCHA_SITE_KEY ? (
               <ReCAPTCHA
                 ref={recaptchaRef}
@@ -428,7 +428,7 @@ const AuthPopup = ({ onClose }: { onClose: () => void }) => {
                 Missing VITE_RECAPTCHA_SITE_KEY in .env
               </div>
             )}
-          </div>
+          </div> */}
 
           <div className="mb-4 flex justify-end">
             <button
