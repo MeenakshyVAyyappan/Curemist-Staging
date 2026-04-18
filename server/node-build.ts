@@ -20,6 +20,13 @@ app.use((req, res, next) => {
     return next();
   }
 
+  // Support pre-rendered semantic HTML files (e.g. for blogs)
+  // Check if a path-specific index.html exists
+  const potentialPath = path.join(distPath, req.path, "index.html");
+  if (require("fs").existsSync(potentialPath)) {
+    return res.sendFile(potentialPath);
+  }
+
   res.sendFile(path.join(distPath, "index.html"));
 });
 
