@@ -785,13 +785,13 @@ export default function Checkout() {
                             </div>
                           )}
                         </div>
-                        <button
+                        {/* <button
                           type="button"
                           onClick={() => setExpandReadOnly(!expandReadOnly)}
                           className="text-brand-blue font-bold text-sm hover:underline"
                         >
                           {expandReadOnly ? "Hide Address" : "+ See full address..."}
-                        </button>
+                        </button> */}
                       </div>
                     ) : (
                       <>
