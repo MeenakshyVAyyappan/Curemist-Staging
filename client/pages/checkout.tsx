@@ -50,7 +50,7 @@ export default function Checkout() {
   const [showShippingAddress, setShowShippingAddress] = useState(false);
   const [showAllAddresses, setShowAllAddresses] = useState(false);
   const [isEditingAddress, setIsEditingAddress] = useState(false);
-  const [expandReadOnly, setExpandReadOnly] = useState(false);
+  // const [expandReadOnly, setExpandReadOnly] = useState(false);
 
   // Customer Information
   const [customerInfo, setCustomerInfo] = useState<CustomerInfo>({
@@ -770,7 +770,7 @@ export default function Checkout() {
                   </div>
 
                   <div className="p-5 md:p-6 space-y-5">
-                    {savedAddresses.length > 0 && !isEditingAddress ? (
+                    {/* {savedAddresses.length > 0 && !isEditingAddress ? (
                       <div className="space-y-3">
                         <div className="flex flex-col gap-1.5">
                           <p className="font-bold text-gray-900 text-lg">{customerInfo.firstName}</p>
@@ -785,15 +785,15 @@ export default function Checkout() {
                             </div>
                           )}
                         </div>
-                        {/* <button
+                        <button
                           type="button"
                           onClick={() => setExpandReadOnly(!expandReadOnly)}
                           className="text-brand-blue font-bold text-sm hover:underline"
                         >
                           {expandReadOnly ? "Hide Address" : "+ See full address..."}
-                        </button> */}
+                        </button>
                       </div>
-                    ) : (
+                    ) : ( */}
                       <>
                         {/* Saved Addresses Selection */}
                         {savedAddresses.length > 0 && (
@@ -1129,7 +1129,7 @@ export default function Checkout() {
                           </div>
                         )}
                       </>
-                    )}
+                    {/* )} */}
                   </div>
                 </section>
 
