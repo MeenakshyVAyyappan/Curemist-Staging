@@ -745,56 +745,59 @@ export default function Checkout() {
                 className="space-y-4"
               >
                 {/* Delivery Information */}
-                <section className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-                  <div className="p-5 md:p-6 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
-                    <div>
-                      <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                        Delivery Information
-                      </h2>
-                      <p className="text-sm text-gray-500 mt-1">
-                        Please provide your details for delivery
-                      </p>
-                    </div>
-                    {savedAddresses.length > 0 && !isEditingAddress && (
-                      <button
-                        type="button"
-                        onClick={() => setIsEditingAddress(true)}
-                        className="text-xs font-bold text-brand-blue hover:text-white hover:bg-brand-blue border-[1.5px] border-brand-blue px-3.5 py-1.5 rounded-full transition-all duration-300 flex items-center gap-1.5 shadow-sm uppercase tracking-wide"
-                      >
-                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                        </svg>
-                        Change Address
-                      </button>
-                    )}
-                  </div>
+               <section className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+  <div className="p-5 md:p-6 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
+    <div>
+      <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+        Delivery Information
+      </h2>
+      <p className="text-sm text-gray-500 mt-1">
+        Please provide your details for delivery
+      </p>
+    </div>
+    {savedAddresses.length > 0 && !isEditingAddress && (
+      <button
+        type="button"
+        onClick={() => setIsEditingAddress(true)}
+        className="text-xs font-bold text-brand-blue hover:text-white hover:bg-brand-blue border-[1.5px] border-brand-blue px-3.5 py-1.5 rounded-full transition-all duration-300 flex items-center gap-1.5 shadow-sm uppercase tracking-wide"
+      >
+        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2.5}
+            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+          />
+        </svg>
+        Change Address
+      </button>
+    )}
+  </div>
 
-                  <div className="p-5 md:p-6 space-y-5">
-                    {/* {savedAddresses.length > 0 && !isEditingAddress ? (
-                      <div className="space-y-3">
-                        <div className="flex flex-col gap-1.5">
-                          <p className="font-bold text-gray-900 text-lg">{customerInfo.firstName}</p>
-                          <p className="text-gray-700 text-sm">{customerInfo.phone}  |  {shippingAddress.city || "City"}</p>
-                          {expandReadOnly && (
-                            <div className="mt-2 text-sm text-gray-600 bg-gray-50 p-4 rounded border border-gray-200 shadow-inner">
-                              <p className="font-semibold text-gray-800 mb-1">Shipping Address</p>
-                              <p>{shippingAddress.street}</p>
-                              <p>{shippingAddress.city}, {shippingAddress.state} - {shippingAddress.zip}</p>
-                              <p>{shippingAddress.country}</p>
-                              <p className="mt-2 pt-2 border-t border-gray-200 text-gray-500">{customerInfo.email}</p>
-                            </div>
-                          )}
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => setExpandReadOnly(!expandReadOnly)}
-                          className="text-brand-blue font-bold text-sm hover:underline"
-                        >
-                          {expandReadOnly ? "Hide Address" : "+ See full address..."}
-                        </button>
-                      </div>
-                    ) : ( */}
-                      <>
+  <div className="p-5 md:p-6 space-y-5">
+    {savedAddresses.length > 0 && !isEditingAddress ? (
+      <div className="space-y-3">
+        <div className="flex flex-col gap-1.5">
+          <p className="font-bold text-gray-900 text-lg">{customerInfo.firstName}</p>
+          <p className="text-gray-700 text-sm">
+            {customerInfo.phone} | {shippingAddress.city || "City"}
+          </p>
+
+          <div className="mt-2 text-sm text-gray-600 bg-gray-50 p-4 rounded border border-gray-200 shadow-inner">
+            <p className="font-semibold text-gray-800 mb-1">Shipping Address</p>
+            <p>{shippingAddress.street}</p>
+            <p>
+              {shippingAddress.city}, {shippingAddress.state} - {shippingAddress.zip}
+            </p>
+            <p>{shippingAddress.country}</p>
+            <p className="mt-2 pt-2 border-t border-gray-200 text-gray-500">
+              {customerInfo.email}
+            </p>
+          </div>
+        </div>
+      </div>
+    ) : (
+      <>
                         {/* Saved Addresses Selection */}
                         {savedAddresses.length > 0 && (
                           <div className="mb-6 bg-gray-50/50 p-4 rounded-lg border border-gray-100">
@@ -1129,7 +1132,7 @@ export default function Checkout() {
                           </div>
                         )}
                       </>
-                    {/* )} */}
+                    )}
                   </div>
                 </section>
 
