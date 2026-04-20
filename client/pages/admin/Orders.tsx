@@ -53,6 +53,8 @@ export default function AdminOrders() {
   const [bulkStatus, setBulkStatus] = useState("processing");
 
   const { toast } = useToast();
+  const [selectedOrderDetail, setSelectedOrderDetail] = useState<any | null>(null);
+  const [loadingOrderDetail, setLoadingOrderDetail] = useState(false);
 
   useEffect(() => {
     fetchOrders();
@@ -230,8 +232,12 @@ export default function AdminOrders() {
     switch (status) {
       case "payment_processing":
         return "bg-indigo-100 text-indigo-800 hover:bg-indigo-100";
+      case "payment_cancelled":
+        return "bg-orange-100 text-orange-800 hover:bg-orange-100";
       case "payment_failed":
         return "bg-rose-100 text-rose-800 hover:bg-rose-100";
+      case "payment_successful":
+        return "bg-green-100 text-green-800 hover:bg-green-100";
       case "processing":
         return "bg-yellow-100 text-yellow-800 hover:bg-yellow-100";
       case "order received":
@@ -451,7 +457,9 @@ export default function AdminOrders() {
             <SelectItem value="payment_processing">
               Payment Processing
             </SelectItem>
+            <SelectItem value="payment_cancelled">Payment Cancelled</SelectItem>
             <SelectItem value="payment_failed">Payment Failed</SelectItem>
+            <SelectItem value="payment_successful">Payment Successful</SelectItem>
             <SelectItem value="processing">Processing</SelectItem>
             <SelectItem value="order received">Order Received</SelectItem>
             <SelectItem value="shipped">Shipped</SelectItem>
@@ -539,7 +547,21 @@ export default function AdminOrders() {
                       <div className="flex justify-end gap-2">
                         <Dialog>
                           <DialogTrigger asChild>
-                            <Button variant="ghost" size="icon">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={async () => {
+                                setSelectedOrderDetail(null);
+                                setLoadingOrderDetail(true);
+                                const { data: fresh } = await supabase
+                                  .from("orders")
+                                  .select("*, order_items(*)")
+                                  .eq("id", order.id)
+                                  .single();
+                                setSelectedOrderDetail(fresh || order);
+                                setLoadingOrderDetail(false);
+                              }}
+                            >
                               <Eye className="h-4 w-4" />
                             </Button>
                           </DialogTrigger>
@@ -586,7 +608,13 @@ export default function AdminOrders() {
                                 </h3>
                                 <div className="text-sm space-y-1">
                                   <p>
-                                    <span className="font-medium">Status:</span>{" "}
+                                    <span className="font-medium">Order Status:</span>{" "}
+                                    <span className={`inline-block px-2 py-0.5 rounded font-semibold ${getStatusColor(selectedOrderDetail?.id === order.id ? selectedOrderDetail.order_status : order.order_status)}`}>
+                                      {selectedOrderDetail?.id === order.id ? selectedOrderDetail.order_status : order.order_status}
+                                    </span>
+                                  </p>
+                                  <p>
+                                    <span className="font-medium">Payment Status:</span>{" "}
                                     {order.payment_status}
                                   </p>
                                   <p>
@@ -680,16 +708,25 @@ export default function AdminOrders() {
                                 <h3 className="font-semibold text-purple-900 mb-2">
                                   Order Action
                                 </h3>
+                                {loadingOrderDetail || !selectedOrderDetail ? (
+                                  <div className="flex items-center justify-center py-4">
+                                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-purple-700" />
+                                  </div>
+                                ) : (
                                 <Select
-                                  defaultValue={order.order_status}
-                                  onValueChange={(val) =>
-                                    updateOrderStatus(order.id, val)
-                                  }
+                                  value={selectedOrderDetail?.id === order.id ? selectedOrderDetail.order_status : order.order_status}
+                                  onValueChange={async (val) => {
+                                    await updateOrderStatus(order.id, val);
+                                    setSelectedOrderDetail((prev: any) => prev ? { ...prev, order_status: val } : prev);
+                                  }}
                                 >
                                   <SelectTrigger>
                                     <SelectValue placeholder="Update Status" />
                                   </SelectTrigger>
                                   <SelectContent>
+                                    <SelectItem value="payment_successful">
+                                      Payment Successful
+                                    </SelectItem>
                                     <SelectItem value="processing">
                                       Processing
                                     </SelectItem>
@@ -707,6 +744,7 @@ export default function AdminOrders() {
                                     </SelectItem>
                                   </SelectContent>
                                 </Select>
+                                )}
                                 <div className="mt-4">
                                   <label className="block text-sm font-medium text-gray-700">
                                     Admin Note

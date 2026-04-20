@@ -68,6 +68,30 @@ export default function Profile() {
   const pageSize = 10;
   const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
   const [showOrderDialog, setShowOrderDialog] = useState(false);
+  const [loadingOrderDetails, setLoadingOrderDetails] = useState(false);
+
+  // User-visible statuses (excludes payment_processing and payment_cancelled)
+  const USER_VISIBLE_STATUSES = ["payment_successful", "payment_failed", "order received", "processing", "shipped", "delivered", "cancelled"];
+
+  const getUserFriendlyStatus = (status: string): { label: string; className: string } => {
+    switch (status) {
+      case "payment_successful":
+      case "order received":
+        return { label: "Payment Successful", className: "bg-green-100 text-green-800" };
+      case "payment_failed":
+        return { label: "Payment Failed", className: "bg-red-100 text-red-800" };
+      case "processing":
+        return { label: "Processing", className: "bg-yellow-100 text-yellow-800" };
+      case "shipped":
+        return { label: "Shipped", className: "bg-purple-100 text-purple-800" };
+      case "delivered":
+        return { label: "Delivered", className: "bg-blue-100 text-blue-800" };
+      case "cancelled":
+        return { label: "Cancelled", className: "bg-gray-100 text-gray-800" };
+      default:
+        return { label: status, className: "bg-gray-100 text-gray-800" };
+    }
+  };
 
   useEffect(() => {
     if (user) {
@@ -118,11 +142,12 @@ export default function Profile() {
       setDefaultAddressId(prof.default_address_id);
     }
 
-    // Orders with Items
+    // Orders with Items - only show user-visible statuses
     const { data: ords } = await supabase
       .from("orders")
       .select("*, order_items(*)")
       .eq("user_id", user.id)
+      .in("order_status", USER_VISIBLE_STATUSES)
       .order("created_at", { ascending: false });
     if (ords) {
       setOrders(ords);
@@ -388,9 +413,17 @@ export default function Profile() {
     currentPage * pageSize,
   );
 
-  const handleViewOrder = (order: any) => {
-    setSelectedOrder(order);
+  const handleViewOrder = async (order: any) => {
     setShowOrderDialog(true);
+    setLoadingOrderDetails(true);
+    // Always fetch the latest order data from DB
+    const { data: freshOrder } = await supabase
+      .from("orders")
+      .select("*, order_items(*)")
+      .eq("id", order.id)
+      .single();
+    setSelectedOrder(freshOrder || order);
+    setLoadingOrderDetails(false);
   };
 
   if (!user) {
@@ -770,8 +803,10 @@ export default function Profile() {
                                   {formatOrderId(ord.id)}
                                 </p>
                               </div>
-                              <div className="px-4 py-2 rounded-full text-xs font-bold bg-green-100 text-green-800 uppercase">
-                                {ord.order_status}
+                              <div className={`px-4 py-2 rounded-full text-xs font-bold uppercase ${
+                                getUserFriendlyStatus(ord.order_status).className
+                              }`}>
+                                {getUserFriendlyStatus(ord.order_status).label}
                               </div>
                               <div className="flex items-center gap-2">
                                 <Button
@@ -863,7 +898,11 @@ export default function Profile() {
                           </DialogDescription>
                         </DialogHeader>
 
-                        {selectedOrder ? (
+                        {loadingOrderDetails ? (
+                          <div className="flex items-center justify-center py-10">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-curemist-purple" />
+                          </div>
+                        ) : selectedOrder ? (
                           <div className="space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                               <div className="rounded-lg border p-4">
@@ -873,10 +912,14 @@ export default function Profile() {
                                     <span className="font-medium">Placed:</span>{" "}
                                     {formatOrderDate(selectedOrder.created_at)}
                                   </p>
-                                  <p>
-                                    <span className="font-medium">Status:</span>{" "}
-                                    {selectedOrder.order_status}
-                                  </p>
+                                   <p>
+                                     <span className="font-medium">Status:</span>{" "}
+                                     <span className={`inline-block px-2 py-0.5 rounded text-xs font-bold ${
+                                       getUserFriendlyStatus(selectedOrder.order_status).className
+                                     }`}>
+                                       {getUserFriendlyStatus(selectedOrder.order_status).label}
+                                     </span>
+                                   </p>
                                   <p>
                                     <span className="font-medium">Total:</span> ₹
                                     {selectedOrder.total_price}

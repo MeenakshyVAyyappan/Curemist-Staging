@@ -354,6 +354,19 @@ export default function Checkout() {
     return order;
   };
 
+  // Cancel a pending order when user dismisses Razorpay
+  const cancelPendingOrder = async (orderId: string) => {
+    if (!orderId) return;
+    await supabase
+      .from("orders")
+      .update({
+        payment_status: "cancelled",
+        order_status: "payment_cancelled",
+        updated_at: new Date(),
+      })
+      .eq("id", orderId);
+  };
+
   // Save final status after Razorpay verification
   const finalizeOrderStatus = async (
     status: "paid" | "payment_failed",
@@ -366,7 +379,7 @@ export default function Checkout() {
 
     const updateData: any = {
       payment_status: status === "paid" ? "paid" : "failed",
-      order_status: status === "paid" ? "order received" : "payment_failed",
+      order_status: status === "paid" ? "payment_successful" : "payment_failed",
       razorpay_payment_id: razorpayPaymentId || null,
       updated_at: new Date(),
     };
@@ -514,10 +527,18 @@ export default function Checkout() {
           color: "#4A0E4E",
         },
         modal: {
-          ondismiss: () => {
+          ondismiss: async () => {
+            // Cancel the pending order in admin panel (status: payment_cancelled)
+            // then clear currentOrderId so a fresh order is created on retry
+            const orderToCancel = currentOrderId;
+            setCurrentOrderId(null);
+            setCurrentOrderStatus("");
             setLoading(false);
             setProcessingPayment(false);
             setIsRazorpayOpen(false);
+            if (orderToCancel) {
+              await cancelPendingOrder(orderToCancel);
+            }
             toast({
               title: "Payment Cancelled",
               description: "You can try again anytime.",
@@ -603,7 +624,8 @@ export default function Checkout() {
     }
 
     try {
-      if (currentOrderId && (currentOrderStatus === "payment_failed" || currentOrderStatus === "payment_processing")) {
+      if (currentOrderId && currentOrderStatus === "payment_failed") {
+        // Retry for a genuinely failed payment (not cancelled)
         setLoading(true);
         setProcessingPayment(true);
         await initiateRazorpayPayment();
