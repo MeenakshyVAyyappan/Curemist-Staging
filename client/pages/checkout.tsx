@@ -362,7 +362,6 @@ export default function Checkout() {
       .update({
         payment_status: "cancelled",
         order_status: "payment_cancelled",
-        updated_at: new Date(),
       })
       .eq("id", orderId);
   };
@@ -383,7 +382,6 @@ export default function Checkout() {
       payment_status: status === "paid" ? "paid" : "failed",
       order_status: status === "paid" ? "payment_successful" : "payment_failed",
       razorpay_payment_id: razorpayPaymentId || null,
-      updated_at: new Date(),
     };
 
     const { error } = await supabase
