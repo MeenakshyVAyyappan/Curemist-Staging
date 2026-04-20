@@ -52,6 +52,8 @@ export const contactHandler = async (req: Request, res: Response) => {
 
   const ownerEmail = process.env.CONTACT_RECIPIENT_EMAIL || "contact@altuspharma.in";
   // Allow configuring the 'from' address separately (use a Resend-verified sending address)
+  // IMPORTANT: Resend only allows sending from verified domains.
+  // Default to onboarding@resend.dev (Resend's shared sender) which works without domain verification.
   const configuredFrom = process.env.RESEND_FROM_EMAIL || null;
   const headerFrom = (req.headers["x-resend-from"] as string) || null;
   const fromAddress = (() => {
@@ -60,7 +62,8 @@ export const contactHandler = async (req: Request, res: Response) => {
       if (chosen.includes("<") && chosen.includes(">")) return chosen;
       return `Contact Form <${chosen}>`;
     }
-    return `Contact Form <no-reply@${ownerEmail.split("@")[1]}>`;
+    // Safe fallback: Resend's shared sender domain (no domain verification needed)
+    return `Contact Form <onboarding@resend.dev>`;
   })();
 
   const html = `

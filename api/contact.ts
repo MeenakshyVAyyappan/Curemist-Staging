@@ -41,7 +41,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     const ownerEmail = process.env.CONTACT_RECIPIENT_EMAIL || "contact@altuspharma.in";
-    const fromAddress = process.env.RESEND_FROM_EMAIL || `Contact Form <no-reply@${ownerEmail.split("@")[1]}>`;
+    // IMPORTANT: Resend only allows sending from verified domains.
+    // Default to onboarding@resend.dev (Resend's shared sender) which works without domain verification.
+    const fromAddress = process.env.RESEND_FROM_EMAIL || `Contact Form <onboarding@resend.dev>`;
 
     const html = `
     <h2>New contact form submission</h2>
