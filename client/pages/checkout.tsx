@@ -368,11 +368,13 @@ export default function Checkout() {
   };
 
   // Save final status after Razorpay verification
+  // orderId is passed directly to avoid stale React closure issues
   const finalizeOrderStatus = async (
+    orderId: string,
     status: "paid" | "payment_failed",
     razorpayPaymentId?: string,
   ) => {
-    if (!currentOrderId || !user) {
+    if (!orderId || !user) {
       console.error("No current order to finalize");
       return null;
     }
@@ -387,7 +389,7 @@ export default function Checkout() {
     const { error } = await supabase
       .from("orders")
       .update(updateData)
-      .eq("id", currentOrderId);
+      .eq("id", orderId);
     if (error) {
       console.error("Failed to finalize order status:", error);
       throw error;
@@ -412,7 +414,9 @@ export default function Checkout() {
   };
 
   // Razorpay payment handler
-  const initiateRazorpayPayment = async () => {
+  // orderId is passed directly to avoid stale React closure bugs
+  // (React state updates are async and closures capture old values)
+  const initiateRazorpayPayment = async (orderId: string) => {
     try {
       console.log("Creating Razorpay order with amount:", totalPrice);
 
@@ -473,9 +477,9 @@ export default function Checkout() {
             console.log("Verification response:", verifyData);
 
             if (verifyData.verified) {
-              // 4. Finalize pending order
+              // 4. Finalize pending order using direct orderId (not stale state)
               console.log("Finalizing order status in database...");
-              await finalizeOrderStatus("paid", response.razorpay_payment_id);
+              await finalizeOrderStatus(orderId, "paid", response.razorpay_payment_id);
 
               trackEvent("Purchase", { value: totalPrice, currency: "INR" });
 
@@ -493,7 +497,7 @@ export default function Checkout() {
                 navigate("/profile?tab=1");
               }, 3000);
             } else {
-              await finalizeOrderStatus("payment_failed");
+              await finalizeOrderStatus(orderId, "payment_failed");
               toast({
                 title: "Payment Verification Failed",
                 description:
@@ -527,17 +531,17 @@ export default function Checkout() {
           color: "#4A0E4E",
         },
         modal: {
+          // ondismiss fires when user clicks X or presses Escape in Razorpay
+          // Use orderId directly — currentOrderId from React state would be stale here
           ondismiss: async () => {
-            // Cancel the pending order in admin panel (status: payment_cancelled)
-            // then clear currentOrderId so a fresh order is created on retry
-            const orderToCancel = currentOrderId;
             setCurrentOrderId(null);
             setCurrentOrderStatus("");
             setLoading(false);
             setProcessingPayment(false);
             setIsRazorpayOpen(false);
-            if (orderToCancel) {
-              await cancelPendingOrder(orderToCancel);
+            // Mark the order as cancelled in the DB using the captured orderId
+            if (orderId) {
+              await cancelPendingOrder(orderId);
             }
             toast({
               title: "Payment Cancelled",
@@ -555,8 +559,9 @@ export default function Checkout() {
         setIsRazorpayOpen(false);
         console.error("Payment failed:", response);
 
-        if (currentOrderId) {
-          await finalizeOrderStatus("payment_failed");
+        // Use direct orderId — not the stale currentOrderId from closure
+        if (orderId) {
+          await finalizeOrderStatus(orderId, "payment_failed");
         }
 
         toast({
@@ -625,14 +630,17 @@ export default function Checkout() {
 
     try {
       if (currentOrderId && currentOrderStatus === "payment_failed") {
-        // Retry for a genuinely failed payment (not cancelled)
+        // Retry for a genuinely failed payment — orderId already known
         setLoading(true);
         setProcessingPayment(true);
-        await initiateRazorpayPayment();
+        await initiateRazorpayPayment(currentOrderId);
       } else {
-        setLoading(true); // Initiate loading state!
-        await createPendingOrder();
-        await initiateRazorpayPayment();
+        setLoading(true);
+        // createPendingOrder returns the order so we pass the ID directly
+        // Do NOT rely on setCurrentOrderId state here — it's async and stale in closures
+        const order = await createPendingOrder();
+        if (!order) throw new Error("Failed to create order");
+        await initiateRazorpayPayment(order.id);
       }
     } catch (err: any) {
       setLoading(false);
