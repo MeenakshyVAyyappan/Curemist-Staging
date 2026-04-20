@@ -132,7 +132,7 @@ const TermsAndConditions = () => {
           {/* Intro Banner */}
           <div className="bg-gradient-to-r from-brand-blue to-[#1a2a6c] rounded-2xl p-6 md:p-8 mb-10 text-white">
             <h2 className="text-lg md:text-xl font-bold mb-2">
-              PLEASE READ CAREFULLY
+              Please Read Carefully
             </h2>
             <p className="text-white/80 text-sm md:text-base leading-relaxed">
               These Terms & Conditions govern your use of the CureMist website
