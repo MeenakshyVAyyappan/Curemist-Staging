@@ -58,31 +58,33 @@ interface InfoCardProps {
 }
 function InfoCard({ icon, label, lines }: InfoCardProps) {
   return (
-    <div className="group flex flex-col items-center text-center p-6 md:p-8 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-      <div className="flex items-center justify-center w-14 h-14 rounded-full bg-brand-blue text-brand-yellow mb-4 group-hover:scale-110 transition-transform duration-300">
+    <div className="group flex flex-row md:flex-col items-center md:text-center gap-4 md:gap-0 p-4 md:p-8 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+      <div className="flex-shrink-0 flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-full bg-brand-blue text-brand-yellow md:mb-4 group-hover:scale-110 transition-transform duration-300">
         {icon}
       </div>
-      <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
-        {label}
-      </p>
-      {lines.map((line, i) =>
-        line.href ? (
-          <a
-            key={i}
-            href={line.href}
-            className="text-brand-blue font-semibold text-sm md:text-base hover:text-brand-yellow transition-colors leading-relaxed"
-          >
-            {line.text}
-          </a>
-        ) : (
-          <p
-            key={i}
-            className="text-brand-blue font-semibold text-sm md:text-base leading-relaxed"
-          >
-            {line.text}
-          </p>
-        ),
-      )}
+      <div className="flex flex-col text-left md:text-center">
+        <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">
+          {label}
+        </p>
+        {lines.map((line, i) =>
+          line.href ? (
+            <a
+              key={i}
+              href={line.href}
+              className="text-brand-blue font-semibold text-sm md:text-base hover:text-brand-yellow transition-colors leading-relaxed"
+            >
+              {line.text}
+            </a>
+          ) : (
+            <p
+              key={i}
+              className="text-brand-blue font-semibold text-sm md:text-base leading-relaxed"
+            >
+              {line.text}
+            </p>
+          ),
+        )}
+      </div>
     </div>
   );
 }
@@ -96,7 +98,7 @@ function Input({ error, className = "", ...props }: InputProps) {
     <div className="w-full">
       <input
         {...props}
-        className={`w-full px-4 py-3 rounded-xl border text-sm font-medium outline-none transition-all duration-200 bg-white
+        className={`w-full px-4 py-3.5 rounded-xl border text-base font-medium outline-none transition-all duration-200 bg-white
           ${error
             ? "border-red-400 focus:ring-2 focus:ring-red-200"
             : "border-gray-200 focus:border-brand-blue focus:ring-2 focus:ring-blue-100"
@@ -120,7 +122,7 @@ function Textarea({ error, className = "", ...props }: TextareaProps) {
     <div className="w-full">
       <textarea
         {...props}
-        className={`w-full px-4 py-3 rounded-xl border text-sm font-medium outline-none transition-all duration-200 bg-white resize-none
+        className={`w-full px-4 py-3.5 rounded-xl border text-base font-medium outline-none transition-all duration-200 bg-white resize-none
           ${error
             ? "border-red-400 focus:ring-2 focus:ring-red-200"
             : "border-gray-200 focus:border-brand-blue focus:ring-2 focus:ring-blue-100"
@@ -223,11 +225,11 @@ const ContactUs = () => {
       <BlogHero title="Contact Us" breadcrumbItems={breadcrumbItems} />
 
       {/* ── Contact Info Cards ── */}
-      <section className="bg-gray-50 py-12 md:py-16">
+      <section className="bg-gray-50 py-8 md:py-16">
         <div className="container mx-auto px-4 md:px-6 lg:px-24">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="flex flex-col md:grid md:grid-cols-3 gap-4 md:gap-6">
             <InfoCard
-              icon={<MapPin size={24} />}
+              icon={<MapPin size={22} />}
               label="Our Address"
               lines={[
                 { text: "13/223 B,C, Sukapuram Complex," },
@@ -236,12 +238,12 @@ const ContactUs = () => {
               ]}
             />
             <InfoCard
-              icon={<Phone size={24} />}
+              icon={<Phone size={22} />}
               label="Phone Number"
               lines={[{ text: "+91 88488 15296", href: "tel:+918848815296" }]}
             />
             <InfoCard
-              icon={<Mail size={24} />}
+              icon={<Mail size={22} />}
               label="Email Address"
               lines={[
                 {
@@ -255,9 +257,9 @@ const ContactUs = () => {
       </section>
 
       {/* ── Map + Form ── */}
-      <section className="bg-white py-12 md:py-20">
+      <section className="bg-white py-10 md:py-20">
         <div className="container mx-auto px-4 md:px-6 lg:px-24">
-          <div className="text-center mb-10 md:mb-14">
+          <div className="text-center mb-8 md:mb-14">
             <span className="inline-block px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest bg-brand-yellow/20 text-brand-blue mb-3">
               Get In Touch
             </span>
@@ -270,23 +272,11 @@ const ContactUs = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
-            {/* Google Map */}
-            <div className="rounded-2xl overflow-hidden shadow-md border border-gray-100 h-full min-h-[350px] md:min-h-[450px]">
-              <iframe
-                title="Altus Pharma Location"
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3913.3869823737354!2d76.0077!3d11.0145!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ba64a6e0e6e3c61%3A0x5b3e4e3b3c3b3c3b!2sEdappal%2C%20Kerala%20679576!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin"
-                width="100%"
-                height="100%"
-                style={{ border: 0, minHeight: "450px" }}
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-              />
-            </div>
+          {/* On mobile: form first, map second. On desktop: side-by-side (map left, form right) */}
+          <div className="flex flex-col lg:grid lg:grid-cols-2 gap-8 lg:gap-16 items-start">
 
-            {/* Contact Form */}
-            <div className="bg-gray-50 rounded-2xl p-6 md:p-10 shadow-sm border border-gray-100">
+            {/* Contact Form — order-1 on mobile (appears first) */}
+            <div className="order-1 lg:order-2 bg-gray-50 rounded-2xl p-5 sm:p-8 md:p-10 shadow-sm border border-gray-100">
               {submitted ? (
                 <div className="flex flex-col items-center justify-center py-10 gap-4 text-center">
                   <CheckCircle2 className="w-16 h-16 text-green-500" />
@@ -298,8 +288,9 @@ const ContactUs = () => {
                   </p>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} noValidate className="space-y-5">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <form onSubmit={handleSubmit} noValidate className="space-y-4">
+                  {/* Row 1: Name + Email */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">
                         Full Name <span className="text-red-400">*</span>
@@ -309,6 +300,7 @@ const ContactUs = () => {
                         value={form.name}
                         onChange={handleChange}
                         placeholder="John Doe"
+                        autoComplete="name"
                         error={errors.name}
                       />
                     </div>
@@ -322,12 +314,14 @@ const ContactUs = () => {
                         value={form.email}
                         onChange={handleChange}
                         placeholder="john@example.com"
+                        autoComplete="email"
                         error={errors.email}
                       />
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  {/* Row 2: Phone + Subject */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">
                         Phone Number <span className="text-red-400">*</span>
@@ -335,10 +329,12 @@ const ContactUs = () => {
                       <Input
                         name="phone"
                         type="tel"
+                        inputMode="numeric"
                         value={form.phone}
                         onChange={handleChange}
                         placeholder="10-digit mobile number"
                         maxLength={10}
+                        autoComplete="tel"
                         error={errors.phone}
                       />
                     </div>
@@ -356,6 +352,7 @@ const ContactUs = () => {
                     </div>
                   </div>
 
+                  {/* Message */}
                   <div>
                     <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">
                       Message <span className="text-red-400">*</span>
@@ -365,23 +362,27 @@ const ContactUs = () => {
                       value={form.message}
                       onChange={handleChange}
                       placeholder="Tell us more about your query..."
-                      rows={5}
+                      rows={4}
                       error={errors.message}
                     />
                   </div>
 
-                  <div className="flex justify-center py-2">
-                    <ReCAPTCHA
-                      ref={recaptchaRef}
-                      sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
-                      onChange={(token) => setCaptchaToken(token)}
-                    />
+                  {/* ReCAPTCHA — scale down on xs screens to prevent horizontal overflow */}
+                  <div className="flex justify-center py-1 overflow-hidden">
+                    <div className="scale-[0.82] sm:scale-100 origin-top">
+                      <ReCAPTCHA
+                        ref={recaptchaRef}
+                        sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
+                        onChange={(token) => setCaptchaToken(token)}
+                      />
+                    </div>
                   </div>
 
+                  {/* Submit */}
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="w-full flex items-center justify-center gap-2 bg-brand-blue text-white font-bold text-sm py-3.5 px-6 rounded-xl hover:bg-brand-blue/90 active:scale-[0.98] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
+                    className="w-full flex items-center justify-center gap-2 bg-brand-blue text-white font-bold text-base py-4 px-6 rounded-xl hover:bg-brand-blue/90 active:scale-[0.98] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed mb-4"
                   >
                     {submitting ? (
                       <>
@@ -414,6 +415,20 @@ const ContactUs = () => {
                   </button>
                 </form>
               )}
+            </div>
+
+            {/* Google Map — order-2 on mobile (appears below form) */}
+            <div className="order-2 lg:order-1 rounded-2xl overflow-hidden shadow-md border border-gray-100 w-full" style={{ minHeight: '260px' }}>
+              <iframe
+                title="Altus Pharma Location"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3913.3869823737354!2d76.0077!3d11.0145!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ba64a6e0e6e3c61%3A0x5b3e4e3b3c3b3c3b!2sEdappal%2C%20Kerala%20679576!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin"
+                width="100%"
+                height="100%"
+                style={{ border: 0, minHeight: '260px' }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
             </div>
           </div>
         </div>
