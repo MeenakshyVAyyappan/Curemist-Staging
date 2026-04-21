@@ -153,7 +153,7 @@ export default function FAQSection() {
   const [showAll, setShowAll] = useState(false);
 
   return (
-    <section className="py-12 md:py-20 lg:py-0 lg:pt-[50px] bg-white">
+    <section className="py-8 md:py-12 lg:py-0 lg:pt-[40px] bg-white">
       <div className="container mx-auto px-4 md:px-6 lg:px-24">
         {/* Section Header */}
         <div className="text-center mb-8 md:mb-12">

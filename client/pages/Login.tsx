@@ -39,6 +39,7 @@ export default function Login() {
   const [resetLoading, setResetLoading] = useState(false);
   const [resetOpen, setResetOpen] = useState(false);
 
+  const [googleLoading, setGoogleLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
@@ -112,6 +113,8 @@ export default function Login() {
   };
 
   const handleGoogleSignIn = async () => {
+    if (googleLoading) return;
+    setGoogleLoading(true);
     try {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: "google",
@@ -120,6 +123,7 @@ export default function Login() {
 
       if (error) {
         toast({ title: "Google Sign-In Failed", description: error.message, variant: "destructive" });
+        setGoogleLoading(false);
         return;
       }
 
@@ -130,6 +134,7 @@ export default function Login() {
     } catch (err: any) {
       console.error("Google sign-in error:", err);
       toast({ title: "Error", description: "Unable to start Google Sign-In.", variant: "destructive" });
+      setGoogleLoading(false);
     }
   };
 
@@ -199,9 +204,23 @@ export default function Login() {
         </CardHeader>
         <CardContent>
           <div className="mb-4 flex justify-center">
-            <Button variant="outline" className="w-full max-w-xs bg-[#efb506] border-none hover:bg-[#efb506]/90 flex items-center gap-2" onClick={handleGoogleSignIn}>
-              <img src="/icons/google.png" alt="Google" className="h-5 w-5" />
-              Continue with Google
+            <Button 
+              variant="outline" 
+              className="w-full max-w-xs bg-[#efb506] border-none hover:bg-[#efb506]/90 flex items-center justify-center gap-2" 
+              onClick={handleGoogleSignIn}
+              disabled={googleLoading}
+            >
+              {googleLoading ? (
+                <div className="flex items-center gap-2">
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
+                  <span>Loading...</span>
+                </div>
+              ) : (
+                <>
+                  <img src="/icons/google.png" alt="Google" className="h-5 w-5" />
+                  Continue with Google
+                </>
+              )}
             </Button>
           </div>
 

@@ -57,7 +57,8 @@ export default function Header() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white">
       {/* Top Scrolling Banner */}
-      <div className={`bg-brand-blue h-[50px] overflow-hidden relative ${isProductDetailsPage ? "hidden md:block" : ""}`}>
+      {location.pathname === "/" && (
+        <div className={`bg-brand-blue h-[50px] overflow-hidden relative ${isProductDetailsPage ? "hidden md:block" : ""}`}>
         <div className="absolute inset-0 flex items-center">
           <div className="marquee-track">
             <div className="marquee-content">
@@ -101,6 +102,7 @@ export default function Header() {
           </div>
         </div>
       </div>
+      )}
 
       {/* Main Navigation */}
       <div className="bg-brand-yellow h-[60px] md:h-[95px]">

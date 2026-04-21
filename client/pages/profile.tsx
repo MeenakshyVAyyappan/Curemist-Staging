@@ -448,7 +448,7 @@ export default function Profile() {
     <>
       <Header />
       <div className="min-h-screen pt-[110px] md:pt-[145px] pb-0 bg-gradient-to-b from-gray-50 to-gray-100">
-        <div className="container mx-auto px-4 md:px-6 lg:px-24 py-8 md:py-12">
+        <div className="container mx-auto px-4 md:px-6 lg:px-24 py-4 md:py-8">
           {/* Page Title */}
           <div className="mb-8">
             <h1 className="text-3xl md:text-4xl font-bold text-curemist-purple">My Account</h1>
@@ -803,9 +803,8 @@ export default function Profile() {
                                   {formatOrderId(ord.id)}
                                 </p>
                               </div>
-                              <div className={`px-4 py-2 rounded-full text-xs font-bold uppercase ${
-                                getUserFriendlyStatus(ord.order_status).className
-                              }`}>
+                              <div className={`px-4 py-2 rounded-full text-xs font-bold uppercase ${getUserFriendlyStatus(ord.order_status).className
+                                }`}>
                                 {getUserFriendlyStatus(ord.order_status).label}
                               </div>
                               <div className="flex items-center gap-2">
@@ -823,18 +822,14 @@ export default function Profile() {
                             <div className="p-6 bg-white">
                               {ord.admin_note && (
                                 <p className="text-sm text-gray-700 font-medium">
-                                  <span className="text-gray-600">Note:</span> {ord.admin_note}
-                                </p>
-                              )}
-                              <p className="text-sm text-gray-700 font-medium">
-                                <span className="text-gray-600">Items:</span> {ord.order_items?.length ?? 0} item{(ord.order_items?.length ?? 0) === 1 ? "" : "s"}
-                              </p>
-                              {ord.order_items && ord.order_items.length > 0 && (
-                                <p className="text-sm text-gray-700 mt-2">
-                                  <span className="text-gray-600">First item:</span>{" "}
-                                  <span className="font-semibold text-curemist-purple">
-                                    {ord.order_items[0].title}
-                                  </span>
+                                  <span className="text-gray-600">Note:</span>{" "}
+                                  {ord.admin_note.split(/(https?:\/\/[^\s]+)/g).map((part, i) =>
+                                    /(https?:\/\/[^\s]+)/g.test(part) ? (
+                                      <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all">
+                                        {part}
+                                      </a>
+                                    ) : part
+                                  )}
                                 </p>
                               )}
                             </div>
@@ -912,14 +907,13 @@ export default function Profile() {
                                     <span className="font-medium">Placed:</span>{" "}
                                     {formatOrderDate(selectedOrder.created_at)}
                                   </p>
-                                   <p>
-                                     <span className="font-medium">Status:</span>{" "}
-                                     <span className={`inline-block px-2 py-0.5 rounded text-xs font-bold ${
-                                       getUserFriendlyStatus(selectedOrder.order_status).className
-                                     }`}>
-                                       {getUserFriendlyStatus(selectedOrder.order_status).label}
-                                     </span>
-                                   </p>
+                                  <p>
+                                    <span className="font-medium">Status:</span>{" "}
+                                    <span className={`inline-block px-2 py-0.5 rounded text-xs font-bold ${getUserFriendlyStatus(selectedOrder.order_status).className
+                                      }`}>
+                                      {getUserFriendlyStatus(selectedOrder.order_status).label}
+                                    </span>
+                                  </p>
                                   <p>
                                     <span className="font-medium">Total:</span> ₹
                                     {selectedOrder.total_price}
@@ -958,7 +952,14 @@ export default function Profile() {
                                   )}
                                   {selectedOrder.admin_note && (
                                     <p className="mt-2">
-                                      <span className="font-medium">Note:</span> {selectedOrder.admin_note}
+                                      <span className="font-medium">Note:</span>{" "}
+                                      {selectedOrder.admin_note.split(/(https?:\/\/[^\s]+)/g).map((part, i) =>
+                                        /(https?:\/\/[^\s]+)/g.test(part) ? (
+                                          <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all">
+                                            {part}
+                                          </a>
+                                        ) : part
+                                      )}
                                     </p>
                                   )}
                                 </div>
@@ -1166,10 +1167,10 @@ export default function Profile() {
                           {editingAddressId ? "Edit Address" : "Add New Address"}
                         </h3>
                         <div className="grid grid-cols-1 gap-5">
-                          <input
+                          <textarea
                             value={newAddressLine}
                             onChange={(e) => setNewAddressLine(e.target.value)}
-                            className="border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-brand-yellow focus:border-transparent outline-none transition-all"
+                            className="border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-brand-yellow focus:border-transparent outline-none transition-all min-h-[100px]"
                             placeholder="Address Line (Street, Flat, etc.)"
                           />
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">

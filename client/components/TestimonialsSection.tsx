@@ -6,7 +6,7 @@ export default function TestimonialsSection() {
   ];
 
   return (
-    <section className="py-12 md:py-20 lg:pt-28 bg-white">
+    <section className="py-10 md:py-12 lg:pt-20 bg-white">
       <div className="container mx-auto px-4 md:px-6 lg:px-24">
         {/* Section Header */}
         <div className="text-center mb-10">

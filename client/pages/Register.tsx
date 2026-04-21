@@ -37,6 +37,7 @@ export default function Register() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const recaptchaRef = React.useRef<ReCAPTCHA>(null);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -110,6 +111,8 @@ export default function Register() {
   };
 
   const handleGoogleSignIn = async () => {
+    if (googleLoading) return;
+    setGoogleLoading(true);
     try {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: "google",
@@ -118,6 +121,7 @@ export default function Register() {
 
       if (error) {
         toast({ title: "Google Sign-In Failed", description: error.message, variant: "destructive" });
+        setGoogleLoading(false);
         return;
       }
 
@@ -127,6 +131,7 @@ export default function Register() {
     } catch (err: any) {
       console.error("Google sign-in error:", err);
       toast({ title: "Error", description: "Unable to start Google Sign-In.", variant: "destructive" });
+      setGoogleLoading(false);
     }
   };
 
@@ -200,9 +205,23 @@ export default function Register() {
         </CardHeader>
         <CardContent>
           <div className="mb-4 flex justify-center">
-            <Button variant="outline" className="w-full max-w-xs flex items-center gap-2" onClick={handleGoogleSignIn}>
-              <img src="/icons/google.png" alt="Google" className="h-5 w-5" />
-              Continue with Google
+            <Button 
+              variant="outline" 
+              className="w-full max-w-xs flex items-center justify-center gap-2" 
+              onClick={handleGoogleSignIn}
+              disabled={googleLoading}
+            >
+              {googleLoading ? (
+                <div className="flex items-center gap-2">
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-brand-blue border-t-transparent" />
+                  <span>Loading...</span>
+                </div>
+              ) : (
+                <>
+                  <img src="/icons/google.png" alt="Google" className="h-5 w-5" />
+                  Continue with Google
+                </>
+              )}
             </Button>
           </div>
           <div className="relative my-6 flex items-center justify-center">

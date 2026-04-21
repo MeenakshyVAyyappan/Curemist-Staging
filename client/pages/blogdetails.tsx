@@ -55,9 +55,9 @@ const BlogDetail = () => {
       <Header />
 
       {/* Breadcrumb Section */}
-      <section className="bg-gradient-to-r from-[#F2B705] to-[#FFD147] py-4 md:py-6 px-4">
+      <section className="py-2 px-4 border-b border-gray-100">
         <div className="container mx-auto px-4 md:px-6 lg:px-24">
-          <BreadcrumbList className="mb-2 text-xs md:text-sm">
+          <BreadcrumbList className="text-xs md:text-sm">
             {breadcrumbItems.map((b, idx) => (
               <BreadcrumbItem key={idx}>
                 {b.href ? (

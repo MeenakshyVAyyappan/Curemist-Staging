@@ -42,6 +42,8 @@ END $$;
 CREATE TABLE IF NOT EXISTS user_addresses (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+    full_name TEXT,
+    phone TEXT,
     street TEXT NOT NULL,
     city TEXT NOT NULL,
     state TEXT NOT NULL,
@@ -50,6 +52,23 @@ CREATE TABLE IF NOT EXISTS user_addresses (
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Migration: Add full_name and phone to existing user_addresses table
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_name = 'user_addresses' AND column_name = 'full_name'
+    ) THEN
+        ALTER TABLE user_addresses ADD COLUMN full_name TEXT;
+    END IF;
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_name = 'user_addresses' AND column_name = 'phone'
+    ) THEN
+        ALTER TABLE user_addresses ADD COLUMN phone TEXT;
+    END IF;
+END $$;
 
 -- ============================================
 -- 3. CARTS TABLE

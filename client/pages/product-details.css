@@ -9,14 +9,14 @@
 .pd-page {
   min-height: 100vh;
   background: #fff;
-  padding-top: 145px;
+  padding-top: 120px;
   overflow-x: hidden;
   /* header height offset */
 }
 
 /* ── Breadcrumb ── */
 .pd-breadcrumb {
-  padding: 18px 0 10px;
+  padding: 10px 0 5px;
   font-size: 12px;
   color: #888;
   letter-spacing: 0.04em;

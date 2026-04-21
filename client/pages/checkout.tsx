@@ -24,6 +24,8 @@ interface CustomerInfo {
 
 interface Address {
   id?: string;
+  full_name?: string;
+  phone?: string;
   street: string;
   city: string;
   state: string;
@@ -82,6 +84,20 @@ export default function Checkout() {
   // New address form (for modal)
   const [showNewAddressForm, setShowNewAddressForm] = useState(false);
   const [newAddress, setNewAddress] = useState<Address>({
+    full_name: "",
+    phone: "",
+    street: "",
+    city: "",
+    state: "",
+    zip: "",
+    country: "",
+  });
+
+  // Edit address state
+  const [editingAddressId, setEditingAddressId] = useState<string | null>(null);
+  const [editAddress, setEditAddress] = useState<Address>({
+    full_name: "",
+    phone: "",
     street: "",
     city: "",
     state: "",
@@ -589,7 +605,12 @@ export default function Checkout() {
       toast({ title: "Please fill all address fields", variant: "destructive" });
       return;
     }
-    const addrToSave = { ...newAddress, country: newAddress.country || "India" };
+    const addrToSave = {
+      ...newAddress,
+      full_name: newAddress.full_name || customerInfo.firstName,
+      phone: newAddress.phone || customerInfo.phone,
+      country: newAddress.country || "India",
+    };
     if (user) {
       const { data: saved, error } = await supabase
         .from("user_addresses")
@@ -608,9 +629,47 @@ export default function Checkout() {
       setShippingAddress(addrToSave);
       setSelectedAddressId(null);
     }
-    setNewAddress({ street: "", city: "", state: "", zip: "", country: "" });
+    setNewAddress({ full_name: "", phone: "", street: "", city: "", state: "", zip: "", country: "" });
     setShowNewAddressForm(false);
     setShowAddressModal(false);
+  };
+
+  // Update existing address in Supabase
+  const handleUpdateAddress = async () => {
+    if (!editingAddressId) return;
+    if (!editAddress.street || !editAddress.city || !editAddress.state || !editAddress.zip) {
+      toast({ title: "Please fill all address fields", variant: "destructive" });
+      return;
+    }
+    const { error } = await supabase
+      .from("user_addresses")
+      .update({
+        full_name: editAddress.full_name,
+        phone: editAddress.phone,
+        street: editAddress.street,
+        city: editAddress.city,
+        state: editAddress.state,
+        zip: editAddress.zip,
+        country: editAddress.country || "India",
+      })
+      .eq("id", editingAddressId);
+
+    if (!error) {
+      setSavedAddresses((prev) =>
+        prev.map((a) =>
+          a.id === editingAddressId ? { ...a, ...editAddress } : a
+        )
+      );
+      // If currently selected address was edited, update shipping address too
+      if (selectedAddressId === editingAddressId) {
+        setShippingAddress({ ...editAddress });
+      }
+      toast({ title: "Address updated successfully" });
+    } else {
+      toast({ title: "Failed to update address", description: error.message, variant: "destructive" });
+    }
+    setEditingAddressId(null);
+    setEditAddress({ full_name: "", phone: "", street: "", city: "", state: "", zip: "", country: "" });
   };
 
   if (items.length === 0) {
@@ -1410,28 +1469,28 @@ export default function Checkout() {
                   onClick={() => setShowAddressModal(false)}
                   aria-label="Close"
                 >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6L6 18M6 6l12 12" /></svg>
                 </button>
               </div>
             </div>
 
             {/* New Address Form */}
-            {showNewAddressForm && (
+            {showNewAddressForm && !editingAddressId && (
               <div className="new-addr-form" style={{ borderBottom: '1px solid #f0f0f0' }}>
                 <p style={{ fontSize: 13, fontWeight: 700, color: '#1a1a1a', marginBottom: 12 }}>Add a New Address</p>
                 <label className="form-label">Full Name *</label>
                 <input
                   className="form-input"
                   placeholder="Your full name"
-                  value={customerInfo.firstName}
-                  onChange={(e) => setCustomerInfo({ ...customerInfo, firstName: e.target.value })}
+                  value={newAddress.full_name ?? ""}
+                  onChange={(e) => setNewAddress({ ...newAddress, full_name: e.target.value })}
                 />
                 <label className="form-label">Phone *</label>
                 <input
                   className="form-input"
                   placeholder="10-digit mobile number"
-                  value={customerInfo.phone}
-                  onChange={(e) => setCustomerInfo({ ...customerInfo, phone: e.target.value.replace(/\D/g, "") })}
+                  value={newAddress.phone ?? ""}
+                  onChange={(e) => setNewAddress({ ...newAddress, phone: e.target.value.replace(/\D/g, "") })}
                   maxLength={10}
                 />
                 <label className="form-label">Street Address *</label>
@@ -1492,7 +1551,95 @@ export default function Checkout() {
               </div>
             )}
 
+            {/* Edit Address Form */}
+            {editingAddressId && (
+              <div className="new-addr-form" style={{ borderBottom: '1px solid #f0f0f0' }}>
+                <p style={{ fontSize: 13, fontWeight: 700, color: '#1a1a1a', marginBottom: 12 }}>Edit Address</p>
+                <label className="form-label">Full Name *</label>
+                <input
+                  className="form-input"
+                  placeholder="Your full name"
+                  value={editAddress.full_name ?? ""}
+                  onChange={(e) => setEditAddress({ ...editAddress, full_name: e.target.value })}
+                />
+                <label className="form-label">Phone *</label>
+                <input
+                  className="form-input"
+                  placeholder="10-digit mobile number"
+                  value={editAddress.phone ?? ""}
+                  onChange={(e) => setEditAddress({ ...editAddress, phone: e.target.value.replace(/\D/g, "") })}
+                  maxLength={10}
+                />
+                <label className="form-label">Street Address *</label>
+                <input
+                  className="form-input"
+                  placeholder="House no, Street, Area"
+                  value={editAddress.street}
+                  onChange={(e) => setEditAddress({ ...editAddress, street: e.target.value })}
+                />
+                <div className="form-grid-2">
+                  <div>
+                    <label className="form-label">City *</label>
+                    <input
+                      className="form-input"
+                      placeholder="City"
+                      value={editAddress.city}
+                      onChange={(e) => setEditAddress({ ...editAddress, city: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <label className="form-label">State *</label>
+                    <input
+                      className="form-input"
+                      placeholder="State"
+                      value={editAddress.state}
+                      onChange={(e) => setEditAddress({ ...editAddress, state: e.target.value })}
+                    />
+                  </div>
+                </div>
+                <div className="form-grid-2">
+                  <div>
+                    <label className="form-label">PIN Code *</label>
+                    <input
+                      className="form-input"
+                      placeholder="PIN code"
+                      value={editAddress.zip}
+                      onChange={(e) => setEditAddress({ ...editAddress, zip: e.target.value.replace(/\D/g, "") })}
+                      maxLength={6}
+                    />
+                  </div>
+                  <div>
+                    <label className="form-label">Country *</label>
+                    <input
+                      className="form-input"
+                      placeholder="Country"
+                      value={editAddress.country || "India"}
+                      onChange={(e) => setEditAddress({ ...editAddress, country: e.target.value })}
+                    />
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
+                  <button
+                    className="deliver-here-btn"
+                    style={{ background: '#888' }}
+                    onClick={() => {
+                      setEditingAddressId(null);
+                      setEditAddress({ full_name: "", phone: "", street: "", city: "", state: "", zip: "", country: "" });
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="deliver-here-btn selected"
+                    onClick={handleUpdateAddress}
+                  >
+                    Save Changes
+                  </button>
+                </div>
+              </div>
+            )}
             {/* Saved Addresses List */}
+            {!editingAddressId && (
             <div style={{ padding: '8px 0' }}>
               {savedAddresses.map((addr) => (
                 <div
@@ -1500,14 +1647,16 @@ export default function Checkout() {
                   className={`saved-address-card ${selectedAddressId === addr.id ? 'selected' : ''}`}
                 >
                   <div className="addr-card-name-row">
-                    <span style={{ fontSize: 14, fontWeight: 700, color: '#1a1a1a' }}>{customerInfo.firstName}</span>
+                    <span style={{ fontSize: 14, fontWeight: 700, color: '#1a1a1a' }}>
+                      {addr.full_name || customerInfo.firstName}
+                    </span>
                     <span className="addr-type-chip">Home</span>
                   </div>
                   <p style={{ fontSize: 13, color: '#555', lineHeight: 1.5 }}>
                     {addr.street}, {addr.city}, {addr.state}, {addr.zip}
                   </p>
                   <p style={{ fontSize: 12, color: '#888', marginTop: 3 }}>{customerInfo.email}</p>
-                  <p style={{ fontSize: 12, color: '#888' }}>{customerInfo.phone}</p>
+                  <p style={{ fontSize: 12, color: '#888' }}>{addr.phone || customerInfo.phone}</p>
 
                   {/* Three-dot menu */}
                   <button
@@ -1517,16 +1666,25 @@ export default function Checkout() {
                       setAddressMenuOpen(addressMenuOpen === addr.id ? null : (addr.id || null));
                     }}
                   >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                      <circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/>
-                    </svg>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2" /><circle cx="12" cy="12" r="2" /><circle cx="12" cy="19" r="2" /></svg>
                   </button>
                   {addressMenuOpen === addr.id && (
                     <div className="addr-dropdown">
                       <button
                         className="addr-dropdown-item"
-                        onClick={() => {
-                          handleAddressSelect(addr);
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEditingAddressId(addr.id || null);
+                          setEditAddress({
+                            full_name: addr.full_name || customerInfo.firstName,
+                            phone: addr.phone || customerInfo.phone,
+                            street: addr.street,
+                            city: addr.city,
+                            state: addr.state,
+                            zip: addr.zip,
+                            country: addr.country,
+                          });
+                          setShowNewAddressForm(false);
                           setAddressMenuOpen(null);
                         }}
                       >
@@ -1556,6 +1714,7 @@ export default function Checkout() {
                 </div>
               ))}
             </div>
+            )}
           </div>
         </div>
       )}
@@ -1565,7 +1724,7 @@ export default function Checkout() {
         {/* Secure payment header */}
         <div style={{ background: '#fff', borderBottom: '1px solid #efefef', padding: '8px 0' }}>
           <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 16px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 6 }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1a8c3b" strokeWidth="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1a8c3b" strokeWidth="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>
             <span style={{ fontSize: 12, fontWeight: 700, color: '#1a8c3b' }}>100% Secured Payment</span>
           </div>
         </div>
@@ -1583,14 +1742,14 @@ export default function Checkout() {
                   <>
                     <div className="addr-display-row">
                       <div className="addr-icon">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4A0E4E" strokeWidth="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4A0E4E" strokeWidth="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" /><circle cx="12" cy="10" r="3" /></svg>
                       </div>
                       <div style={{ flex: 1 }}>
-                        <p className="addr-name">Deliver To: {customerInfo.firstName}</p>
+                        <p className="addr-name">Deliver To: {selectedAddress?.full_name || customerInfo.firstName}</p>
                         <p className="addr-line">
                           {shippingAddress.street}, {shippingAddress.city}, {shippingAddress.state} - {shippingAddress.zip}
                         </p>
-                        <p className="addr-phone">+91 {customerInfo.phone}</p>
+                        <p className="addr-phone">+91 {selectedAddress?.phone || customerInfo.phone}</p>
                       </div>
                       <button
                         className="change-btn"
@@ -1600,7 +1759,7 @@ export default function Checkout() {
                       </button>
                     </div>
                     <div className="free-delivery-badge">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1a8c3b" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1a8c3b" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
                       Free Delivery Across India
                     </div>
                   </>
@@ -1609,7 +1768,7 @@ export default function Checkout() {
                   <>
                     <div className="addr-display-row">
                       <div className="addr-icon">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4A0E4E" strokeWidth="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4A0E4E" strokeWidth="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" /><circle cx="12" cy="10" r="3" /></svg>
                       </div>
                       <div style={{ flex: 1 }}>
                         <p className="addr-name">Select Delivery Address</p>
@@ -1669,9 +1828,8 @@ export default function Checkout() {
                       </div>
                       <div className="checkout-form-field">
                         <label>Street Address *</label>
-                        <input
-                          type="text"
-                          className={showErrors && !shippingAddress.street ? 'error' : ''}
+                        <textarea
+                          className={showErrors && !shippingAddress.street ? 'error min-h-[80px]' : 'min-h-[80px]'}
                           value={shippingAddress.street}
                           onChange={(e) => setShippingAddress({ ...shippingAddress, street: e.target.value })}
                           placeholder="House no, Street, Area"
@@ -1879,18 +2037,18 @@ export default function Checkout() {
                   <span className="desktop-razorpay-label">Pay using Razorpay</span>
                 </div> */}
                 <div style={{ padding: '0 14px 14px' }} className="hidden md:block">
-          <button
-           id="main-pay-button"
-          type="button"
-           onClick={handlePlaceOrder as any}
-           disabled={loading || processingPayment}
-           className="main-inline-pay-btn"
-          >
-          {loading || processingPayment
-          ? "Processing..."
-           : `Pay ₹${totalPrice}`}
-           </button>
-             </div>
+                  <button
+                    id="main-pay-button"
+                    type="button"
+                    onClick={handlePlaceOrder as any}
+                    disabled={loading || processingPayment}
+                    className="main-inline-pay-btn"
+                  >
+                    {loading || processingPayment
+                      ? "Processing..."
+                      : `Pay ₹${totalPrice}`}
+                  </button>
+                </div>
                 {/* <div className="secure-badge" style={{ paddingBottom: 14 }}>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#888" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                   100% Secure & Encrypted Payment
