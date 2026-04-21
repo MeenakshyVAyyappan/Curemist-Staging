@@ -23,16 +23,16 @@ import {
 } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
 import { FiEye, FiEyeOff } from "react-icons/fi";
-import ReCAPTCHA from "react-google-recaptcha";
+// import ReCAPTCHA from "react-google-recaptcha";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
-  const recaptchaRef = React.useRef<ReCAPTCHA>(null);
-  const resetRecaptchaRef = React.useRef<ReCAPTCHA>(null);
+  // const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  // const recaptchaRef = React.useRef<ReCAPTCHA>(null);
+  // const resetRecaptchaRef = React.useRef<ReCAPTCHA>(null);
 
   // Reset Password State
   const [resetEmail, setResetEmail] = useState("");
@@ -46,14 +46,14 @@ export default function Login() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!captchaToken) {
-      toast({
-        title: "Captcha Required",
-        description: "Please complete the captcha verification.",
-        variant: "destructive",
-      });
-      return;
-    }
+    // if (!captchaToken) {
+    //   toast({
+    //     title: "Captcha Required",
+    //     description: "Please complete the captcha verification.",
+    //     variant: "destructive",
+    //   });
+    //   return;
+    // }
 
     setLoading(true);
 
@@ -144,14 +144,14 @@ export default function Login() {
       return;
     }
 
-    if (!captchaToken) {
-      toast({
-        title: "Captcha Required",
-        description: "Please complete the captcha verification.",
-        variant: "destructive",
-      });
-      return;
-    }
+    // if (!captchaToken) {
+    //   toast({
+    //     title: "Captcha Required",
+    //     description: "Please complete the captcha verification.",
+    //     variant: "destructive",
+    //   });
+    //   return;
+    // }
 
     console.log("Attempting to reset password for:", resetEmail);
     setResetLoading(true);
@@ -196,9 +196,6 @@ export default function Login() {
           <CardTitle className="text-2xl font-bold text-center">
             Login
           </CardTitle>
-          <CardDescription className="text-center">
-            Enter your email and password to access your account
-          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="mb-4 flex justify-center">
@@ -215,6 +212,9 @@ export default function Login() {
           </div>
 
           <form onSubmit={handleLogin} className="space-y-4">
+            <CardDescription className="text-center">
+            Enter your email and password to access your account
+          </CardDescription>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -261,13 +261,13 @@ export default function Login() {
                           required
                         />
                       </div>
-                      <div className="flex justify-center py-2">
+                      {/* <div className="flex justify-center py-2">
                         <ReCAPTCHA
                           ref={resetRecaptchaRef}
                           sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
                           onChange={(token) => setCaptchaToken(token)}
                         />
-                      </div>
+                      </div> */}
                       <DialogFooter>
                         <Button type="submit" disabled={resetLoading}>
                           {resetLoading ? "Sending..." : "Send Reset Link"}
@@ -296,13 +296,13 @@ export default function Login() {
                 </button>
               </div>
             </div>
-            <div className="flex justify-center py-2">
+            {/* <div className="flex justify-center py-2">
               <ReCAPTCHA
                 ref={recaptchaRef}
                 sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
                 onChange={(token) => setCaptchaToken(token)}
               />
-            </div>
+            </div> */}
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Logging in..." : "Login"}
             </Button>

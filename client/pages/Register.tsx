@@ -197,9 +197,6 @@ export default function Register() {
           <CardTitle className="text-2xl font-bold text-center">
             Create an Account
           </CardTitle>
-          <CardDescription className="text-center">
-            Enter your details to register
-          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="mb-4 flex justify-center">
@@ -208,8 +205,16 @@ export default function Register() {
               Continue with Google
             </Button>
           </div>
+          <div className="relative my-6 flex items-center justify-center">
+            <div className="flex-grow border-t border-gray-200"></div>
+            <span className="flex-shrink-0 px-3 text-xs font-medium text-gray-400 uppercase">Or</span>
+            <div className="flex-grow border-t border-gray-200"></div>
+          </div>
           <form onSubmit={handleRegister} className="space-y-4">
             <div className="space-y-2">
+              <CardDescription className="text-center">
+            Enter your details to register
+          </CardDescription>
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
