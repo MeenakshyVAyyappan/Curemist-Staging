@@ -341,7 +341,7 @@ export default function Header() {
             </Link>
 
             <Link
-              to="/terms-conditions"
+              to="/terms-and-conditions"
               className="text-lg font-medium text-gray-700 py-3 px-0 border-b border-gray-100"
               onClick={() => setIsMobileMenuOpen(false)}
             >

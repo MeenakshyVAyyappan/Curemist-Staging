@@ -54,6 +54,7 @@ export default function Checkout() {
   // New state for redesign
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [addressMenuOpen, setAddressMenuOpen] = useState<string | null>(null);
+  const [pincodeError, setPincodeError] = useState<string | null>(null);
 
   // Customer Information
   const [customerInfo, setCustomerInfo] = useState<CustomerInfo>({
@@ -74,7 +75,7 @@ export default function Checkout() {
     city: "",
     state: "",
     zip: "",
-    country: "",
+    country: "India",
   });
 
   // Billing always same as shipping - section removed from UI
@@ -90,7 +91,7 @@ export default function Checkout() {
     city: "",
     state: "",
     zip: "",
-    country: "",
+    country: "India",
   });
 
   // Edit address state
@@ -102,7 +103,7 @@ export default function Checkout() {
     city: "",
     state: "",
     zip: "",
-    country: "",
+    country: "India",
   });
 
   const fetchAvailableCoupons = async () => {
@@ -559,6 +560,8 @@ export default function Checkout() {
       return;
     }
 
+    if (!validateAddress(shippingAddress)) return;
+
 
 
     try {
@@ -599,12 +602,37 @@ export default function Checkout() {
     }
   };
 
+  const validateAddress = (addr: Address) => {
+    if (!addr.zip || addr.zip.length !== 6) {
+      toast({ title: "Error", description: "PIN Code must be 6 digits", variant: "destructive" });
+      return false;
+    }
+    if (pincodeError) {
+      toast({ title: "Error", description: pincodeError, variant: "destructive" });
+      return false;
+    }
+    if (!addr.city || addr.city.length < 3 || /\d/.test(addr.city)) {
+      toast({ title: "Error", description: "Please enter a valid city name", variant: "destructive" });
+      return false;
+    }
+    if (!addr.state || addr.state.length < 3 || /\d/.test(addr.state)) {
+      toast({ title: "Error", description: "Please enter a valid state name", variant: "destructive" });
+      return false;
+    }
+    if (!addr.country || addr.country.length < 2) {
+      toast({ title: "Error", description: "Please enter a valid country", variant: "destructive" });
+      return false;
+    }
+    return true;
+  };
+
   // Save new address to Supabase and select it
   const handleSaveAndDeliverNewAddress = async () => {
     if (!newAddress.street || !newAddress.city || !newAddress.state || !newAddress.zip) {
       toast({ title: "Please fill all address fields", variant: "destructive" });
       return;
     }
+    if (!validateAddress(newAddress)) return;
     const addrToSave = {
       ...newAddress,
       full_name: newAddress.full_name || customerInfo.firstName,
@@ -641,6 +669,7 @@ export default function Checkout() {
       toast({ title: "Please fill all address fields", variant: "destructive" });
       return;
     }
+    if (!validateAddress(editAddress)) return;
     const { error } = await supabase
       .from("user_addresses")
       .update({
@@ -670,6 +699,38 @@ export default function Checkout() {
     }
     setEditingAddressId(null);
     setEditAddress({ full_name: "", phone: "", street: "", city: "", state: "", zip: "", country: "" });
+  };
+
+  const lookupPincode = async (pincode: string, type: 'new' | 'edit' | 'shipping') => {
+    if (pincode.length !== 6) {
+      setPincodeError(null);
+      return;
+    }
+
+    try {
+      const response = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
+      const data = await response.json();
+
+      if (data && data[0].Status === "Success" && data[0].PostOffice && data[0].PostOffice.length > 0) {
+        setPincodeError(null);
+        const postOffice = data[0].PostOffice[0];
+        const city = postOffice.District;
+        const state = postOffice.State;
+
+        if (type === 'new') {
+          setNewAddress(prev => ({ ...prev, city, state }));
+        } else if (type === 'edit') {
+          setEditAddress(prev => ({ ...prev, city, state }));
+        } else if (type === 'shipping') {
+          setShippingAddress(prev => ({ ...prev, city, state }));
+        }
+      } else {
+        setPincodeError("Please enter a valid pincode");
+      }
+    } catch (error) {
+      console.error("Pincode lookup failed:", error);
+      setPincodeError("Invalid pincode or service unavailable");
+    }
   };
 
   if (items.length === 0) {
@@ -1500,8 +1561,29 @@ export default function Checkout() {
                   value={newAddress.street}
                   onChange={(e) => setNewAddress({ ...newAddress, street: e.target.value })}
                 />
+                
                 <div className="form-grid-2">
                   <div>
+                    <label className="form-label">PIN Code *</label>
+                    <input
+                      className="form-input"
+                      placeholder="PIN code"
+                      value={newAddress.zip}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/\D/g, "");
+                        setNewAddress({ ...newAddress, zip: val });
+                        if (val.length === 6) {
+                          lookupPincode(val, 'new');
+                        } else {
+                          setPincodeError(null);
+                        }
+                      }}
+                      maxLength={6}
+                    />
+                    {pincodeError && <p className="field-error">{pincodeError}</p>}
+                  </div>
+                  <div>
+                    
                     <label className="form-label">City *</label>
                     <input
                       className="form-input"
@@ -1510,7 +1592,7 @@ export default function Checkout() {
                       onChange={(e) => setNewAddress({ ...newAddress, city: e.target.value })}
                     />
                   </div>
-                  <div>
+                  {/* <div>
                     <label className="form-label">State *</label>
                     <input
                       className="form-input"
@@ -1518,17 +1600,35 @@ export default function Checkout() {
                       value={newAddress.state}
                       onChange={(e) => setNewAddress({ ...newAddress, state: e.target.value })}
                     />
-                  </div>
+                  </div> */}
                 </div>
                 <div className="form-grid-2">
-                  <div>
+                  {/* <div>
                     <label className="form-label">PIN Code *</label>
                     <input
                       className="form-input"
                       placeholder="PIN code"
                       value={newAddress.zip}
-                      onChange={(e) => setNewAddress({ ...newAddress, zip: e.target.value.replace(/\D/g, "") })}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/\D/g, "");
+                        setNewAddress({ ...newAddress, zip: val });
+                        if (val.length === 6) {
+                          lookupPincode(val, 'new');
+                        } else {
+                          setPincodeError(null);
+                        }
+                      }}
                       maxLength={6}
+                    />
+                    {pincodeError && <p className="field-error">{pincodeError}</p>}
+                  </div> */}
+                  <div>
+                    <label className="form-label">State *</label>
+                    <input
+                      className="form-input"
+                      placeholder="State"
+                      value={newAddress.state}
+                      onChange={(e) => setNewAddress({ ...newAddress, state: e.target.value })}
                     />
                   </div>
                   <div>
@@ -1604,9 +1704,18 @@ export default function Checkout() {
                       className="form-input"
                       placeholder="PIN code"
                       value={editAddress.zip}
-                      onChange={(e) => setEditAddress({ ...editAddress, zip: e.target.value.replace(/\D/g, "") })}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/\D/g, "");
+                        setEditAddress({ ...editAddress, zip: val });
+                        if (val.length === 6) {
+                          lookupPincode(val, 'edit');
+                        } else {
+                          setPincodeError(null);
+                        }
+                      }}
                       maxLength={6}
                     />
+                    {pincodeError && <p className="field-error">{pincodeError}</p>}
                   </div>
                   <div>
                     <label className="form-label">Country *</label>
@@ -1865,11 +1974,20 @@ export default function Checkout() {
                             type="text"
                             className={showErrors && !shippingAddress.zip ? 'error' : ''}
                             value={shippingAddress.zip}
-                            onChange={(e) => setShippingAddress({ ...shippingAddress, zip: e.target.value.replace(/\D/g, "") })}
+                            onChange={(e) => {
+                              const val = e.target.value.replace(/\D/g, "");
+                              setShippingAddress({ ...shippingAddress, zip: val });
+                              if (val.length === 6) {
+                                lookupPincode(val, 'shipping');
+                              } else {
+                                setPincodeError(null);
+                              }
+                            }}
                             placeholder="PIN code"
                             maxLength={6}
                             required
                           />
+                          {pincodeError && <p className="field-error">{pincodeError}</p>}
                         </div>
                         <div className="checkout-form-field">
                           <label>Country *</label>
