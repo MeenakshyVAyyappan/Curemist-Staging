@@ -134,3 +134,44 @@ export async function verifyRazorpayPayment(req: Request, res: Response) {
     res.status(500).json({ verified: false, error: "Internal server error" });
   }
 }
+
+// GET /api/admin/verify-razorpay-order/:order_id
+export async function getRazorpayOrderStatus(req: Request, res: Response) {
+  try {
+    const { RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET, missing } =
+      getRazorpayCredentials();
+    if (missing.length) {
+      return sendMissingConfig(res, missing);
+    }
+
+    const { order_id } = req.params;
+    if (!order_id) {
+      res.status(400).json({ error: "Missing order_id" });
+      return;
+    }
+
+    const auth = Buffer.from(
+      `${RAZORPAY_KEY_ID}:${RAZORPAY_KEY_SECRET}`,
+    ).toString("base64");
+
+    const response = await fetch(`https://api.razorpay.com/v1/orders/${order_id}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Basic ${auth}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Failed to fetch Razorpay order:", errorText);
+      res.status(response.status).json({ error: "Failed to fetch order from Razorpay" });
+      return;
+    }
+
+    const order = await response.json();
+    res.json(order);
+  } catch (err: any) {
+    console.error("Razorpay order fetch error:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}

@@ -2,7 +2,7 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
-import { createRazorpayOrder, verifyRazorpayPayment } from "./routes/razorpay";
+import { createRazorpayOrder, verifyRazorpayPayment, getRazorpayOrderStatus } from "./routes/razorpay";
 import { contactHandler, notifyResetHandler } from "./routes/email";
 
 export function createServer() {
@@ -24,6 +24,7 @@ export function createServer() {
   // Razorpay routes
   app.post("/api/create-razorpay-order", createRazorpayOrder);
   app.post("/api/verify-razorpay-payment", verifyRazorpayPayment);
+  app.get("/api/admin/verify-razorpay-order/:order_id", getRazorpayOrderStatus);
 
   // Email endpoints (Resend)
   app.post("/api/contact", contactHandler);

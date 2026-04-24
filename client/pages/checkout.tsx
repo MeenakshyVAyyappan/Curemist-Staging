@@ -395,12 +395,20 @@ export default function Checkout() {
         body: JSON.stringify({
           amount: totalPrice,
           currency: "INR",
-          receipt: `order_${Date.now()}`,
+          receipt: orderId, // Pass actual DB order ID
         }),
       });
 
       const data = await response.json();
       console.log("Razorpay order response:", data);
+
+      if (response.ok && data.orderId) {
+        // Save the razorpay_order_id to database immediately so we can track it
+        await supabase
+          .from("orders")
+          .update({ razorpay_order_id: data.orderId })
+          .eq("id", orderId);
+      }
 
       if (!response.ok) {
         console.error("Razorpay order creation failed:", data);

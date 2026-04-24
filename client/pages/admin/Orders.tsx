@@ -115,6 +115,27 @@ export default function AdminOrders() {
     }
   };
 
+  const verifyWithRazorpay = async (orderId: string, razorpayOrderId: string) => {
+    try {
+      const res = await fetch(`/api/admin/verify-razorpay-order/${razorpayOrderId}`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to fetch");
+
+      if (data.status === "paid") {
+        await updateOrderStatus(orderId, "payment_successful");
+        setSelectedOrderDetail((prev: any) => {
+          if (!prev) return prev;
+          return { ...prev, order_status: "payment_successful", payment_status: "paid" };
+        });
+        toast({ title: "Verified", description: "Payment was successful! Order updated." });
+      } else {
+        toast({ title: "Checked", description: `Razorpay status is currently: ${data.status}` });
+      }
+    } catch (err: any) {
+      toast({ title: "Verification Failed", description: err.message, variant: "destructive" });
+    }
+  };
+
   const saveOrderNote = async (orderId: string) => {
     const raw = orderNotes[orderId];
     const note = raw === "" ? null : raw ?? null;
@@ -718,6 +739,7 @@ export default function AdminOrders() {
                                     <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-purple-700" />
                                   </div>
                                 ) : (
+                                <>
                                 <Select
                                   value={selectedOrderDetail?.id === order.id ? selectedOrderDetail.order_status : order.order_status}
                                   onValueChange={async (val) => {
@@ -754,6 +776,23 @@ export default function AdminOrders() {
                                     </SelectItem>
                                   </SelectContent>
                                 </Select>
+                                <div className="mt-2">
+                                  {order.razorpay_order_id ? (
+                                    <Button 
+                                      size="sm" 
+                                      variant="outline" 
+                                      className="w-full text-purple-700 border-purple-700 hover:bg-purple-700 hover:text-white"
+                                      onClick={() => verifyWithRazorpay(order.id, order.razorpay_order_id)}
+                                    >
+                                      Verify with Razorpay
+                                    </Button>
+                                  ) : (
+                                    <p className="text-xs text-gray-500 italic mt-1">
+                                      * Cannot auto-verify older orders.
+                                    </p>
+                                  )}
+                                </div>
+                                </>
                                 )}
                                 <div className="mt-4">
                                   <label className="block text-sm font-medium text-gray-700">
