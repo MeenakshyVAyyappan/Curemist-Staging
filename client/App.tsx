@@ -150,7 +150,7 @@ function AppRoutes() {
 
         <Route path="*" element={<NotFound />} />
       </Routes>
-      {!hideWhatsApp && <WhatsAppButton hideOnMobile={hideWhatsAppOnMobile} />}
+      {/* {!hideWhatsApp && <WhatsAppButton hideOnMobile={hideWhatsAppOnMobile} />} */}
     </>
   );
 }
