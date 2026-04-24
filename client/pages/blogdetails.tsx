@@ -49,6 +49,14 @@ const BlogDetail = () => {
     }
   };
 
+  const handleBack = () => {
+    if (window.history.state && window.history.state.idx > 0) {
+      navigate(-1);
+    } else {
+      navigate("/blog");
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <AnnouncementBar />
@@ -164,7 +172,7 @@ const BlogDetail = () => {
           <div className="flex items-center justify-between sm:justify-start gap-4 mt-12 pt-8">
             <Button
               variant="outline"
-              onClick={() => navigate(-1)}
+              onClick={handleBack}
               className="flex-1 sm:flex-none sm:w-auto border-2 border-muted-foreground/30 text-foreground font-semibold hover:bg-muted px-12 py-6"
             >
               BACK
@@ -180,6 +188,7 @@ const BlogDetail = () => {
               <span className="font-semibold text-foreground text-sm sm:text-base">Share</span>
             </button>
           </div>
+
         </div>
       </main>
 
