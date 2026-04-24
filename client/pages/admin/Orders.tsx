@@ -591,7 +591,7 @@ export default function AdminOrders() {
                                     {order.customer_info?.phone}
                                   </p>
                                   <p>
-                                    <span className="font-medium">Sex:</span>{" "}
+                                    <span className="font-medium">Gender:</span>{" "}
                                     {order.customer_info?.sex || "N/A"}
                                   </p>
                                   <p>

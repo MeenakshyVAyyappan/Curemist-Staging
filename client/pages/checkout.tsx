@@ -262,9 +262,9 @@ export default function Checkout() {
       shipping_fee: shippingFee,
       gst_amount: gstAmount,
       total_price: totalPrice,
-      payment_status: "pending",
+      payment_status: "cancelled",
       payment_method: "razorpay",
-      order_status: "payment_processing",
+      order_status: "payment_cancelled",
     };
 
     if (!selectedAddressId && savedAddresses.length < 3) {
@@ -315,7 +315,7 @@ export default function Checkout() {
     }
 
     setCurrentOrderId(order.id);
-    setCurrentOrderStatus("payment_processing");
+    setCurrentOrderStatus("payment_cancelled");
     return order;
   };
 
@@ -565,7 +565,7 @@ export default function Checkout() {
 
 
     try {
-      if (currentOrderId && currentOrderStatus === "payment_failed") {
+      if (currentOrderId && (currentOrderStatus === "payment_failed" || currentOrderStatus === "payment_cancelled")) {
         setLoading(true);
         setProcessingPayment(true);
         await initiateRazorpayPayment(currentOrderId);
