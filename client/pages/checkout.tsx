@@ -321,6 +321,18 @@ export default function Checkout() {
 
   const cancelPendingOrder = async (orderId: string) => {
     if (!orderId) return;
+
+    // Safety check: ensure we don't cancel a paid order
+    const { data: order } = await supabase
+      .from("orders")
+      .select("payment_status, order_status")
+      .eq("id", orderId)
+      .single();
+
+    if (order && (order.payment_status === "paid" || order.order_status === "payment_successful")) {
+      return; 
+    }
+
     await supabase
       .from("orders")
       .update({
@@ -489,14 +501,29 @@ export default function Checkout() {
             setLoading(false);
             setProcessingPayment(false);
             setIsRazorpayOpen(false);
+
+            let isPaid = false;
             if (orderId) {
-              await cancelPendingOrder(orderId);
+              const { data: order } = await supabase
+                .from("orders")
+                .select("payment_status")
+                .eq("id", orderId)
+                .single();
+                
+              if (order && order.payment_status === "paid") {
+                isPaid = true;
+              } else {
+                await cancelPendingOrder(orderId);
+              }
             }
-            toast({
-              title: "Payment Cancelled",
-              description: "You can try again anytime.",
-              variant: "destructive",
-            });
+            
+            if (!isPaid) {
+              toast({
+                title: "Payment Cancelled",
+                description: "You can try again anytime.",
+                variant: "destructive",
+              });
+            }
           },
         },
       };
@@ -1561,7 +1588,7 @@ export default function Checkout() {
                   value={newAddress.street}
                   onChange={(e) => setNewAddress({ ...newAddress, street: e.target.value })}
                 />
-                
+
                 <div className="form-grid-2">
                   <div>
                     <label className="form-label">PIN Code *</label>
@@ -1583,7 +1610,7 @@ export default function Checkout() {
                     {pincodeError && <p className="field-error">{pincodeError}</p>}
                   </div>
                   <div>
-                    
+
                     <label className="form-label">City *</label>
                     <input
                       className="form-input"
@@ -1749,80 +1776,80 @@ export default function Checkout() {
             )}
             {/* Saved Addresses List */}
             {!editingAddressId && (
-            <div style={{ padding: '8px 0' }}>
-              {savedAddresses.map((addr) => (
-                <div
-                  key={addr.id}
-                  className={`saved-address-card ${selectedAddressId === addr.id ? 'selected' : ''}`}
-                >
-                  <div className="addr-card-name-row">
-                    <span style={{ fontSize: 14, fontWeight: 700, color: '#1a1a1a' }}>
-                      {addr.full_name || customerInfo.firstName}
-                    </span>
-                    <span className="addr-type-chip">Home</span>
-                  </div>
-                  <p style={{ fontSize: 13, color: '#555', lineHeight: 1.5 }}>
-                    {addr.street}, {addr.city}, {addr.state}, {addr.zip}
-                  </p>
-                  <p style={{ fontSize: 12, color: '#888', marginTop: 3 }}>{customerInfo.email}</p>
-                  <p style={{ fontSize: 12, color: '#888' }}>{addr.phone || customerInfo.phone}</p>
-
-                  {/* Three-dot menu */}
-                  <button
-                    className="addr-menu-btn"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setAddressMenuOpen(addressMenuOpen === addr.id ? null : (addr.id || null));
-                    }}
+              <div style={{ padding: '8px 0' }}>
+                {savedAddresses.map((addr) => (
+                  <div
+                    key={addr.id}
+                    className={`saved-address-card ${selectedAddressId === addr.id ? 'selected' : ''}`}
                   >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2" /><circle cx="12" cy="12" r="2" /><circle cx="12" cy="19" r="2" /></svg>
-                  </button>
-                  {addressMenuOpen === addr.id && (
-                    <div className="addr-dropdown">
-                      <button
-                        className="addr-dropdown-item"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setEditingAddressId(addr.id || null);
-                          setEditAddress({
-                            full_name: addr.full_name || customerInfo.firstName,
-                            phone: addr.phone || customerInfo.phone,
-                            street: addr.street,
-                            city: addr.city,
-                            state: addr.state,
-                            zip: addr.zip,
-                            country: addr.country,
-                          });
-                          setShowNewAddressForm(false);
-                          setAddressMenuOpen(null);
-                        }}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="addr-dropdown-item danger"
-                        onClick={() => {
-                          handleDeleteAddress(addr.id!);
-                          setAddressMenuOpen(null);
-                        }}
-                      >
-                        Delete
-                      </button>
+                    <div className="addr-card-name-row">
+                      <span style={{ fontSize: 14, fontWeight: 700, color: '#1a1a1a' }}>
+                        {addr.full_name || customerInfo.firstName}
+                      </span>
+                      <span className="addr-type-chip">Home</span>
                     </div>
-                  )}
+                    <p style={{ fontSize: 13, color: '#555', lineHeight: 1.5 }}>
+                      {addr.street}, {addr.city}, {addr.state}, {addr.zip}
+                    </p>
+                    <p style={{ fontSize: 12, color: '#888', marginTop: 3 }}>{customerInfo.email}</p>
+                    <p style={{ fontSize: 12, color: '#888' }}>{addr.phone || customerInfo.phone}</p>
 
-                  <button
-                    className={`deliver-here-btn ${selectedAddressId === addr.id ? 'selected' : ''}`}
-                    onClick={() => {
-                      handleAddressSelect(addr);
-                      setShowAddressModal(false);
-                    }}
-                  >
-                    Deliver Here
-                  </button>
-                </div>
-              ))}
-            </div>
+                    {/* Three-dot menu */}
+                    <button
+                      className="addr-menu-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setAddressMenuOpen(addressMenuOpen === addr.id ? null : (addr.id || null));
+                      }}
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2" /><circle cx="12" cy="12" r="2" /><circle cx="12" cy="19" r="2" /></svg>
+                    </button>
+                    {addressMenuOpen === addr.id && (
+                      <div className="addr-dropdown">
+                        <button
+                          className="addr-dropdown-item"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setEditingAddressId(addr.id || null);
+                            setEditAddress({
+                              full_name: addr.full_name || customerInfo.firstName,
+                              phone: addr.phone || customerInfo.phone,
+                              street: addr.street,
+                              city: addr.city,
+                              state: addr.state,
+                              zip: addr.zip,
+                              country: addr.country,
+                            });
+                            setShowNewAddressForm(false);
+                            setAddressMenuOpen(null);
+                          }}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="addr-dropdown-item danger"
+                          onClick={() => {
+                            handleDeleteAddress(addr.id!);
+                            setAddressMenuOpen(null);
+                          }}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    )}
+
+                    <button
+                      className={`deliver-here-btn ${selectedAddressId === addr.id ? 'selected' : ''}`}
+                      onClick={() => {
+                        handleAddressSelect(addr);
+                        setShowAddressModal(false);
+                      }}
+                    >
+                      Deliver Here
+                    </button>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
         </div>

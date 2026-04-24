@@ -93,9 +93,14 @@ export default function AdminOrders() {
     );
     if (!confirmed) return;
 
+    const updatePayload: any = { order_status: newStatus };
+    if (newStatus === "payment_successful") {
+      updatePayload.payment_status = "paid";
+    }
+
     const { error } = await supabase
       .from("orders")
-      .update({ order_status: newStatus })
+      .update(updatePayload)
       .eq("id", orderId);
 
     if (error) {
@@ -717,7 +722,12 @@ export default function AdminOrders() {
                                   value={selectedOrderDetail?.id === order.id ? selectedOrderDetail.order_status : order.order_status}
                                   onValueChange={async (val) => {
                                     await updateOrderStatus(order.id, val);
-                                    setSelectedOrderDetail((prev: any) => prev ? { ...prev, order_status: val } : prev);
+                                    setSelectedOrderDetail((prev: any) => {
+                                      if (!prev) return prev;
+                                      const updates: any = { order_status: val };
+                                      if (val === "payment_successful") updates.payment_status = "paid";
+                                      return { ...prev, ...updates };
+                                    });
                                   }}
                                 >
                                   <SelectTrigger>

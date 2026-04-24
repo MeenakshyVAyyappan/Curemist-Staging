@@ -28,11 +28,11 @@ blogPosts.forEach(post => {
     fs.mkdirSync(dirPath, { recursive: true });
   }
 
-  const imageUrl = post.image.startsWith('http') 
-    ? post.image 
+  const imageUrl = post.image.startsWith('http')
+    ? post.image
     : `${domain}${post.image.startsWith('/') ? '' : '/'}${post.image}`;
   const postUrl = `${domain}/blog/${post.id}`;
-  
+
   const excerptText = post.excerpt ? post.excerpt.replace(/"/g, '&quot;') : '';
   const escapedTitle = post.title.replace(/"/g, '&quot;');
 
@@ -51,7 +51,7 @@ blogPosts.forEach(post => {
 
   // Insert just before the </head> tag for best parsing
   const replacedHtml = indexHtml.replace('</head>', `${metaTags}\n  </head>`);
-  
+
   fs.writeFileSync(path.join(dirPath, 'index.html'), replacedHtml, 'utf8');
   count++;
 });
