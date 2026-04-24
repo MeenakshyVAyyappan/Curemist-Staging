@@ -386,6 +386,7 @@ export default function Checkout() {
   };
 
   const initiateRazorpayPayment = async (orderId: string) => {
+    let paymentHandled = false;
     try {
       console.log("Creating Razorpay order with amount:", totalPrice);
 
@@ -434,6 +435,7 @@ export default function Checkout() {
         description: "Ayurvedic Wound Spray Purchase",
         order_id: data.orderId,
         handler: async (response: any) => {
+          paymentHandled = true;
           try {
             console.log("Payment successful, verifying...", response);
 
@@ -504,6 +506,8 @@ export default function Checkout() {
         },
         modal: {
           ondismiss: async () => {
+            if (paymentHandled) return;
+            
             setCurrentOrderId(null);
             setCurrentOrderStatus("");
             setLoading(false);
@@ -538,6 +542,7 @@ export default function Checkout() {
 
       const rzp = new window.Razorpay(options);
       rzp.on("payment.failed", async (response: any) => {
+        paymentHandled = true;
         setLoading(false);
         setProcessingPayment(false);
         setIsRazorpayOpen(false);
