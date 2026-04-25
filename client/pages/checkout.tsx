@@ -37,6 +37,13 @@ export default function Checkout() {
   const { items, subtotal, clearCart, appliedCoupon, setAppliedCoupon } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!user) {
+      navigate("/login", { state: { from: { pathname: "/checkout" } } });
+    }
+  }, [user, navigate]);
+
   const [loading, setLoading] = useState(false);
   const [processingPayment, setProcessingPayment] = useState(false);
   const [isRazorpayOpen, setIsRazorpayOpen] = useState(false);
@@ -250,9 +257,15 @@ export default function Checkout() {
       return null;
     }
 
+    const finalCustomerInfo = {
+      ...customerInfo,
+      firstName: customerInfo.firstName || shippingAddress.full_name || "",
+      phone: customerInfo.phone || shippingAddress.phone || "",
+    };
+
     const orderData: any = {
       user_id: user.id,
-      customer_info: customerInfo,
+      customer_info: finalCustomerInfo,
       shipping_address: shippingAddress,
       billing_address: shippingAddress,
       subtotal,
@@ -304,6 +317,7 @@ export default function Checkout() {
       price: item.price,
       quantity: item.quantity,
       image: item.image,
+      size: item.size,
     }));
 
     const { error: itemsError } = await supabase
@@ -494,9 +508,9 @@ export default function Checkout() {
           }
         },
         prefill: {
-          name: `${customerInfo.firstName}}`,
+          name: customerInfo.firstName || shippingAddress.full_name || "Curemist Customer",
           email: customerInfo.email,
-          contact: customerInfo.phone,
+          contact: customerInfo.phone || shippingAddress.phone || "",
         },
         notes: {
           address: `${shippingAddress.street}, ${shippingAddress.city}, ${shippingAddress.state} - ${shippingAddress.zip}`,
@@ -596,6 +610,19 @@ export default function Checkout() {
       toast({
         title: "Error",
         description: "Please fill in all shipping address fields",
+      });
+      return;
+    }
+
+    // Ensure we have a name and phone
+    const hasName = customerInfo.firstName || shippingAddress.full_name;
+    const hasPhone = customerInfo.phone || shippingAddress.phone;
+
+    if (!hasName || !hasPhone) {
+      toast({
+        title: "Missing Information",
+        description: "Customer name and phone number are required.",
+        variant: "destructive",
       });
       return;
     }

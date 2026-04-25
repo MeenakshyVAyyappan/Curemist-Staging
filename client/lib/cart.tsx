@@ -50,7 +50,17 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const fetchCart = async () => {
     if (!user) {
-      setItems([]);
+      try {
+        const guestCartStr = localStorage.getItem("guestCart");
+        if (guestCartStr) {
+          setItems(JSON.parse(guestCartStr));
+        } else {
+          setItems([]);
+        }
+      } catch (e) {
+        console.error("Error parsing guest cart:", e);
+        setItems([]);
+      }
       return;
     }
 
@@ -114,66 +124,57 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
       await fetchCart();
 
       if (!user) return;
-      const pendingJson = window.localStorage.getItem(PENDING_CART_ITEM_KEY);
-      if (!pendingJson) return;
       
-      // Remove immediately to prevent race conditions during React Strict Mode double-invocations
-      window.localStorage.removeItem(PENDING_CART_ITEM_KEY);
+      const guestCartStr = window.localStorage.getItem("guestCart");
+      if (!guestCartStr) return;
 
       try {
-        const pending = JSON.parse(pendingJson) as {
-          item?: CartItem;
-          qty?: number;
-          redirectTo?: string;
-        };
-        if (!pending?.item) return;
+        const guestItems = JSON.parse(guestCartStr) as CartItem[];
+        if (!guestItems || guestItems.length === 0) return;
 
         const cartId = await getCartId();
         if (!cartId) return;
 
-        const item = pending.item as CartItem;
-        const qty = typeof pending.qty === "number" ? pending.qty : 1;
+        for (const item of guestItems) {
+          const { data: existing, error: existingError } = await supabase
+            .from("cart_items")
+            .select("quantity")
+            .eq("cart_id", cartId)
+            .eq("product_id", item.id)
+            .single();
 
-        const { data: existing, error: existingError } = await supabase
-          .from("cart_items")
-          .select("quantity")
-          .eq("cart_id", cartId)
-          .eq("product_id", item.id)
-          .single();
-
-        if (existingError && existingError.code !== "PGRST116") {
-          throw existingError;
-        }
-
-        if (existing?.quantity) {
-          // Instead of adding qty to existing.quantity (which caused the "extra item" perceived bug upon login),
-          // we just ensure the cart has at least the pending quantity.
-          const newQty = Math.max(existing.quantity, qty);
-          
-          if (newQty !== existing.quantity) {
-            await supabase
-              .from("cart_items")
-              .update({ quantity: newQty })
-              .eq("cart_id", cartId)
-              .eq("product_id", item.id);
+          if (existingError && existingError.code !== "PGRST116") {
+            console.error(existingError);
+            continue;
           }
-        } else {
-          await supabase.from("cart_items").insert({
-            cart_id: cartId,
-            product_id: item.id,
-            quantity: qty,
-            title: item.title,
-            price: item.price,
-            original_price: item.originalPrice,
-            image: item.image,
-            size: item.size,
-          });
-        }
 
-        await fetchCart();
-        setIsCartOpen(true);
+          if (existing?.quantity) {
+            const newQty = Math.max(existing.quantity, item.quantity);
+            if (newQty !== existing.quantity) {
+              await supabase
+                .from("cart_items")
+                .update({ quantity: newQty })
+                .eq("cart_id", cartId)
+                .eq("product_id", item.id);
+            }
+          } else {
+            await supabase.from("cart_items").insert({
+              cart_id: cartId,
+              product_id: item.id,
+              quantity: item.quantity,
+              title: item.title,
+              price: item.price,
+              original_price: item.originalPrice,
+              image: item.image,
+              size: item.size,
+            });
+          }
+        }
       } catch (error) {
-        console.error("Error processing pending cart item:", error);
+        console.error("Error processing guest cart item:", error);
+      } finally {
+        window.localStorage.removeItem("guestCart");
+        await fetchCart();
       }
     };
 
@@ -201,10 +202,21 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const addItem = async (item: CartItem, qty = 1) => {
     if (!user) {
-      toast({
-        title: "Please login to add items to cart",
-        variant: "destructive",
+      setItems((prev) => {
+        const newItems = [...prev];
+        const existingIndex = newItems.findIndex((i) => i.id === item.id);
+        if (existingIndex >= 0) {
+          newItems[existingIndex] = {
+            ...newItems[existingIndex],
+            quantity: newItems[existingIndex].quantity + qty,
+          };
+        } else {
+          newItems.push({ ...item, quantity: qty });
+        }
+        localStorage.setItem("guestCart", JSON.stringify(newItems));
+        return newItems;
       });
+      setIsCartOpen(true);
       return;
     }
 
@@ -268,11 +280,20 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const updateQty = async (id: string, qty: number) => {
-    if (!user) return;
-    
     // Ensure quantity is never less than 1
     if (qty < 1) {
       qty = 1;
+    }
+
+    if (!user) {
+      setItems((prev) => {
+        const newItems = prev.map((item) =>
+          item.id === id ? { ...item, quantity: qty } : item,
+        );
+        localStorage.setItem("guestCart", JSON.stringify(newItems));
+        return newItems;
+      });
+      return;
     }
     
     try {
@@ -304,7 +325,14 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const removeItem = async (id: string) => {
-    if (!user) return;
+    if (!user) {
+      setItems((prev) => {
+        const newItems = prev.filter((item) => item.id !== id);
+        localStorage.setItem("guestCart", JSON.stringify(newItems));
+        return newItems;
+      });
+      return;
+    }
     try {
       const cartId = await getCartId();
       if (!cartId) return;
@@ -330,7 +358,11 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const clearCart = async () => {
-    if (!user) return;
+    if (!user) {
+      setItems([]);
+      localStorage.removeItem("guestCart");
+      return;
+    }
     try {
       const cartId = await getCartId();
       if (!cartId) return;

@@ -79,16 +79,6 @@ export default function ProductImageDialog({
     const numPrice = Number(price.replace(/[^\d]/g, "")) || 0;
     const item = { id: slug, title, image, price: numPrice, quantity: qty, size };
 
-    if (!user) {
-      onOpenChange(false);
-      localStorage.setItem(
-        "pendingCartItem",
-        JSON.stringify({ item, qty, redirectTo: "/checkout" }),
-      );
-      navigate("/login", { state: { from: { pathname: "/checkout" } } });
-      return;
-    }
-
     // Add item to cart first
     addItem(item, qty);
 
@@ -302,15 +292,6 @@ export default function ProductImageDialog({
                       quantity: qty,
                       size,
                     };
-                    if (!user) {
-                      localStorage.setItem(
-                        "pendingCartItem",
-                        JSON.stringify({ item, qty, redirectTo: "/cart" }),
-                      );
-                      onOpenChange(false);
-                      navigate("/login", { state: { from: { pathname: "/cart" } } });
-                      return;
-                    }
                     addItem(item, qty);
                     try {
                       toast({

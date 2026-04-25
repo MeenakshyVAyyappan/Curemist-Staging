@@ -5,5 +5,4 @@ const AnnouncementBar = () => (
     </div>
   </div>
 );
-
 export default AnnouncementBar;

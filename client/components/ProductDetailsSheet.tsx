@@ -153,22 +153,6 @@ export default function ProductDetailsSheet({
             onClick={() => {
               const slug = `${title.replace(/\s+/g, "-").toLowerCase()}-${size.replace(/\s+/g, "").toLowerCase()}`;
               const numPrice = Number(price.replace(/[^\d]/g, "")) || 0;
-              if (!user) {
-                const item = {
-                  id: slug,
-                  title,
-                  image,
-                  price: numPrice,
-                  quantity: qty,
-                  size,
-                };
-                localStorage.setItem(
-                  "pendingCartItem",
-                  JSON.stringify({ item, qty, redirectTo: "/cart" }),
-                );
-                navigate("/login", { state: { from: { pathname: "/cart" } } });
-                return;
-              }
               addItem(
                 {
                   id: slug,

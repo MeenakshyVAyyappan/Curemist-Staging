@@ -9,7 +9,9 @@ import { products } from "@/lib/products";
 import useEmblaCarousel from "embla-carousel-react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { trackEvent } from "@/lib/pixel";
+import PremiumConditionCards from "@/components/PremiumConditionCards";
 import "./product-details.css";
+
 
 /* ──────────────── helpers ──────────────── */
 const parseNum = (s?: string) => (s ? Number(s.replace(/[^\d]/g, "")) || 0 : 0);
@@ -173,10 +175,6 @@ export default function ProductDetailsPage() {
       currency: "INR",
     });
     trackEvent("InitiateCheckout");
-    if (!user) {
-      navigate("/login", { state: { from: { pathname: "/checkout" } } });
-      return;
-    }
     addItem(getCartItem(), qty);
     navigate("/checkout");
   };
@@ -189,14 +187,6 @@ export default function ProductDetailsPage() {
       value: numPrice * qty,
       currency: "INR",
     });
-    if (!user) {
-      localStorage.setItem(
-        "pendingCartItem",
-        JSON.stringify({ item: getCartItem(), qty, redirectTo: "/cart" }),
-      );
-      navigate("/login", { state: { from: { pathname: "/cart" } } });
-      return;
-    }
     addItem(getCartItem(), qty);
     try {
       toast({
@@ -431,6 +421,15 @@ export default function ProductDetailsPage() {
                 </div>
               </div>
             </div>
+          </div>
+        </section>
+
+        {/* ══════════════════
+            PREMIUM CONDITION CARDS
+        ══════════════════ */}
+        <section className="py-4bg-white">
+          <div className="pd-container text-center">
+            <PremiumConditionCards />
           </div>
         </section>
 

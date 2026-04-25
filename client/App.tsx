@@ -62,19 +62,8 @@ function AppRoutes() {
   }, [location.pathname]);
 
   useEffect(() => {
-    if (!user) return;
-    const pendingJson = window.localStorage.getItem("pendingCartItem");
-    if (!pendingJson) return;
-
-    try {
-      const pending = JSON.parse(pendingJson) as { redirectTo?: string };
-      if (pending?.redirectTo && pending.redirectTo !== location.pathname) {
-        navigate(pending.redirectTo, { replace: true });
-      }
-    } catch (err) {
-      console.error("Unable to parse pending cart redirect:", err);
-    }
-  }, [user, location.pathname, navigate]);
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
 
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;

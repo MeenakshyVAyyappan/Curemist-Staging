@@ -33,25 +33,6 @@ function AddToCartButton({
   const navigate = useNavigate();
 
   const handleAdd = () => {
-    if (!user) {
-      const item = {
-        id: slug,
-        title,
-        image,
-        price: Number(price.replace(/[^\d]/g, "")) || 0,
-        originalPrice: originalPrice
-          ? Number(originalPrice.replace(/[^\d]/g, "")) || 0
-          : Number(price.replace(/[^\d]/g, "")) || 0,
-        quantity: 1,
-        size,
-      };
-      localStorage.setItem(
-        "pendingCartItem",
-        JSON.stringify({ item, qty: 1, redirectTo: "/cart" }),
-      );
-      navigate("/login", { state: { from: { pathname: "/cart" } } });
-      return;
-    }
     const numericPrice = Number(price.replace(/[^\d]/g, "")) || 0;
     const numericOriginalPrice = originalPrice
       ? Number(originalPrice.replace(/[^\d]/g, "")) || 0

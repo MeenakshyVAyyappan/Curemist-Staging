@@ -107,6 +107,9 @@ CREATE TABLE IF NOT EXISTS orders (
     shipping_address JSONB NOT NULL,
     billing_address JSONB NOT NULL,
     subtotal INTEGER NOT NULL,
+    mrp_total INTEGER,
+    discount_amount INTEGER DEFAULT 0,
+    coupon_discount INTEGER DEFAULT 0,
     shipping_fee INTEGER DEFAULT 0,
     gst_amount INTEGER DEFAULT 0,
     total_price INTEGER NOT NULL,
@@ -115,6 +118,7 @@ CREATE TABLE IF NOT EXISTS orders (
     razorpay_payment_id TEXT,
     razorpay_order_id TEXT,
     order_status TEXT NOT NULL DEFAULT 'processing',
+    admin_note TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -130,6 +134,7 @@ CREATE TABLE IF NOT EXISTS order_items (
     price INTEGER NOT NULL,
     quantity INTEGER NOT NULL DEFAULT 1,
     image TEXT,
+    size TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 

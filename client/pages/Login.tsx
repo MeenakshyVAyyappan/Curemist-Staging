@@ -92,11 +92,7 @@ export default function Login() {
       });
 
       const from = (location.state as any)?.from?.pathname;
-      const pendingJson = window.localStorage.getItem("pendingCartItem");
-      const pendingRedirect = pendingJson
-        ? ((JSON.parse(pendingJson) as { redirectTo?: string }).redirectTo || null)
-        : null;
-      const redirectTo = from && from !== "/login" ? from : pendingRedirect || "/";
+      const redirectTo = from && from !== "/login" ? from : "/";
 
       navigate(redirectTo, { replace: true, state: null });
     } catch (err: any) {

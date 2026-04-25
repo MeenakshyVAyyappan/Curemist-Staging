@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { formatOrderDate, formatOrderId } from "@/lib/utils";
 import { toast } from "@/components/ui/use-toast";
 import { supabase } from "@/lib/supabase";
+import { products } from "@/lib/products";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import Header from "@/components/Header";
@@ -915,31 +916,23 @@ export default function Profile() {
                                     </span>
                                   </p>
                                   <p>
-                                    <span className="font-medium">Total:</span> ₹
+                                    <span className="font-medium">Mrp (Inc 5% Gst):</span> ₹
+                                    {selectedOrder.mrp_total || selectedOrder.subtotal}
+                                  </p>
+                                  {selectedOrder.discount_amount && selectedOrder.discount_amount > 0 && (
+                                    <p>
+                                      <span className="font-medium">Discount:</span> ₹
+                                      {selectedOrder.discount_amount}
+                                    </p>
+                                  )}
+                                  <p>
+                                    <span className="font-medium">Total Paid:</span> ₹
                                     {selectedOrder.total_price}
                                   </p>
-                                  {selectedOrder.subtotal && (
+                                  {selectedOrder.coupon_discount && selectedOrder.coupon_discount > 0 && (
                                     <p>
-                                      <span className="font-medium">Subtotal:</span>{" "}
-                                      ₹{selectedOrder.subtotal}
-                                    </p>
-                                  )}
-                                  {selectedOrder.discount_amount && (
-                                    <p>
-                                      <span className="font-medium">Discount:</span>{" "}
-                                      ₹{selectedOrder.discount_amount}
-                                    </p>
-                                  )}
-                                  {selectedOrder.coupon_discount && (
-                                    <p>
-                                      <span className="font-medium">Coupon:</span> ₹
+                                      <span className="font-medium">Coupon Discount:</span> ₹
                                       {selectedOrder.coupon_discount}
-                                    </p>
-                                  )}
-                                  {selectedOrder.gst_amount && (
-                                    <p>
-                                      <span className="font-medium">GST:</span> ₹
-                                      {selectedOrder.gst_amount}
                                     </p>
                                   )}
                                   {selectedOrder.payment_method && (
@@ -1018,6 +1011,35 @@ export default function Profile() {
                                 </div>
                               </div>
                               <div className="rounded-lg border p-4">
+  <h4 className="font-semibold mb-3">Ordered Products</h4>
+
+  <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+    {selectedOrder.order_items?.map((item: any) => (
+      <div
+        key={item.id}
+        className="border rounded-lg overflow-hidden bg-gray-50"
+      >
+        {item.image ? (
+          <img
+            src={item.image}
+            className="w-full h-20 object-cover"
+          />
+        ) : (
+          <div className="w-full h-20 flex items-center justify-center text-gray-400 text-xs">
+            No Image
+          </div>
+        )}
+
+        <div className="p-2 text-center">
+          <p className="text-sm font-medium truncate">
+            {item.size || products.find((p) => p.slug === item.product_id)?.size || "Unknown Size"}
+          </p>
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
+                              {/* <div className="rounded-lg border p-4">
                                 <h4 className="font-semibold mb-2">
                                   Billing Address
                                 </h4>
@@ -1032,7 +1054,7 @@ export default function Profile() {
                                     {selectedOrder.billing_address?.country}
                                   </p>
                                 </div>
-                              </div>
+                              </div> */}
                             </div>
                           </div>
                         ) : (

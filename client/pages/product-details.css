@@ -457,7 +457,7 @@
 /* ── Description / About This Product ── */
 .pd-description-section {
   background: linear-gradient(135deg, #f9faff 0%, #fff 60%, #fffbf0 100%);
-  padding: 80px 0;
+  padding: 10px 0;
   border-top: 1px solid #eef2ff;
   position: relative;
   overflow: hidden;

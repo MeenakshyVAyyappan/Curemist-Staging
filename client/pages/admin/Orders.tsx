@@ -307,8 +307,8 @@ export default function AdminOrders() {
       return [
         formatOrderId(order.id),
         formatOrderDate(order.created_at),
-        `${order.customer_info?.firstName || ""} ${order.customer_info?.lastName || ""}`.trim(),
-        order.customer_info?.phone || "",
+        `${order.customer_info?.firstName || order.shipping_address?.full_name || "Guest"} ${order.customer_info?.lastName || ""}`.trim(),
+        order.customer_info?.phone || order.shipping_address?.phone || "",
         order.total_price,
         order.order_status,
         shipping,
@@ -551,15 +551,15 @@ export default function AdminOrders() {
                     <TableCell>
                       <div className="flex flex-col">
                         <span className="font-medium">
-                          {order.customer_info?.firstName}{" "}
-                          {order.customer_info?.lastName}
+                          {order.customer_info?.firstName || order.shipping_address?.full_name || "Guest"}{" "}
+                          {order.customer_info?.lastName || ""}
                         </span>
                         <span className="text-xs text-muted-foreground">
-                          {order.customer_info?.email}
+                          {order.customer_info?.email || ""}
                         </span>
                       </div>
                     </TableCell>
-                    <TableCell>{order.customer_info?.phone || "N/A"}</TableCell>
+                    <TableCell>{order.customer_info?.phone || order.shipping_address?.phone || "N/A"}</TableCell>
                     <TableCell>₹{order.total_price}</TableCell>
                     <TableCell>
                       <Badge
@@ -605,16 +605,16 @@ export default function AdminOrders() {
                                 <div className="text-sm space-y-1">
                                   <p>
                                     <span className="font-medium">Name:</span>{" "}
-                                    {order.customer_info?.firstName}{" "}
-                                    {order.customer_info?.lastName}
+                                    {order.customer_info?.firstName || order.shipping_address?.full_name || "Guest"}{" "}
+                                    {order.customer_info?.lastName || ""}
                                   </p>
                                   <p>
                                     <span className="font-medium">Email:</span>{" "}
-                                    {order.customer_info?.email}
+                                    {order.customer_info?.email || ""}
                                   </p>
                                   <p>
                                     <span className="font-medium">Phone:</span>{" "}
-                                    {order.customer_info?.phone}
+                                    {order.customer_info?.phone || order.shipping_address?.phone || "N/A"}
                                   </p>
                                   <p>
                                     <span className="font-medium">Gender:</span>{" "}
