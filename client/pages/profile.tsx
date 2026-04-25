@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/lib/auth";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -30,6 +30,7 @@ export default function Profile() {
   const navigate = useNavigate();
   const location = useLocation();
   const [active, setActive] = useState<number>(0);
+  const addressFormRef = useRef<HTMLDivElement>(null);
 
   const [profile, setProfile] = useState<any>(null);
   const [orders, setOrders] = useState<any[]>([]);
@@ -46,6 +47,8 @@ export default function Profile() {
   const [loadingProfile, setLoadingProfile] = useState(false);
 
   // New address form state
+  const [newAddrFullName, setNewAddrFullName] = useState("");
+  const [newAddrPhone, setNewAddrPhone] = useState("");
   const [newAddressLine, setNewAddressLine] = useState("");
   const [newCity, setNewCity] = useState("");
   const [newState, setNewState] = useState("");
@@ -244,7 +247,13 @@ export default function Profile() {
 
   const handleSaveAddress = async () => {
     if (!user) return;
+    if (newAddrPhone.trim().length !== 10) {
+      toast({ title: "Please enter a valid 10-digit phone number", variant: "destructive" });
+      return;
+    }
+
     if (
+      !newAddrFullName.trim() ||
       !newAddressLine.trim() ||
       !newCity ||
       !newState ||
@@ -263,6 +272,8 @@ export default function Profile() {
         const { error } = await supabase
           .from("user_addresses")
           .update({
+            full_name: newAddrFullName,
+            phone: newAddrPhone,
             street: newAddressLine,
             city: newCity,
             state: newState,
@@ -294,6 +305,8 @@ export default function Profile() {
           .from("user_addresses")
           .insert({
             user_id: user.id,
+            full_name: newAddrFullName,
+            phone: newAddrPhone,
             street: newAddressLine,
             city: newCity,
             state: newState,
@@ -314,6 +327,8 @@ export default function Profile() {
         }
       }
 
+      setNewAddrFullName("");
+      setNewAddrPhone("");
       setNewAddressLine("");
       setNewCity("");
       setNewState("");
@@ -331,14 +346,21 @@ export default function Profile() {
     }
   };
 
-  const handleEditAddress = (address: any) => {
-    setEditingAddressId(address.id);
-    setNewAddressLine(address.street);
-    setNewCity(address.city);
-    setNewState(address.state);
-    setNewPincode(address.zip);
-    setNewCountry(address.country);
+  const handleEditAddress = (addr: any) => {
+    setEditingAddressId(addr.id);
+    setNewAddrFullName(addr.full_name || "");
+    setNewAddrPhone(addr.phone || "");
+    setNewAddressLine(addr.street);
+    setNewCity(addr.city);
+    setNewState(addr.state);
+    setNewPincode(addr.zip);
+    setNewCountry(addr.country);
     setShowAddForm(true);
+
+    // Scroll to form
+    setTimeout(() => {
+      addressFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
   };
 
   const handleDeleteAddress = async (id: string) => {
@@ -375,11 +397,13 @@ export default function Profile() {
 
   const handleCancelEdit = () => {
     setEditingAddressId(null);
+    setNewAddrFullName("");
+    setNewAddrPhone("");
     setNewAddressLine("");
     setNewCity("");
     setNewState("");
     setNewPincode("");
-    setNewCountry("");
+    setNewCountry("India");
     setShowAddForm(false);
   };
 
@@ -1011,34 +1035,34 @@ export default function Profile() {
                                 </div>
                               </div>
                               <div className="rounded-lg border p-4">
-  <h4 className="font-semibold mb-3">Ordered Products</h4>
+                                <h4 className="font-semibold mb-3">Ordered Products</h4>
 
-  <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-    {selectedOrder.order_items?.map((item: any) => (
-      <div
-        key={item.id}
-        className="border rounded-lg overflow-hidden bg-gray-50"
-      >
-        {item.image ? (
-          <img
-            src={item.image}
-            className="w-full h-20 object-cover"
-          />
-        ) : (
-          <div className="w-full h-20 flex items-center justify-center text-gray-400 text-xs">
-            No Image
-          </div>
-        )}
+                                <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+                                  {selectedOrder.order_items?.map((item: any) => (
+                                    <div
+                                      key={item.id}
+                                      className="border rounded-lg overflow-hidden bg-gray-50"
+                                    >
+                                      {item.image ? (
+                                        <img
+                                          src={item.image}
+                                          className="w-full h-20 object-cover"
+                                        />
+                                      ) : (
+                                        <div className="w-full h-20 flex items-center justify-center text-gray-400 text-xs">
+                                          No Image
+                                        </div>
+                                      )}
 
-        <div className="p-2 text-center">
-          <p className="text-sm font-medium truncate">
-            {item.size || products.find((p) => p.slug === item.product_id)?.size || "Unknown Size"}
-          </p>
-        </div>
-      </div>
-    ))}
-  </div>
-</div>
+                                      <div className="p-2 text-center">
+                                        <p className="text-sm font-medium truncate">
+                                          {item.size || products.find((p) => p.slug === item.product_id)?.size || "Unknown Size"}
+                                        </p>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
                               {/* <div className="rounded-lg border p-4">
                                 <h4 className="font-semibold mb-2">
                                   Billing Address
@@ -1087,7 +1111,20 @@ export default function Profile() {
                         <p className="text-gray-600 text-sm">Manage your delivery addresses</p>
                       </div>
                       <button
-                        onClick={() => setShowAddForm(true)}
+                        onClick={() => {
+                          setShowAddForm(true);
+                          setEditingAddressId(null);
+                          setNewAddrFullName("");
+                          setNewAddrPhone("");
+                          setNewAddressLine("");
+                          setNewCity("");
+                          setNewState("");
+                          setNewPincode("");
+                          setNewCountry("India");
+                          setTimeout(() => {
+                            addressFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                          }, 100);
+                        }}
                         className="w-full sm:w-auto bg-gradient-to-r from-brand-yellow to-[#d4a835] text-brand-blue px-6 py-3 rounded-lg font-bold text-sm shadow-md hover:shadow-lg transition-all whitespace-nowrap"
                       >
                         + ADD NEW ADDRESS
@@ -1119,6 +1156,9 @@ export default function Profile() {
                               <div className="flex-1 min-w-0">
                                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 sm:gap-4">
                                   <div className="min-w-0">
+                                    <p className="font-bold text-base sm:text-lg text-gray-800 break-words">
+                                      {a.full_name && `${a.full_name}, `}{a.phone && `(${a.phone})`}
+                                    </p>
                                     <p className="font-bold text-base sm:text-lg text-gray-800 break-words">
                                       {a.street}
                                     </p>
@@ -1184,11 +1224,29 @@ export default function Profile() {
 
                     {/* Show Address Form */}
                     {showAddForm && (
-                      <div className="mt-8 border-2 border-gray-300 pt-8 bg-gradient-to-b from-gray-50 to-white p-8 rounded-lg">
+                      <div ref={addressFormRef} className="mt-8 border-2 border-gray-300 pt-8 bg-gradient-to-b from-gray-50 to-white p-8 rounded-lg">
                         <h3 className="font-bold text-xl mb-6 text-curemist-purple">
                           {editingAddressId ? "Edit Address" : "Add New Address"}
                         </h3>
                         <div className="grid grid-cols-1 gap-5">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            <input
+                              value={newAddrFullName}
+                              onChange={(e) => setNewAddrFullName(e.target.value)}
+                              className="border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-brand-yellow focus:border-transparent outline-none transition-all"
+                              placeholder="Full Name"
+                            />
+                            <input
+                              value={newAddrPhone}
+                              onChange={(e) => {
+                                const val = e.target.value.replace(/\D/g, "").slice(0, 10);
+                                setNewAddrPhone(val);
+                              }}
+                              className={`border ${newAddrPhone.length > 0 && newAddrPhone.length < 10 ? 'border-red-500' : 'border-gray-300'} p-3 rounded-lg focus:ring-2 focus:ring-brand-yellow focus:border-transparent outline-none transition-all`}
+                              placeholder="Phone Number (10 digits)"
+                              maxLength={10}
+                            />
+                          </div>
                           <textarea
                             value={newAddressLine}
                             onChange={(e) => setNewAddressLine(e.target.value)}
@@ -1224,21 +1282,24 @@ export default function Profile() {
                             />
                           </div>
 
-                          <div className="flex justify-end gap-4 pt-4 border-t border-gray-200">
-                            <button
-                              onClick={handleCancelEdit}
-                              className="text-gray-600 hover:text-gray-800 font-semibold px-6 py-2 rounded-lg border border-gray-300 transition-colors"
-                            >
-                              Cancel
-                            </button>
-                            <button
-                              onClick={handleSaveAddress}
-                              disabled={loadingProfile}
-                              className="bg-gradient-to-r from-brand-yellow to-[#d4a835] text-brand-blue px-8 py-2 rounded-lg font-bold shadow-md hover:shadow-lg disabled:opacity-50 transition-all"
-                            >
-                              {editingAddressId ? "Update Address" : "Save Address"}
-                            </button>
-                          </div>
+                          <div className="flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 pt-4 border-t border-gray-200">
+  
+  <button
+    onClick={handleCancelEdit}
+    className="w-full sm:w-auto text-gray-600 hover:text-gray-800 font-semibold px-6 py-2 rounded-lg border border-gray-300 transition-colors"
+  >
+    Cancel
+  </button>
+
+  <button
+    onClick={handleSaveAddress}
+    disabled={loadingProfile}
+    className="w-full sm:w-auto bg-gradient-to-r from-brand-yellow to-[#d4a835] text-brand-blue px-6 py-2 rounded-lg font-bold shadow-md hover:shadow-lg disabled:opacity-50 transition-all"
+  >
+    {editingAddressId ? "Update Address" : "Save Address"}
+  </button>
+
+</div>
                         </div>
                       </div>
                     )}

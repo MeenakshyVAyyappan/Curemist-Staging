@@ -44,15 +44,15 @@ export default function StatsSection() {
 
   return (
     <section className="relative py-6 md:py-10 bg-white">
-      <div className="absolute top-[-140px] md:bottom-[-100px] left-0 right-0 hidden md:block">
+      <div className="absolute top-[-130px] md:bottom-[-100px] left-0 right-0 hidden md:block">
         <div className="container mx-auto px-4 md:px-6 lg:px-24">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
             {stats.map((stat, index) => (
               <div
                 key={index}
-                className="bg-gradient-to-br from-[#FFE9AE] to-[#FFD147] rounded-lg p-6 md:p-8 flex flex-col items-center text-center ring-1 ring-white/50 shadow-sm"
+                className="bg-gradient-to-br from-[#FFE9AE] to-[#FFD147] rounded-lg p-6 md:p-6 flex flex-col items-center text-center ring-1 ring-white/50 shadow-sm"
               >
-                <div className="mb-4 md:mb-6 flex items-center justify-center h-[50px] md:h-[72px]">
+                <div className="mb-4 md:mb-6 flex items-center justify-center h-[50px] md:h-[30px]">
                   <img
                     src={stat.icon.props.src}
                     alt={stat.icon.props.alt}
