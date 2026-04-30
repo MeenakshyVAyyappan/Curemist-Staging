@@ -332,9 +332,9 @@ export default function ProductDetailsPage() {
               <button className="pd-btn-buy" onClick={handleBuyNow}>
                 BUY NOW
               </button>
-              <button className="pd-btn-cart" onClick={handleAddToCart}>
+              {/* <button className="pd-btn-cart" onClick={handleAddToCart}>
                 ADD TO CART
-              </button>
+              </button> */}
             </div>
 
             {/* Trust chips */}

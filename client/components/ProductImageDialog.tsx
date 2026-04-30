@@ -272,7 +272,7 @@ export default function ProductImageDialog({
               <div className="w-full space-y-2 sm:space-y-3">
                 <button
                   onClick={handleBuyNow}
-                  className="w-full bg-brand-blue hover:bg-brand-blue/90 text-white px-4 sm:px-6 py-2.5 sm:py-3 md:py-4 rounded-lg sm:rounded-xl text-sm sm:text-base md:text-lg font-bold shadow-lg hover:shadow-xl transition-all transform hover:scale-[1.02]"
+                  className="w-full bg-brand-yellow hover:bg-brand-yellow/90 text-brand-blue px-4 sm:px-6 py-2.5 sm:py-3 md:py-4 rounded-lg sm:rounded-xl text-sm sm:text-base md:text-lg font-bold shadow-lg hover:shadow-xl transition-all transform hover:scale-[1.02]"
                 >
                   BUY NOW
                 </button>

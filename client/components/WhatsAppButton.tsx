@@ -1,10 +1,12 @@
-const WhatsAppButton = ({ hideOnMobile }: { hideOnMobile?: boolean }) => (
+const WhatsAppButton = ({ visible = true }: { visible?: boolean }) => (
   <a
     href="https://wa.me/918848815296"
     target="_blank"
     rel="noreferrer"
-    className={`fixed bottom-2 left-1/2 z-50 flex items-center bg-[#25D366] text-white py-2 px-4 rounded-md shadow-[0_4px_12px_rgba(37,211,102,0.4)] transition-all duration-300 group animate-float-pulse ${
-      hideOnMobile ? "hidden md:flex" : ""
+    className={`fixed left-1/2 z-50 flex items-center bg-[#0E5C2D] text-white py-2 px-4 rounded-md shadow-[0_4px_12px_rgba(37,211,102,0.4)] transition-all duration-500 ease-in-out ${
+      visible
+        ? "bottom-4 opacity-100 animate-float-pulse"
+        : "-bottom-16 opacity-0 pointer-events-none"
     }`}
     aria-label="Order via WhatsApp"
   >
@@ -28,4 +30,3 @@ const WhatsAppButton = ({ hideOnMobile }: { hideOnMobile?: boolean }) => (
 );
 
 export default WhatsAppButton;
-

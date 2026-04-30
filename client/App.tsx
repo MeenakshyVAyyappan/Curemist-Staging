@@ -104,8 +104,8 @@ function AppRoutes() {
     return () => clearTimeout(timer);
   }, [location, user, navigate]);
 
-  const hideWhatsApp = ["/login", "/checkout"].includes(location.pathname);
-  const hideWhatsAppOnMobile = location.pathname.startsWith("/product/");
+
+  const showGlobalWhatsApp = location.pathname !== "/";
 
   return (
     <>
@@ -139,7 +139,8 @@ function AppRoutes() {
 
         <Route path="*" element={<NotFound />} />
       </Routes>
-      {!hideWhatsApp && <WhatsAppButton hideOnMobile={hideWhatsAppOnMobile} />}
+
+      {showGlobalWhatsApp && <WhatsAppButton visible />}
     </>
   );
 }

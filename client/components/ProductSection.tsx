@@ -9,7 +9,11 @@ import { AnimatePresence, motion } from "framer-motion";
 
 import PremiumConditionCards from "./PremiumConditionCards";
 
-export default function ProductSection() {
+interface ProductSectionProps {
+  productListRef?: React.RefObject<HTMLDivElement>;
+}
+
+export default function ProductSection({ productListRef }: ProductSectionProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
 
@@ -42,33 +46,34 @@ export default function ProductSection() {
           <PremiumConditionCards />
         </div>
 
-        {/* Mobile View: 2-Column Grid Wrapper */}
-        <div className="grid grid-cols-2 gap-3 sm:gap-4 md:hidden">
-          {products.map((product, index) => (
-            <ProductCard key={index} {...product} />
-          ))}
-        </div>
-
-        {/* Desktop View: Carousel Container */}
-        <div className="hidden md:block relative group">
-          {/* Desktop Snap Scroll List */}
-          <div
-            ref={scrollContainerRef}
-            className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-8 hide-scrollbar scroll-smooth pt-4 items-stretch"
-          >
-            {carouselProducts.map((product, index) => (
-              <div
-                key={index}
-                className="w-[calc(33.333%-16px)] lg:w-[calc(25%-18px)] flex-shrink-0 snap-start flex flex-col"
-              >
-                <ProductCard {...product} />
-              </div>
+        <div ref={productListRef}>
+          {/* Mobile View: 2-Column Grid Wrapper */}
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 md:hidden">
+            {products.map((product, index) => (
+              <ProductCard key={index} {...product} />
             ))}
           </div>
 
-          <style
-            dangerouslySetInnerHTML={{
-              __html: `
+          {/* Desktop View: Carousel Container */}
+          <div className="hidden md:block relative group">
+            {/* Desktop Snap Scroll List */}
+            <div
+              ref={scrollContainerRef}
+              className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-8 hide-scrollbar scroll-smooth pt-4 items-stretch"
+            >
+              {carouselProducts.map((product, index) => (
+                <div
+                  key={index}
+                  className="w-[calc(33.333%-16px)] lg:w-[calc(25%-18px)] flex-shrink-0 snap-start flex flex-col"
+                >
+                  <ProductCard {...product} />
+                </div>
+              ))}
+            </div>
+
+            <style
+              dangerouslySetInnerHTML={{
+                __html: `
             .hide-scrollbar::-webkit-scrollbar {
               display: none;
             }
@@ -77,8 +82,9 @@ export default function ProductSection() {
               scrollbar-width: none;
             }
           `,
-            }}
-          />
+              }}
+            />
+          </div>
         </div>
       </div>
     </section>

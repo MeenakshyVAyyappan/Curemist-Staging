@@ -315,8 +315,8 @@
 
 .pd-btn-buy {
   flex: 1;
-  background: #0c1f4a;
-  color: #ffd147;
+  background: #ffd147;
+  color: #0c1f4a;
   border: none;
   padding: 16px 24px;
   border-radius: 10px;

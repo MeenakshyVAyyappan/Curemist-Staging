@@ -7,7 +7,7 @@ import Certifications from "@/components/ui/Certification";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import FAQSection from "@/components/FAQSection";
 import Footer from "@/components/Footer";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   Dialog,
@@ -19,11 +19,16 @@ import {
 import KeyFeaturesSection from "@/components/KeyFeaturesSection";
 import WhySafe from "@/components/ui/WhySafe";
 import CuremistDetailsSections from "@/components/CuremistDetailsSections";
+import WhatsAppButton from "@/components/WhatsAppButton";
 
 export default function Index() {
   const location = useLocation();
   const navigate = useNavigate();
   const [showWelcome, setShowWelcome] = useState(false);
+  const [showWhatsApp, setShowWhatsApp] = useState(false);
+  const [hasScrolled, setHasScrolled] = useState(false);
+  const [productListVisible, setProductListVisible] = useState(false);
+  const productListRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -33,6 +38,38 @@ export default function Index() {
       navigate("/", { replace: true });
     }
   }, [location, navigate]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!hasScrolled) {
+        setHasScrolled(true);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [hasScrolled]);
+
+  useEffect(() => {
+    const el = productListRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setProductListVisible(entry.isIntersecting);
+      },
+      { threshold: 0.25 }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (productListVisible && hasScrolled) {
+      setShowWhatsApp(true);
+    }
+  }, [productListVisible, hasScrolled]);
 
   return (
     <div className="min-h-screen bg-white">
@@ -97,7 +134,7 @@ export default function Index() {
         </div>
 
         <KeyFeaturesSection />
-        <ProductSection />
+        <ProductSection productListRef={productListRef} />
         <CuremistDetailsSections />
         <FeatureSections />
         <StatsSection />
@@ -106,6 +143,9 @@ export default function Index() {
         <FAQSection />
         <Footer />
       </main>
+
+      <WhatsAppButton visible={showWhatsApp} />
+
       <Dialog open={showWelcome} onOpenChange={setShowWelcome}>
         <DialogContent className="sm:max-w-md text-center">
           <DialogHeader>
@@ -130,3 +170,4 @@ export default function Index() {
     </div>
   );
 }
+
