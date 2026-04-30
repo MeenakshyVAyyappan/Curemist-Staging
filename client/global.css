@@ -182,6 +182,23 @@
       animation: none;
     }
   }
+
+  @keyframes float-pulse {
+    0%, 100% {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+      box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
+    }
+    50% {
+      transform: translateX(-50%) translateY(-6px);
+      opacity: 0.85;
+      box-shadow: 0 8px 16px rgba(37, 211, 102, 0.6);
+    }
+  }
+
+  .animate-float-pulse {
+    animation: float-pulse 2s ease-in-out infinite;
+  }
 }
 
 /* For small screens (sm), set padding-top to 0 */

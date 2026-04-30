@@ -3,15 +3,15 @@ const WhatsAppButton = ({ hideOnMobile }: { hideOnMobile?: boolean }) => (
     href="https://wa.me/918848815296"
     target="_blank"
     rel="noreferrer"
-    className={`fixed right-5 bottom-6 md:right-8 md:bottom-8 z-50 flex items-center bg-[#25D366] text-white p-2.5 md:p-3 rounded-2xl shadow-[0_4px_12px_rgba(37,211,102,0.4)] hover:shadow-[0_6px_16px_rgba(37,211,102,0.6)] hover:-translate-y-1 transition-all duration-300 group ${
+    className={`fixed bottom-2 left-1/2 z-50 flex items-center bg-[#25D366] text-white py-2 px-4 rounded-md shadow-[0_4px_12px_rgba(37,211,102,0.4)] transition-all duration-300 group animate-float-pulse ${
       hideOnMobile ? "hidden md:flex" : ""
     }`}
     aria-label="Order via WhatsApp"
   >
     {/* Icon */}
     <svg
-      width="46"
-      height="46"
+      width="24"
+      height="24"
       viewBox="0 0 24 24"
       fill="white"
       xmlns="http://www.w3.org/2000/svg"
@@ -21,10 +21,11 @@ const WhatsAppButton = ({ hideOnMobile }: { hideOnMobile?: boolean }) => (
     </svg>
 
     {/* Text */}
-    <span className="font-semibold text-[15px] whitespace-nowrap overflow-hidden max-w-0 opacity-0 group-hover:max-w-[200px] group-hover:opacity-100 group-hover:ml-3 group-hover:mr-2 transition-all duration-300 ease-in-out">
+    <span className="font-semibold text-[14px] whitespace-nowrap ml-2">
       Order via WhatsApp
     </span>
   </a>
 );
 
 export default WhatsAppButton;
+
