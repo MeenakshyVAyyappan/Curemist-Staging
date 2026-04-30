@@ -105,7 +105,7 @@ function AppRoutes() {
   }, [location, user, navigate]);
 
 
-  const showGlobalWhatsApp = location.pathname !== "/" && !location.pathname.startsWith("/product/");
+  const showGlobalWhatsApp = location.pathname !== "/" && !location.pathname.startsWith("/product/")  && !location.pathname.startsWith("/login");;
 
   return (
     <>
