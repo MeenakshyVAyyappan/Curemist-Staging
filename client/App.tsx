@@ -44,6 +44,7 @@ import AdminOrders from "./pages/admin/Orders";
 import AdminUsers from "./pages/admin/Users";
 import AdminCoupons from "./pages/admin/Coupons";
 import AdminLogin from "./pages/admin/Login";
+import { startsWith } from "zod/v4";
 
 const queryClient = new QueryClient();
 
@@ -105,7 +106,7 @@ function AppRoutes() {
   }, [location, user, navigate]);
 
 
-  const showGlobalWhatsApp = location.pathname !== "/" && !location.pathname.startsWith("/product/")  && !location.pathname.startsWith("/login");;
+  const showGlobalWhatsApp = location.pathname !== "/" && !location.pathname.startsWith("/product/")  && !location.pathname.startsWith("/login");
 
   return (
     <>
@@ -140,7 +141,12 @@ function AppRoutes() {
         <Route path="*" element={<NotFound />} />
       </Routes>
 
-      {showGlobalWhatsApp && <WhatsAppButton visible />}
+      {showGlobalWhatsApp && (
+        <WhatsAppButton 
+          visible 
+          className={location.pathname === "/checkout" ? "bottom-[100px] md:bottom-4" : ""} 
+        />
+      )}
     </>
   );
 }

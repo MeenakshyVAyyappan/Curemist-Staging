@@ -1,13 +1,23 @@
-const WhatsAppButton = ({ visible = true }: { visible?: boolean }) => (
+const WhatsAppButton = ({ 
+  visible = true, 
+  className = "" 
+}: { 
+  visible?: boolean;
+  className?: string;
+}) => (
   <a
     href="https://wa.me/918848815296"
     target="_blank"
     rel="noreferrer"
-    className={`fixed left-1/2 z-50 flex items-center bg-[#0E5C2D] text-white py-2 px-4 rounded-md shadow-[0_4px_12px_rgba(37,211,102,0.4)] transition-all duration-500 ease-in-out ${
+    className={`fixed left-1/2 -translate-x-1/2 z-50 flex items-center bg-[#0E5C2D] text-white py-2 px-4 rounded-md shadow-[0_4px_12px_rgba(37,211,102,0.4)] transition-all duration-500 ease-in-out ${
       visible
-        ? "bottom-4 opacity-100 animate-float-pulse"
-        : "-bottom-16 opacity-0 pointer-events-none"
-    }`}
+        ? "opacity-100 animate-float-pulse"
+        : "opacity-0 pointer-events-none"
+    } ${
+      visible && !className.includes('bottom-') ? "bottom-4" : ""
+    } ${
+      !visible ? "-bottom-16" : ""
+    } ${className}`}
     aria-label="Order via WhatsApp"
   >
     {/* Icon */}

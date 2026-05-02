@@ -337,6 +337,11 @@ export default function ProductDetailsPage() {
               </button> */}
             </div>
 
+            {/* Premium Condition Cards - MOBILE ONLY (between BUY NOW and badges) */}
+            <div className="md:hidden mt-8 mb-4">
+              <PremiumConditionCards />
+            </div>
+
             {/* Trust chips */}
             <div className="pd-trust-row">
               {[
@@ -351,7 +356,6 @@ export default function ProductDetailsPage() {
                 </div>
               ))}
             </div>
-
             {/* Highlights mini strip */}
             <div className="pd-highlights">
               {[
@@ -368,6 +372,13 @@ export default function ProductDetailsPage() {
             </div>
           </div>
         </div>
+
+        {/* Premium Condition Cards - DESKTOP ONLY (below hero) */}
+        <section className="py-4 bg-white hidden md:block">
+          <div className="pd-container text-center">
+            <PremiumConditionCards />
+          </div>
+        </section>
 
         {/* ══════════════════
             ABOUT THIS PRODUCT (moved above Phytochemicals)
@@ -421,15 +432,6 @@ export default function ProductDetailsPage() {
                 </div>
               </div>
             </div>
-          </div>
-        </section>
-
-        {/* ══════════════════
-            PREMIUM CONDITION CARDS
-        ══════════════════ */}
-        <section className="py-4bg-white">
-          <div className="pd-container text-center">
-            <PremiumConditionCards />
           </div>
         </section>
 
@@ -790,24 +792,8 @@ export default function ProductDetailsPage() {
       {/* Sticky Pay Button for Mobile */}
       {!isCtaVisible && (
         <div className="fixed bottom-0 left-0 right-0 md:hidden bg-white border-t border-gray-200 p-4 shadow-2xl z-50 animate-in slide-in-from-bottom-2 duration-200">
-          <div className="flex items-center justify-between gap-3 max-w-md mx-auto">
-            <div className="flex-1">
-              <div className="text-xs uppercase tracking-wider text-gray-500">
-                Price
-              </div>
-              <div className="mt-2 flex items-center gap-2">
-                <span className="text-lg font-bold text-curemist-purple whitespace-nowrap">
-                  ₹{total}
-                </span>
-                <button
-                  onClick={handleBuyNow}
-                  className="rounded-lg bg-gradient-to-r from-brand-blue to-[#1a2b5f] px-4 py-3 text-sm font-bold text-brand-yellow hover:shadow-lg transition-shadow active:scale-95"
-                >
-                  BUY NOW
-                </button>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-slate-50 px-2 py-2">
+          <div className="flex items-center justify-between gap-12 max-w-md mx-auto">
+              <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-slate-50 px-2 py-2">
               <button
                 type="button"
                 onClick={() => setQty((q) => Math.max(1, q - 1))}
@@ -826,6 +812,23 @@ export default function ProductDetailsPage() {
                 +
               </button>
             </div>
+            <div className="flex-1">
+              <div className="text-xs uppercase tracking-wider text-gray-500">
+                Price
+              </div>
+              <div className="mt-0   flex items-center gap-2">
+                <span className="text-lg font-bold text-curemist-purple whitespace-nowrap">
+                  ₹{total}
+                </span>
+                <button
+                  onClick={handleBuyNow}
+                  className="rounded-lg bg-gradient-to-r from-brand-blue to-[#1a2b5f] px-4 py-3 text-sm font-bold text-brand-yellow hover:shadow-lg transition-shadow active:scale-95"
+                >
+                  BUY NOW
+                </button>
+              </div>
+            </div>
+           
           </div>
         </div>
       )}

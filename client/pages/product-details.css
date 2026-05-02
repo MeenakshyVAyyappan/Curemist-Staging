@@ -43,7 +43,7 @@
   gap: 56px;
   max-width: 1280px;
   margin: 0 auto;
-  padding: 0 48px 80px;
+  padding: 0 48px 0px;
 }
 
 /* ── Image Panel ── */
@@ -330,6 +330,7 @@
 
 .pd-btn-buy:hover {
   background: #162e69;
+  color: #ffd147;
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(12, 31, 74, 0.25);
 }
@@ -421,7 +422,8 @@
 .pd-container {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 0 48px;
+  padding: 0px 48px;
+  margin-bottom: 20px;
 }
 
 /* Section heading */
@@ -457,7 +459,7 @@
 /* ── Description / About This Product ── */
 .pd-description-section {
   background: linear-gradient(135deg, #f9faff 0%, #fff 60%, #fffbf0 100%);
-  padding: 10px 0;
+  padding: 48px 0;
   border-top: 1px solid #eef2ff;
   position: relative;
   overflow: hidden;

@@ -100,12 +100,6 @@ export default function CartDrawer() {
               <ShoppingCart className="w-5 h-5" />
               Your Cart ({items.reduce((acc, item) => acc + item.quantity, 0)})
             </SheetTitle>
-            <button
-              onClick={() => setIsCartOpen(false)}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-            >
-              <X className="w-5 h-5 text-gray-500" />
-            </button>
           </div>
         </SheetHeader>
 
