@@ -59,7 +59,7 @@ export const products: Product[] = [
   },
   {
     slug: "curemist-ayurvedic-first-aid-wound-spray-12-5g",
-    title: "CureMist Ayurvedic First Aid Wound Spray 12.5g",
+    title: "CureMist Ayurvedic First Aid Wound Spray 12.5g(Travel Size)",
     size: "12.5 gm",
     price: "₹100",
     originalPrice: "₹161",
