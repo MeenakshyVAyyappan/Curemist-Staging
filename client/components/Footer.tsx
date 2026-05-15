@@ -7,6 +7,7 @@ const legalLinks = [
   { label: "Privacy Policy", href: "/privacy-policy" },
   { label: "Terms & Conditions", href: "/terms-and-conditions" },
   { label: "Shipping Information", href: "/shipping-information" },
+  { label: "Return Policy", href: "/return-policy" },
 ];
 
 export default function Footer() {

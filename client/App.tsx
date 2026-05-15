@@ -19,7 +19,9 @@ import { AuthProvider, useAuth } from "@/lib/auth";
 
 import Preloader from "@/components/Preloader";
 import CartDrawer from "@/components/CartDrawer";
-import WhatsAppButton from "@/components/WhatsAppButton";
+// [COMMENTED OUT] Old WhatsApp floating button – may re-enable later
+// import WhatsAppButton from "@/components/WhatsAppButton";
+import WhatsAppIcon from "@/components/WhatsAppIcon";
 
 import Index from "./pages/Index";
 import Blog from "./pages/blog";
@@ -35,6 +37,7 @@ import ContactUs from "./pages/contact";
 import PrivacyPolicy from "./pages/privacy-policy";
 import TermsAndConditions from "./pages/terms-and-conditions";
 import ShippingInformation from "./pages/shipping-information";
+import ReturnPolicy from "./pages/return-policy";
 import ProductDetailsPage from "./pages/product-details";
 
 // Admin Components
@@ -106,7 +109,7 @@ function AppRoutes() {
   }, [location, user, navigate]);
 
 
-  const showGlobalWhatsApp = location.pathname !== "/" && !location.pathname.startsWith("/product/")  && !location.pathname.startsWith("/login");
+  const showGlobalWhatsApp = location.pathname !== "/" && !location.pathname.startsWith("/product/") && !location.pathname.startsWith("/login") && !location.pathname.startsWith("/admin");
 
   return (
     <>
@@ -126,6 +129,7 @@ function AppRoutes() {
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
         <Route path="/shipping-information" element={<ShippingInformation />} />
+        <Route path="/return-policy" element={<ReturnPolicy />} />
         <Route path="/product/:slug" element={<ProductDetailsPage />} />
 
         {/* Admin Routes */}
@@ -141,12 +145,16 @@ function AppRoutes() {
         <Route path="*" element={<NotFound />} />
       </Routes>
 
+      {/* [COMMENTED OUT] Old WhatsApp floating button – may re-enable later
       {showGlobalWhatsApp && (
         <WhatsAppButton 
           visible 
           className={location.pathname === "/checkout" ? "bottom-[100px] md:bottom-4" : ""} 
         />
       )}
+      */}
+
+      {showGlobalWhatsApp && <WhatsAppIcon visible />}
     </>
   );
 }

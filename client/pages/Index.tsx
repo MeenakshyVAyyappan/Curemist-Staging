@@ -19,7 +19,9 @@ import {
 import KeyFeaturesSection from "@/components/KeyFeaturesSection";
 import WhySafe from "@/components/ui/WhySafe";
 import CuremistDetailsSections from "@/components/CuremistDetailsSections";
-import WhatsAppButton from "@/components/WhatsAppButton";
+// [COMMENTED OUT] Old WhatsApp floating button – may re-enable later
+// import WhatsAppButton from "@/components/WhatsAppButton";
+import WhatsAppIcon from "@/components/WhatsAppIcon";
 
 export default function Index() {
   const location = useLocation();
@@ -144,7 +146,10 @@ export default function Index() {
         <Footer />
       </main>
 
+      {/* [COMMENTED OUT] Old WhatsApp floating button – may re-enable later
       <WhatsAppButton visible={showWhatsApp} />
+      */}
+      <WhatsAppIcon visible={showWhatsApp} />
 
       <Dialog open={showWelcome} onOpenChange={setShowWelcome}>
         <DialogContent className="sm:max-w-md text-center">

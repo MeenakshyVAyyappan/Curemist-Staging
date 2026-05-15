@@ -77,11 +77,15 @@ export default function Profile() {
   // User-visible statuses (excludes payment_processing and payment_cancelled)
   const USER_VISIBLE_STATUSES = ["payment_successful", "payment_failed", "order received", "processing", "shipped", "delivered", "cancelled"];
 
-  const getUserFriendlyStatus = (status: string): { label: string; className: string } => {
+  const getUserFriendlyStatus = (status: string, paymentMethod?: string): { label: string; className: string } => {
     switch (status) {
       case "payment_successful":
-      case "order received":
         return { label: "Payment Successful", className: "bg-green-100 text-green-800" };
+      case "order received":
+        if (paymentMethod === "cod") {
+          return { label: "Order Received (COD)", className: "bg-orange-100 text-orange-800" };
+        }
+        return { label: "Order Received", className: "bg-green-100 text-green-800" };
       case "payment_failed":
         return { label: "Payment Failed", className: "bg-red-100 text-red-800" };
       case "processing":
@@ -828,9 +832,9 @@ export default function Profile() {
                                   {formatOrderId(ord.id)}
                                 </p>
                               </div>
-                              <div className={`px-4 py-2 rounded-full text-xs font-bold uppercase ${getUserFriendlyStatus(ord.order_status).className
+                              <div className={`px-4 py-2 rounded-full text-xs font-bold uppercase ${getUserFriendlyStatus(ord.order_status, ord.payment_method).className
                                 }`}>
-                                {getUserFriendlyStatus(ord.order_status).label}
+                                {getUserFriendlyStatus(ord.order_status, ord.payment_method).label}
                               </div>
                               <div className="flex items-center gap-2">
                                 <Button
@@ -934,9 +938,9 @@ export default function Profile() {
                                   </p>
                                   <p>
                                     <span className="font-medium">Status:</span>{" "}
-                                    <span className={`inline-block px-2 py-0.5 rounded text-xs font-bold ${getUserFriendlyStatus(selectedOrder.order_status).className
+                                    <span className={`inline-block px-2 py-0.5 rounded text-xs font-bold ${getUserFriendlyStatus(selectedOrder.order_status, selectedOrder.payment_method).className
                                       }`}>
-                                      {getUserFriendlyStatus(selectedOrder.order_status).label}
+                                      {getUserFriendlyStatus(selectedOrder.order_status, selectedOrder.payment_method).label}
                                     </span>
                                   </p>
                                   <p>
@@ -950,7 +954,7 @@ export default function Profile() {
                                     </p>
                                   )}
                                   <p>
-                                    <span className="font-medium">Total Paid:</span> ₹
+                                    <span className="font-medium">{selectedOrder.payment_method === "cod" ? "Total Amount:" : "Total Paid:"}</span> ₹
                                     {selectedOrder.total_price}
                                   </p>
                                   {selectedOrder.coupon_discount && selectedOrder.coupon_discount > 0 && (
@@ -964,7 +968,16 @@ export default function Profile() {
                                       <span className="font-medium">
                                         Payment Method:
                                       </span>{" "}
-                                      {selectedOrder.payment_method}
+                                      {selectedOrder.payment_method === "cod" ? (
+                                        <span className="inline-block px-2 py-0.5 rounded text-xs font-bold bg-orange-100 text-orange-800">Cash on Delivery</span>
+                                      ) : (
+                                        <span className="inline-block px-2 py-0.5 rounded text-xs font-bold bg-blue-100 text-blue-800">Online (Razorpay)</span>
+                                      )}
+                                    </p>
+                                  )}
+                                  {selectedOrder.cod_charge > 0 && (
+                                    <p>
+                                      <span className="font-medium">COD Charge:</span> ₹{selectedOrder.cod_charge}
                                     </p>
                                   )}
                                   {selectedOrder.admin_note && (

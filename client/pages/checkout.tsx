@@ -38,11 +38,15 @@ export default function Checkout() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
+  // Detect guest checkout mode from URL param
+  const isGuestCheckout = !user && new URLSearchParams(window.location.search).get('guest') === 'true';
+
   useEffect(() => {
-    if (!user) {
+    // Only redirect to login if NOT logged in AND NOT guest checkout
+    if (!user && !isGuestCheckout) {
       navigate("/login", { state: { from: { pathname: "/checkout" } } });
     }
-  }, [user, navigate]);
+  }, [user, navigate, isGuestCheckout]);
 
   const [loading, setLoading] = useState(false);
   const [processingPayment, setProcessingPayment] = useState(false);
@@ -62,6 +66,10 @@ export default function Checkout() {
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [addressMenuOpen, setAddressMenuOpen] = useState<string | null>(null);
   const [pincodeError, setPincodeError] = useState<string | null>(null);
+
+  // Payment method selection
+  const [paymentMethod, setPaymentMethod] = useState<"razorpay" | "cod">("razorpay");
+  const COD_CHARGE = 50;
 
   // Customer Information
   const [customerInfo, setCustomerInfo] = useState<CustomerInfo>({
@@ -222,8 +230,14 @@ export default function Checkout() {
       return () => {
         subscription.unsubscribe();
       };
+    } else if (isGuestCheckout) {
+      // Guest checkout: only fetch coupons (no profile/addresses)
+      fetchAvailableCoupons();
+      if (appliedCoupon?.code) {
+        setCoupon(appliedCoupon.code);
+      }
     }
-  }, [user]);
+  }, [user, isGuestCheckout]);
 
 
   // Close address menu on outside click
@@ -248,12 +262,14 @@ export default function Checkout() {
   const gstAmount = Math.round(subtotal * 0.05);
   const shippingFee = 0;
   const couponDiscount = appliedCoupon?.discount || 0;
-  const totalPrice = Math.max(0, Math.round(subtotal - couponDiscount));
+  const codCharge = paymentMethod === "cod" ? COD_CHARGE : 0;
+  const totalPrice = Math.max(0, Math.round(subtotal - couponDiscount + codCharge));
 
   // Create pending order with items in Supabase
   const createPendingOrder = async () => {
-    if (!user) {
-      console.error("No user found when creating order");
+    // For guest checkout, user can be null
+    if (!user && !isGuestCheckout) {
+      console.error("No user found and not guest checkout");
       return null;
     }
 
@@ -264,7 +280,7 @@ export default function Checkout() {
     };
 
     const orderData: any = {
-      user_id: user.id,
+      user_id: user ? user.id : null,
       customer_info: finalCustomerInfo,
       shipping_address: shippingAddress,
       billing_address: shippingAddress,
@@ -272,15 +288,22 @@ export default function Checkout() {
       mrp_total: mrpTotal,
       discount_amount: discountAmount,
       coupon_discount: couponDiscount,
+      cod_charge: codCharge,
       shipping_fee: shippingFee,
       gst_amount: gstAmount,
       total_price: totalPrice,
-      payment_status: "cancelled",
-      payment_method: "razorpay",
-      order_status: "payment_cancelled",
+      payment_status: paymentMethod === "cod" ? "cod_pending" : "cancelled",
+      payment_method: paymentMethod === "cod" ? "cod" : "razorpay",
+      order_status: paymentMethod === "cod" ? "order received" : "payment_cancelled",
     };
 
-    if (!selectedAddressId && savedAddresses.length < 3) {
+    // Add guest_email for guest orders
+    if (isGuestCheckout && customerInfo.email) {
+      orderData.guest_email = customerInfo.email;
+    }
+
+    // Only save addresses for logged-in users
+    if (user && !selectedAddressId && savedAddresses.length < 3) {
       const { data: existingAddresses } = await supabase
         .from("user_addresses")
         .select("*")
@@ -361,7 +384,7 @@ export default function Checkout() {
     status: "paid" | "payment_failed",
     razorpayPaymentId?: string,
   ) => {
-    if (!orderId || !user) {
+    if (!orderId || (!user && !isGuestCheckout)) {
       console.error("No current order to finalize");
       return null;
     }
@@ -384,14 +407,16 @@ export default function Checkout() {
     setCurrentOrderStatus(updateData.order_status);
 
     if (status === "paid") {
-      const { error: profileError } = await supabase.from("profiles").upsert({
-        id: user.id,
-        first_name: customerInfo.firstName,
-        phone: customerInfo.phone,
-        updated_at: new Date(),
-      });
+      if (user) {
+        const { error: profileError } = await supabase.from("profiles").upsert({
+          id: user.id,
+          first_name: customerInfo.firstName,
+          phone: customerInfo.phone,
+          updated_at: new Date(),
+        });
 
-      if (profileError) console.error("Error syncing profile:", profileError);
+        if (profileError) console.error("Error syncing profile:", profileError);
+      }
 
       await clearCart();
     }
@@ -482,7 +507,7 @@ export default function Checkout() {
               setTimeout(() => {
                 setProcessingPayment(false);
                 setShowThankYouModal(false);
-                navigate("/profile?tab=1");
+                navigate(user ? "/profile?tab=1" : "/");
               }, 3000);
             } else {
               await finalizeOrderStatus(orderId, "payment_failed");
@@ -591,13 +616,56 @@ export default function Checkout() {
 
   const handlePlaceOrder = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) {
+    if (!user && !isGuestCheckout) {
       toast({
         title: "Error",
-        description: "You must be logged in to place an order.",
+        description: "You must be logged in or use guest checkout.",
       });
       navigate("/login");
       return;
+    }
+
+    // === Guest checkout: Strong validation ===
+    if (isGuestCheckout) {
+      setShowErrors(true);
+      const errors: string[] = [];
+
+      if (!customerInfo.firstName || customerInfo.firstName.trim().length < 2) {
+        errors.push("Full Name is required (minimum 2 characters)");
+      }
+      if (!customerInfo.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerInfo.email)) {
+        errors.push("A valid Email ID is required");
+      }
+      if (!customerInfo.phone || customerInfo.phone.length !== 10) {
+        errors.push("A valid 10-digit Phone number is required");
+      }
+      if (!shippingAddress.street || shippingAddress.street.trim().length < 5) {
+        errors.push("Street Address is required (minimum 5 characters)");
+      }
+      if (!shippingAddress.city || shippingAddress.city.trim().length < 2 || /\d/.test(shippingAddress.city)) {
+        errors.push("A valid City name is required");
+      }
+      if (!shippingAddress.state || shippingAddress.state.trim().length < 2 || /\d/.test(shippingAddress.state)) {
+        errors.push("A valid State name is required");
+      }
+      if (!shippingAddress.zip || shippingAddress.zip.length !== 6) {
+        errors.push("A valid 6-digit PIN Code is required");
+      }
+      if (!shippingAddress.country || shippingAddress.country.trim().length < 2) {
+        errors.push("Country is required");
+      }
+      if (pincodeError) {
+        errors.push(pincodeError);
+      }
+
+      if (errors.length > 0) {
+        toast({
+          title: "Please fill all required fields",
+          description: errors[0],
+          variant: "destructive",
+        });
+        return;
+      }
     }
 
     if (
@@ -629,8 +697,54 @@ export default function Checkout() {
 
     if (!validateAddress(shippingAddress)) return;
 
+    // === COD Flow ===
+    if (paymentMethod === "cod") {
+      try {
+        setLoading(true);
+        setProcessingPayment(true);
+        const order = await createPendingOrder();
+        if (!order) throw new Error("Failed to create order");
 
+        // Save profile info only for logged-in users
+        if (user) {
+          const { error: profileError } = await supabase.from("profiles").upsert({
+            id: user.id,
+            first_name: customerInfo.firstName,
+            phone: customerInfo.phone,
+            updated_at: new Date(),
+          });
+          if (profileError) console.error("Error syncing profile:", profileError);
+        }
 
+        await clearCart();
+
+        trackEvent("Purchase", { value: totalPrice, currency: "INR" });
+
+        toast({
+          title: "Order Placed! 🎉",
+          description: "Your Cash on Delivery order has been placed successfully.",
+        });
+
+        setShowThankYouModal(true);
+        setTimeout(() => {
+          setProcessingPayment(false);
+          setLoading(false);
+          setShowThankYouModal(false);
+          navigate(user ? "/profile?tab=1" : "/");
+        }, 3000);
+      } catch (err: any) {
+        setLoading(false);
+        setProcessingPayment(false);
+        toast({
+          title: "Order Error",
+          description: err.message || "Could not place your order",
+          variant: "destructive",
+        });
+      }
+      return;
+    }
+
+    // === Online Payment (Razorpay) Flow ===
     try {
       if (currentOrderId && (currentOrderStatus === "payment_failed" || currentOrderStatus === "payment_cancelled")) {
         setLoading(true);
@@ -1564,9 +1678,13 @@ export default function Checkout() {
               </svg>
             </div>
             <h2 style={{ fontSize: 28, fontWeight: 900, color: '#16a34a', marginBottom: 8 }}>Thank You! 🎉</h2>
-            <p style={{ fontSize: 16, fontWeight: 700, color: '#1a1a1a', marginBottom: 8 }}>Payment Successful</p>
+            <p style={{ fontSize: 16, fontWeight: 700, color: '#1a1a1a', marginBottom: 8 }}>
+              {paymentMethod === "cod" ? "Order Placed" : "Payment Successful"}
+            </p>
             <p style={{ fontSize: 13, color: '#666', marginBottom: 20 }}>
-              Your order has been placed! We're preparing your items for shipment.
+              {paymentMethod === "cod"
+                ? "Your Cash on Delivery order has been placed! Pay ₹" + totalPrice + " upon delivery."
+                : "Your order has been placed! We're preparing your items for shipment."}
             </p>
             <div style={{ background: '#f9f9f9', borderRadius: 10, padding: '12px 16px', marginBottom: 16, textAlign: 'left' }}>
               <p style={{ fontSize: 12, color: '#666' }}>
@@ -1574,7 +1692,7 @@ export default function Checkout() {
               </p>
               <p style={{ fontSize: 11, color: '#999', marginTop: 4 }}>We'll email you tracking information soon.</p>
             </div>
-            <p style={{ fontSize: 12, color: '#aaa' }}>Redirecting to your orders in a moment...</p>
+            <p style={{ fontSize: 12, color: '#aaa' }}>{user ? 'Redirecting to your orders in a moment...' : 'Redirecting to homepage in a moment...'}</p>
           </div>
         </div>
       )}
@@ -1912,8 +2030,24 @@ export default function Checkout() {
               {/* === DELIVERY ADDRESS SECTION === */}
               <p className="section-label-top">Delivery Details</p>
 
+              {/* Guest Checkout Banner */}
+              {isGuestCheckout && (
+                <div style={{
+                  background: 'linear-gradient(135deg, #fef3c7, #fde68a)',
+                  borderRadius: 10, padding: '12px 16px', marginBottom: 12,
+                  display: 'flex', alignItems: 'center', gap: 10,
+                  border: '1px solid #f59e0b',
+                }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#92400e" strokeWidth="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  <div>
+                    <p style={{ fontSize: 13, fontWeight: 700, color: '#92400e' }}>Guest Checkout</p>
+                    <p style={{ fontSize: 11, color: '#a16207' }}>All fields are mandatory. Please fill in every detail.</p>
+                  </div>
+                </div>
+              )}
+
               <div className="checkout-section-card">
-                {savedAddresses.length > 0 && selectedAddressId ? (
+                {!isGuestCheckout && savedAddresses.length > 0 && selectedAddressId ? (
                   /* Show saved address display */
                   <>
                     <div className="addr-display-row">
@@ -1939,7 +2073,7 @@ export default function Checkout() {
                       Free Delivery Across India
                     </div>
                   </>
-                ) : savedAddresses.length > 0 ? (
+                ) : !isGuestCheckout && savedAddresses.length > 0 ? (
                   /* Saved addresses exist but none selected - show to pick */
                   <>
                     <div className="addr-display-row">
@@ -1979,15 +2113,16 @@ export default function Checkout() {
                       </div>
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                         <div className="checkout-form-field">
-                          <label>Email *</label>
+                          <label>Email ID *</label>
                           <input
                             type="email"
-                            className={showErrors && !customerInfo.email ? 'error' : ''}
+                            className={showErrors && (!customerInfo.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerInfo.email)) ? 'error' : ''}
                             value={customerInfo.email}
                             onChange={(e) => setCustomerInfo({ ...customerInfo, email: e.target.value })}
                             placeholder="Email address"
                             required
                           />
+                          {showErrors && isGuestCheckout && (!customerInfo.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerInfo.email)) && <p className="field-error">Valid email is required</p>}
                         </div>
                         <div className="checkout-form-field">
                           <label>Phone *</label>
@@ -2000,6 +2135,7 @@ export default function Checkout() {
                             maxLength={10}
                             required
                           />
+                          {showErrors && isGuestCheckout && (!customerInfo.phone || customerInfo.phone.length !== 10) && <p className="field-error">10-digit phone number is required</p>}
                         </div>
                       </div>
                       <div className="checkout-form-field">
@@ -2141,6 +2277,83 @@ export default function Checkout() {
               </div>
 
               {/* Billing address section removed - always same as shipping */}
+
+              {/* === PAYMENT METHOD SECTION === */}
+              <p className="section-label-top">Payment Method</p>
+              <div className="checkout-section-card">
+                <div style={{ padding: '14px 18px' }}>
+                  {/* Pay Online Option */}
+                  <label
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 12,
+                      padding: '14px 16px',
+                      border: paymentMethod === 'razorpay' ? '2px solid #4A0E4E' : '1.5px solid #e0e0e0',
+                      borderRadius: 12,
+                      cursor: 'pointer',
+                      background: paymentMethod === 'razorpay' ? '#faf7fb' : '#fff',
+                      transition: 'all 0.2s',
+                      marginBottom: 10,
+                    }}
+                  >
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="razorpay"
+                      checked={paymentMethod === 'razorpay'}
+                      onChange={() => setPaymentMethod('razorpay')}
+                      style={{ accentColor: '#4A0E4E', width: 18, height: 18 }}
+                    />
+                    <div style={{ flex: 1 }}>
+                      <p style={{ fontSize: 14, fontWeight: 700, color: '#1a1a1a', margin: 0 }}>Pay Online</p>
+                      <p style={{ fontSize: 12, color: '#888', margin: '2px 0 0' }}>Razorpay · UPI, Cards, Net Banking & more</p>
+                    </div>
+                    <img
+                      src="/Razorpay/razorpayllogo01.png"
+                      alt="Razorpay"
+                      style={{ height: 20, objectFit: 'contain' }}
+                      onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                    />
+                  </label>
+
+                  {/* Cash on Delivery Option */}
+                  <label
+                    style={{
+                      display: 'flex',
+                      alignItems: 'flex-start',
+                      gap: 12,
+                      padding: '14px 16px',
+                      border: paymentMethod === 'cod' ? '2px solid #4A0E4E' : '1.5px solid #e0e0e0',
+                      borderRadius: 12,
+                      cursor: 'pointer',
+                      background: paymentMethod === 'cod' ? '#faf7fb' : '#fff',
+                      transition: 'all 0.2s',
+                    }}
+                  >
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="cod"
+                      checked={paymentMethod === 'cod'}
+                      onChange={() => setPaymentMethod('cod')}
+                      style={{ accentColor: '#4A0E4E', width: 18, height: 18, marginTop: 2 }}
+                    />
+                    <div style={{ flex: 1 }}>
+                      <p style={{ fontSize: 14, fontWeight: 700, color: '#1a1a1a', margin: 0 }}>Cash on Delivery</p>
+                      <p style={{ fontSize: 12, color: '#c47d15', fontWeight: 600, margin: '4px 0 0', display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10" /><path d="M12 8v4M12 16h.01" /></svg>
+                        ₹{COD_CHARGE} extra charge applies for Cash on Delivery
+                      </p>
+                    </div>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="1.5" style={{ flexShrink: 0, marginTop: 2 }}>
+                      <rect x="2" y="6" width="20" height="12" rx="2" />
+                      <path d="M2 10h20" />
+                      <path d="M6 14h4" />
+                    </svg>
+                  </label>
+                </div>
+              </div>
             </div>
 
             {/* RIGHT COLUMN - Order Summary Desktop */}
@@ -2199,6 +2412,12 @@ export default function Checkout() {
                       <span>-₹{couponDiscount}</span>
                     </div>
                   )}
+                  {codCharge > 0 && (
+                    <div className="totals-row">
+                      <span>COD Charge</span>
+                      <span>₹{codCharge}</span>
+                    </div>
+                  )}
                   <div className="totals-row green">
                     <span>Shipping</span>
                     <span>Free 🚚</span>
@@ -2231,7 +2450,9 @@ export default function Checkout() {
                   >
                     {loading || processingPayment
                       ? "Processing..."
-                      : `Pay ₹${totalPrice}`}
+                      : paymentMethod === "cod"
+                        ? `Place Order · ₹${totalPrice}`
+                        : `Pay ₹${totalPrice}`}
                   </button>
                 </div>
                 {/* <div className="secure-badge" style={{ paddingBottom: 14 }}>
@@ -2246,16 +2467,25 @@ export default function Checkout() {
         {/* STICKY BOTTOM BAR (mobile only) - always shown, hidden via CSS on desktop */}
         <div className="sticky-pay-bar">
           <div className="sticky-pay-left">
-            <img
-              src="/Razorpay/razorpayllogo01.png"
-              alt="Razorpay"
-              className="sticky-razorpay-logo"
-              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-            />
-            <div>
-              <p className="sticky-pay-label">Pay using Razorpay</p>
-              <p style={{ fontSize: 11, fontWeight: 600, color: '#1a8c3b' }}>Free Delivery 🚚</p>
-            </div>
+            {paymentMethod === "razorpay" ? (
+              <>
+                <img
+                  src="/Razorpay/razorpayllogo01.png"
+                  alt="Razorpay"
+                  className="sticky-razorpay-logo"
+                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                />
+                <div>
+                  <p className="sticky-pay-label">Pay using Razorpay</p>
+                  <p style={{ fontSize: 11, fontWeight: 600, color: '#1a8c3b' }}>Free Delivery 🚚</p>
+                </div>
+              </>
+            ) : (
+              <div>
+                <p className="sticky-pay-label" style={{ fontSize: 13, fontWeight: 700, color: '#1a1a1a' }}>Cash on Delivery</p>
+                <p style={{ fontSize: 11, fontWeight: 600, color: '#c47d15' }}>+₹{COD_CHARGE} COD charge</p>
+              </div>
+            )}
           </div>
           <button
             className="sticky-pay-btn"
@@ -2264,7 +2494,9 @@ export default function Checkout() {
           >
             {loading || processingPayment
               ? "Processing..."
-              : `Pay ₹${totalPrice}`}
+              : paymentMethod === "cod"
+                ? `Place Order · ₹${totalPrice}`
+                : `Pay ₹${totalPrice}`}
           </button>
         </div>
       </div>

@@ -229,6 +229,7 @@ export default function AdminOrders() {
       formattedOrderId.includes(q) ||
       order.customer_info?.firstName?.toLowerCase().includes(q) ||
       order.customer_info?.email?.toLowerCase().includes(q) ||
+      (order.guest_email || "").toLowerCase().includes(q) ||
       rawPhone.includes(q);
 
     const matchesStatus =
@@ -314,6 +315,7 @@ export default function AdminOrders() {
         shipping,
         billing,
         order.payment_method || "",
+        order.user_id ? "Registered" : "Guest",
       ];
     });
 
@@ -517,19 +519,20 @@ export default function AdminOrders() {
                 <TableHead>Mobile</TableHead>
                 <TableHead>Total</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Payment</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8">
+                  <TableCell colSpan={9} className="text-center py-8">
                     Loading orders...
                   </TableCell>
                 </TableRow>
               ) : filteredOrders.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8">
+                  <TableCell colSpan={9} className="text-center py-8">
                     No orders found.
                   </TableCell>
                 </TableRow>
@@ -554,8 +557,9 @@ export default function AdminOrders() {
                           {order.customer_info?.firstName || order.shipping_address?.full_name || "Guest"}{" "}
                           {order.customer_info?.lastName || ""}
                         </span>
+                        {!order.user_id && <Badge className="ml-1 bg-amber-100 text-amber-800 hover:bg-amber-100 text-[10px] py-0" variant="outline">Guest</Badge>}
                         <span className="text-xs text-muted-foreground">
-                          {order.customer_info?.email || ""}
+                          {order.customer_info?.email || order.guest_email || ""}
                         </span>
                       </div>
                     </TableCell>
@@ -568,6 +572,13 @@ export default function AdminOrders() {
                       >
                         {order.order_status}
                       </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {order.payment_method === "cod" ? (
+                        <Badge className="bg-orange-100 text-orange-800 hover:bg-orange-100" variant="outline">COD</Badge>
+                      ) : (
+                        <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100" variant="outline">Online</Badge>
+                      )}
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
@@ -607,10 +618,11 @@ export default function AdminOrders() {
                                     <span className="font-medium">Name:</span>{" "}
                                     {order.customer_info?.firstName || order.shipping_address?.full_name || "Guest"}{" "}
                                     {order.customer_info?.lastName || ""}
+                                    {!order.user_id && <Badge className="ml-1 bg-amber-100 text-amber-800 hover:bg-amber-100 text-[10px] py-0" variant="outline">Guest</Badge>}
                                   </p>
                                   <p>
                                     <span className="font-medium">Email:</span>{" "}
-                                    {order.customer_info?.email || ""}
+                                    {order.customer_info?.email || order.guest_email || ""}
                                   </p>
                                   <p>
                                     <span className="font-medium">Phone:</span>{" "}
@@ -653,6 +665,20 @@ export default function AdminOrders() {
                                     </span>{" "}
                                     {formatOrderDate(order.created_at)}
                                   </p>
+                                  <p>
+                                    <span className="font-medium">Payment Method:</span>{" "}
+                                    {order.payment_method === "cod" ? (
+                                      <span className="inline-block px-2 py-0.5 rounded font-semibold bg-orange-100 text-orange-800">COD</span>
+                                    ) : (
+                                      <span className="inline-block px-2 py-0.5 rounded font-semibold bg-blue-100 text-blue-800">Online (Razorpay)</span>
+                                    )}
+                                  </p>
+                                  {order.cod_charge > 0 && (
+                                    <p>
+                                      <span className="font-medium">COD Charge:</span>{" "}
+                                      ₹{order.cod_charge}
+                                    </p>
+                                  )}
                                 </div>
                               </div>
                               <div>
