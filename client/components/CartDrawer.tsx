@@ -21,7 +21,6 @@ export default function CartDrawer() {
   const [couponCode, setCouponCode] = useState("");
   const [isApplying, setIsApplying] = useState(false);
   const [availableCoupons, setAvailableCoupons] = useState<any[]>([]);
-  const [showCheckoutChoice, setShowCheckoutChoice] = useState(false);
 
   const fetchAvailableCoupons = async () => {
     const { data, error } = await supabase
@@ -42,26 +41,8 @@ export default function CartDrawer() {
   }, [isCartOpen]);
 
   const handleCheckout = () => {
-    if (user) {
-      // Logged in — go straight to checkout
-      setIsCartOpen(false);
-      navigate("/checkout");
-    } else {
-      // Not logged in — show login vs guest choice
-      setShowCheckoutChoice(true);
-    }
-  };
-
-  const handleLoginCheckout = () => {
     setIsCartOpen(false);
-    setShowCheckoutChoice(false);
-    navigate("/login", { state: { from: { pathname: "/checkout" } } });
-  };
-
-  const handleGuestCheckout = () => {
-    setIsCartOpen(false);
-    setShowCheckoutChoice(false);
-    navigate("/checkout?guest=true");
+    navigate(user ? "/checkout" : "/checkout?guest=true");
   };
 
   const handleApplyCoupon = async (codeToApply?: string) => {
@@ -291,57 +272,6 @@ export default function CartDrawer() {
         )}
       </SheetContent>
 
-      {/* Checkout Choice Modal */}
-      {showCheckoutChoice && (
-        <div
-          style={{
-            position: 'fixed', inset: 0, zIndex: 9999,
-            background: 'rgba(0,0,0,0.5)', display: 'flex',
-            alignItems: 'center', justifyContent: 'center', padding: 16,
-          }}
-          onClick={() => setShowCheckoutChoice(false)}
-        >
-          <div
-            style={{
-              background: '#fff', borderRadius: 16, padding: '28px 24px',
-              maxWidth: 380, width: '100%', textAlign: 'center',
-              boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div style={{ width: 56, height: 56, borderRadius: '50%', background: '#f3e8ff', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
-              <ShoppingCart className="w-6 h-6" style={{ color: '#7c3aed' }} />
-            </div>
-            <h3 style={{ fontSize: 20, fontWeight: 800, color: '#1a1a1a', marginBottom: 6 }}>How would you like to checkout?</h3>
-            <p style={{ fontSize: 13, color: '#666', marginBottom: 20 }}>You can login for a personalized experience or continue as a guest.</p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <button
-                onClick={handleLoginCheckout}
-                style={{
-                  width: '100%', padding: '14px 20px', borderRadius: 12,
-                  background: 'linear-gradient(135deg, #4A0E4E, #7c3aed)',
-                  color: '#fff', fontWeight: 700, fontSize: 15, border: 'none',
-                  cursor: 'pointer', transition: 'all 0.2s',
-                }}
-              >
-                Login & Checkout
-              </button>
-              <button
-                onClick={handleGuestCheckout}
-                style={{
-                  width: '100%', padding: '14px 20px', borderRadius: 12,
-                  background: '#fff', color: '#4A0E4E', fontWeight: 700,
-                  fontSize: 15, border: '2px solid #4A0E4E', cursor: 'pointer',
-                  transition: 'all 0.2s',
-                }}
-              >
-                Guest Checkout
-              </button>
-            </div>
-            <p style={{ fontSize: 11, color: '#999', marginTop: 14 }}>Guest checkout: All fields are mandatory</p>
-          </div>
-        </div>
-      )}
     </Sheet>
   );
 }
