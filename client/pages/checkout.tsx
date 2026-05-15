@@ -1611,6 +1611,20 @@ export default function Checkout() {
         }
         .checkout-form-field input:focus { border-color: #4A0E4E; }
         .checkout-form-field input.error { border-color: #e53e3e; }
+        .checkout-form-field textarea {
+          width: 100%;
+          border: 1.5px solid #ddd;
+          border-radius: 8px;
+          padding: 10px 12px;
+          font-size: 13px;
+          outline: none;
+          transition: border-color 0.2s;
+          box-sizing: border-box;
+          font-family: inherit;
+          resize: vertical;
+        }
+        .checkout-form-field textarea:focus { border-color: #4A0E4E; }
+        .checkout-form-field textarea.error { border-color: #e53e3e; }
         .field-error {
           font-size: 11px;
           color: #e53e3e;
