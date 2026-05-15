@@ -159,7 +159,7 @@ function AppRoutes() {
           visible
           className={
             location.pathname === "/checkout" && location.search.includes("guest=true")
-              ? "bottom-24 md:bottom-4"
+              ? "bottom-28 md:bottom-4"
               : ""
           }
         />
