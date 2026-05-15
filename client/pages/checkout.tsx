@@ -633,9 +633,6 @@ export default function Checkout() {
       if (!customerInfo.firstName || customerInfo.firstName.trim().length < 2) {
         errors.push("Full Name is required (minimum 2 characters)");
       }
-      if (!customerInfo.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerInfo.email)) {
-        errors.push("A valid Email ID is required");
-      }
       if (!customerInfo.phone || customerInfo.phone.length !== 10) {
         errors.push("A valid 10-digit Phone number is required");
       }
@@ -1591,6 +1588,18 @@ export default function Checkout() {
         .checkout-form-field {
           margin-bottom: 14px;
         }
+        .checkout-form-grid {
+          display: grid;
+          gap: 12px;
+        }
+        .checkout-form-grid-2 {
+          grid-template-columns: 1fr;
+        }
+        @media (min-width: 768px) {
+          .checkout-form-grid-2 {
+            grid-template-columns: 1fr 1fr;
+          }
+        }
         .checkout-form-field label {
           display: block;
           font-size: 12px;
@@ -1598,19 +1607,7 @@ export default function Checkout() {
           color: #555;
           margin-bottom: 5px;
         }
-        .checkout-form-field input {
-          width: 100%;
-          border: 1.5px solid #ddd;
-          border-radius: 8px;
-          padding: 10px 12px;
-          font-size: 13px;
-          outline: none;
-          transition: border-color 0.2s;
-          box-sizing: border-box;
-          font-family: inherit;
-        }
-        .checkout-form-field input:focus { border-color: #4A0E4E; }
-        .checkout-form-field input.error { border-color: #e53e3e; }
+        .checkout-form-field input,
         .checkout-form-field textarea {
           width: 100%;
           border: 1.5px solid #ddd;
@@ -1621,10 +1618,15 @@ export default function Checkout() {
           transition: border-color 0.2s;
           box-sizing: border-box;
           font-family: inherit;
+          background: #fff;
+        }
+        .checkout-form-field input:focus,
+        .checkout-form-field textarea:focus { border-color: #4A0E4E; }
+        .checkout-form-field input.error,
+        .checkout-form-field textarea.error { border-color: #e53e3e; }
+        .checkout-form-field textarea {
           resize: vertical;
         }
-        .checkout-form-field textarea:focus { border-color: #4A0E4E; }
-        .checkout-form-field textarea.error { border-color: #e53e3e; }
         .field-error {
           font-size: 11px;
           color: #e53e3e;
@@ -2125,32 +2127,18 @@ export default function Checkout() {
                         />
                         {showErrors && !customerInfo.firstName && <p className="field-error">Full name is required</p>}
                       </div>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                        <div className="checkout-form-field">
-                          <label>Email ID *</label>
-                          <input
-                            type="email"
-                            className={showErrors && (!customerInfo.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerInfo.email)) ? 'error' : ''}
-                            value={customerInfo.email}
-                            onChange={(e) => setCustomerInfo({ ...customerInfo, email: e.target.value })}
-                            placeholder="Email address"
-                            required
-                          />
-                          {showErrors && isGuestCheckout && (!customerInfo.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerInfo.email)) && <p className="field-error">Valid email is required</p>}
-                        </div>
-                        <div className="checkout-form-field">
-                          <label>Phone *</label>
-                          <input
-                            type="tel"
-                            className={showErrors && (!customerInfo.phone || customerInfo.phone.length < 10) ? 'error' : ''}
-                            value={customerInfo.phone}
-                            onChange={(e) => setCustomerInfo({ ...customerInfo, phone: e.target.value.replace(/\D/g, "") })}
-                            placeholder="10-digit number"
-                            maxLength={10}
-                            required
-                          />
-                          {showErrors && isGuestCheckout && (!customerInfo.phone || customerInfo.phone.length !== 10) && <p className="field-error">10-digit phone number is required</p>}
-                        </div>
+                      <div className="checkout-form-field">
+                        <label>Phone *</label>
+                        <input
+                          type="tel"
+                          className={showErrors && (!customerInfo.phone || customerInfo.phone.length < 10) ? 'error' : ''}
+                          value={customerInfo.phone}
+                          onChange={(e) => setCustomerInfo({ ...customerInfo, phone: e.target.value.replace(/\D/g, "") })}
+                          placeholder="10-digit number"
+                          maxLength={10}
+                          required
+                        />
+                        {showErrors && isGuestCheckout && (!customerInfo.phone || customerInfo.phone.length !== 10) && <p className="field-error">10-digit phone number is required</p>}
                       </div>
                       <div className="checkout-form-field">
                         <label>Street Address *</label>
@@ -2162,7 +2150,7 @@ export default function Checkout() {
                           required
                         />
                       </div>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                      <div className="checkout-form-grid checkout-form-grid-2">
                         <div className="checkout-form-field">
                           <label>City *</label>
                           <input
@@ -2185,6 +2173,8 @@ export default function Checkout() {
                             required
                           />
                         </div>
+                      </div>
+                      <div className="checkout-form-grid checkout-form-grid-2">
                         <div className="checkout-form-field">
                           <label>PIN Code *</label>
                           <input

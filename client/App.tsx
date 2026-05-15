@@ -154,7 +154,16 @@ function AppRoutes() {
       )}
       */}
 
-      {showGlobalWhatsApp && <WhatsAppIcon visible />}
+      {showGlobalWhatsApp && (
+        <WhatsAppIcon
+          visible
+          className={
+            location.pathname === "/checkout" && location.search.includes("guest=true")
+              ? "bottom-24 md:bottom-4"
+              : ""
+          }
+        />
+      )}
     </>
   );
 }
