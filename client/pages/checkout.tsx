@@ -1784,7 +1784,6 @@ export default function Checkout() {
                     {pincodeError && <p className="field-error">{pincodeError}</p>}
                   </div>
                   <div>
-
                     <label className="form-label">City *</label>
                     <input
                       className="form-input"
@@ -1880,26 +1879,6 @@ export default function Checkout() {
                 />
                 <div className="form-grid-2">
                   <div>
-                    <label className="form-label">City *</label>
-                    <input
-                      className="form-input"
-                      placeholder="City"
-                      value={editAddress.city}
-                      onChange={(e) => setEditAddress({ ...editAddress, city: e.target.value })}
-                    />
-                  </div>
-                  <div>
-                    <label className="form-label">State *</label>
-                    <input
-                      className="form-input"
-                      placeholder="State"
-                      value={editAddress.state}
-                      onChange={(e) => setEditAddress({ ...editAddress, state: e.target.value })}
-                    />
-                  </div>
-                </div>
-                <div className="form-grid-2">
-                  <div>
                     <label className="form-label">PIN Code *</label>
                     <input
                       className="form-input"
@@ -1917,6 +1896,26 @@ export default function Checkout() {
                       maxLength={6}
                     />
                     {pincodeError && <p className="field-error">{pincodeError}</p>}
+                  </div>
+                  <div>
+                    <label className="form-label">City *</label>
+                    <input
+                      className="form-input"
+                      placeholder="City"
+                      value={editAddress.city}
+                      onChange={(e) => setEditAddress({ ...editAddress, city: e.target.value })}
+                    />
+                  </div>
+                </div>
+                <div className="form-grid-2">
+                  <div>
+                    <label className="form-label">State *</label>
+                    <input
+                      className="form-input"
+                      placeholder="State"
+                      value={editAddress.state}
+                      onChange={(e) => setEditAddress({ ...editAddress, state: e.target.value })}
+                    />
                   </div>
                   <div>
                     <label className="form-label">Country *</label>
@@ -2152,30 +2151,6 @@ export default function Checkout() {
                       </div>
                       <div className="checkout-form-grid checkout-form-grid-2">
                         <div className="checkout-form-field">
-                          <label>City *</label>
-                          <input
-                            type="text"
-                            className={showErrors && !shippingAddress.city ? 'error' : ''}
-                            value={shippingAddress.city}
-                            onChange={(e) => setShippingAddress({ ...shippingAddress, city: e.target.value })}
-                            placeholder="City"
-                            required
-                          />
-                        </div>
-                        <div className="checkout-form-field">
-                          <label>State *</label>
-                          <input
-                            type="text"
-                            className={showErrors && !shippingAddress.state ? 'error' : ''}
-                            value={shippingAddress.state}
-                            onChange={(e) => setShippingAddress({ ...shippingAddress, state: e.target.value })}
-                            placeholder="State"
-                            required
-                          />
-                        </div>
-                      </div>
-                      <div className="checkout-form-grid checkout-form-grid-2">
-                        <div className="checkout-form-field">
                           <label>PIN Code *</label>
                           <input
                             type="text"
@@ -2195,6 +2170,30 @@ export default function Checkout() {
                             required
                           />
                           {pincodeError && <p className="field-error">{pincodeError}</p>}
+                        </div>
+                        <div className="checkout-form-field">
+                          <label>City *</label>
+                          <input
+                            type="text"
+                            className={showErrors && !shippingAddress.city ? 'error' : ''}
+                            value={shippingAddress.city}
+                            onChange={(e) => setShippingAddress({ ...shippingAddress, city: e.target.value })}
+                            placeholder="City"
+                            required
+                          />
+                        </div>
+                      </div>
+                      <div className="checkout-form-grid checkout-form-grid-2">
+                        <div className="checkout-form-field">
+                          <label>State *</label>
+                          <input
+                            type="text"
+                            className={showErrors && !shippingAddress.state ? 'error' : ''}
+                            value={shippingAddress.state}
+                            onChange={(e) => setShippingAddress({ ...shippingAddress, state: e.target.value })}
+                            placeholder="State"
+                            required
+                          />
                         </div>
                         <div className="checkout-form-field">
                           <label>Country *</label>
