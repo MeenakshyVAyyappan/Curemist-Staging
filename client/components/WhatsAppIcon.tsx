@@ -13,11 +13,10 @@ const WhatsAppIcon = ({
     href="https://wa.me/918848815296"
     target="_blank"
     rel="noreferrer"
-    className={`fixed right-4 bottom-4 z-50 flex items-center justify-center
+    className={`fixed right-4 ${className || "bottom-4"} z-50 flex items-center justify-center
       w-[66px] h-[66px] rounded-full bg-[#25D366] shadow-[0_4px_14px_rgba(37,211,102,0.45)]
       transition-all duration-500 ease-in-out hover:scale-110 hover:shadow-[0_6px_20px_rgba(37,211,102,0.6)]
-      ${visible ? "opacity-100 translate-y-0" : "opacity-0 pointer-events-none translate-y-4"}
-      ${className}`}
+      ${visible ? "opacity-100 translate-y-0" : "opacity-0 pointer-events-none translate-y-4"}`}
     aria-label="Chat on WhatsApp"
   >
     <svg
