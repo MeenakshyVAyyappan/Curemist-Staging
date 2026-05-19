@@ -4,6 +4,7 @@ import cors from "cors";
 import { handleDemo } from "./routes/demo";
 import { createRazorpayOrder, verifyRazorpayPayment, getRazorpayOrderStatus } from "./routes/razorpay";
 import { contactHandler, notifyResetHandler } from "./routes/email";
+import { sendWhatsAppConfirmation } from "./routes/whatsapp";
 
 export function createServer() {
   const app = express();
@@ -29,6 +30,9 @@ export function createServer() {
   // Email endpoints (Resend)
   app.post("/api/contact", contactHandler);
   app.post("/api/notify-reset", notifyResetHandler);
+
+  // WhatsApp endpoints
+  app.post("/api/send-whatsapp-confirmation", sendWhatsAppConfirmation);
 
   return app;
 }

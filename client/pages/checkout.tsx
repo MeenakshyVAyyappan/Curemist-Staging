@@ -121,6 +121,10 @@ export default function Checkout() {
     country: "India",
   });
 
+  // WhatsApp notification
+  const [whatsappSameAsPhone, setWhatsappSameAsPhone] = useState(true);
+  const [whatsappPhone, setWhatsappPhone] = useState("");
+
   const fetchAvailableCoupons = async () => {
     const { data, error } = await supabase
       .from("coupons")
@@ -495,6 +499,9 @@ export default function Checkout() {
               console.log("Finalizing order status in database...");
               await finalizeOrderStatus(orderId, "paid", response.razorpay_payment_id);
 
+              // Send WhatsApp confirmation
+              await sendWhatsAppConfirmation(orderId);
+
               trackEvent("Purchase", { value: totalPrice, currency: "INR" });
 
               toast({
@@ -636,6 +643,9 @@ export default function Checkout() {
       if (!customerInfo.phone || customerInfo.phone.length !== 10) {
         errors.push("A valid 10-digit Phone number is required");
       }
+      if (!whatsappSameAsPhone && (!whatsappPhone || whatsappPhone.length !== 10)) {
+        errors.push("A valid 10-digit WhatsApp number is required");
+      }
       if (!shippingAddress.street || shippingAddress.street.trim().length < 5) {
         errors.push("Street Address is required (minimum 5 characters)");
       }
@@ -714,6 +724,9 @@ export default function Checkout() {
         }
 
         await clearCart();
+
+        // Send WhatsApp confirmation for COD
+        await sendWhatsAppConfirmation(order.id);
 
         trackEvent("Purchase", { value: totalPrice, currency: "INR" });
 
@@ -877,6 +890,59 @@ export default function Checkout() {
     }
     setEditingAddressId(null);
     setEditAddress({ full_name: "", phone: "", street: "", city: "", state: "", zip: "", country: "" });
+  };
+
+  // Send WhatsApp confirmation message via backend API
+  const sendWhatsAppConfirmation = async (orderId: string) => {
+    try {
+      const finalWhatsappPhone = whatsappSameAsPhone 
+        ? customerInfo.phone 
+        : whatsappPhone;
+
+      if (!finalWhatsappPhone || finalWhatsappPhone.length !== 10) {
+        console.warn("Invalid WhatsApp phone number, skipping WhatsApp notification");
+        return;
+      }
+
+      // Prepare product details
+      const productNames = items.map(item => item.title).join(", ");
+      const totalQuantity = items.reduce((sum, item) => sum + item.quantity, 0);
+
+      console.log("[checkout] Sending WhatsApp confirmation for order:", orderId, "Phone:", finalWhatsappPhone);
+
+      const response = await fetch("/api/send-whatsapp-confirmation", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          phone: finalWhatsappPhone,
+          firstName: customerInfo.firstName,
+          orderId,
+          productNames,
+          totalQuantity,
+          totalPrice,
+          customerAddress: `${shippingAddress.street}, ${shippingAddress.city}, ${shippingAddress.state} - ${shippingAddress.zip}`,
+        }),
+      });
+
+      console.log("[checkout] WhatsApp API response status:", response.status);
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("[checkout] WhatsApp confirmation message sent successfully:", data);
+      } else {
+        // Try to parse error response, fallback to status text
+        try {
+          const errorData = await response.json();
+          console.error("[checkout] Failed to send WhatsApp message:", errorData);
+        } catch (e) {
+          const errorText = await response.text();
+          console.error("[checkout] Failed to send WhatsApp message. Status:", response.status, response.statusText, errorText);
+        }
+      }
+    } catch (error) {
+      console.error("[checkout] Error sending WhatsApp confirmation:", error);
+      // Don't fail the order due to WhatsApp notification error
+    }
   };
 
   const lookupPincode = async (pincode: string, type: 'new' | 'edit' | 'shipping') => {
@@ -1138,7 +1204,7 @@ export default function Checkout() {
           border: 1.5px solid #ddd;
           border-radius: 8px;
           padding: 10px 14px;
-          font-size: 13px;
+          font-size: 16px;
           outline: none;
           transition: border-color 0.2s;
           font-family: inherit;
@@ -1405,7 +1471,7 @@ export default function Checkout() {
           border: 1.5px solid #ddd;
           border-radius: 8px;
           padding: 10px 12px;
-          font-size: 13px;
+          font-size: 16px;
           outline: none;
           transition: border-color 0.2s;
           margin-bottom: 12px;
@@ -1613,7 +1679,7 @@ export default function Checkout() {
           border: 1.5px solid #ddd;
           border-radius: 8px;
           padding: 10px 12px;
-          font-size: 13px;
+          font-size: 16px;
           outline: none;
           transition: border-color 0.2s;
           box-sizing: border-box;
@@ -2139,6 +2205,41 @@ export default function Checkout() {
                         />
                         {showErrors && isGuestCheckout && (!customerInfo.phone || customerInfo.phone.length !== 10) && <p className="field-error">10-digit phone number is required</p>}
                       </div>
+
+                      {/* WhatsApp Checkbox */}
+                      <div className="checkout-form-field" style={{ marginBottom: 8 }}>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontWeight: 400, margin: 0 }}>
+                          <input
+                            type="checkbox"
+                            checked={whatsappSameAsPhone}
+                            onChange={(e) => {
+                              setWhatsappSameAsPhone(e.target.checked);
+                              if (e.target.checked) {
+                                setWhatsappPhone("");
+                              }
+                            }}
+                            style={{ width: 18, height: 18, cursor: 'pointer' }}
+                          />
+                          <span>WhatsApp number is same as above</span>
+                        </label>
+                      </div>
+
+                      {/* WhatsApp Phone Field - Show only if not same */}
+                      {!whatsappSameAsPhone && (
+                        <div className="checkout-form-field">
+                          <label>WhatsApp Number *</label>
+                          <input
+                            type="tel"
+                            value={whatsappPhone}
+                            onChange={(e) => setWhatsappPhone(e.target.value.replace(/\D/g, ""))}
+                            placeholder="10-digit number"
+                            maxLength={10}
+                            required={!whatsappSameAsPhone}
+                          />
+                          {showErrors && !whatsappSameAsPhone && (!whatsappPhone || whatsappPhone.length !== 10) && <p className="field-error">10-digit WhatsApp number is required</p>}
+                        </div>
+                      )}
+
                       <div className="checkout-form-field">
                         <label>Street Address *</label>
                         <textarea

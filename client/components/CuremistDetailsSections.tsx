@@ -217,6 +217,14 @@ export default function CuremistDetailsSections() {
               </div>
             ))}
           </div>
+           {/* Important usage statement (prominent but design-friendly) */}
+        <div className="container mx-auto px-2 mt-6">
+          <div className="bg-[#fff7cc] border-l-4 border-[#ffd147] rounded-md p-2 text-center max-w-xl mx-auto">
+            <p className="text-[10px] md:text-base font-semibold text-[#0C1F4A]">
+              CureMist needs to be used 3 times a day for a minimum of 3 days
+            </p>
+          </div>
+        </div>
 
           {/* Film Visibility Info -> PREMIUM LAYOUT */}
           {/* Film Visibility Info -> VERY COMPACT LAYOUT */}
